@@ -27,6 +27,35 @@ export const Colors = {
   },
 };
 
+export const GameColors = {
+  background: '#0a172b',
+  surface: '#1A2744',
+  surfaceLight: '#243354',
+  primary: '#D3773F',
+  secondary: '#020202',
+  accent: '#F5A623',
+  yellow: '#F8E71C',
+  pink: '#E84393',
+  coral: '#FF6B6B',
+  lavender: '#A29BFE',
+  sky: '#74B9FF',
+  mint: '#55EFC4',
+  orange: '#FF9F43',
+  // Scoring zone colors
+  zone4: '#E8573D',
+  zone3: '#F5A623',
+  zone2: '#F8E71C',
+  // Text
+  text: '#FFFFFF',
+  textMuted: '#8B9DC3',
+  textDark: '#0F1B2D',
+  // Dial
+  dialBackground: '#162038',
+  dialBorder: '#2A3A5C',
+  needleColor: '#FFFFFF',
+  pivotColor: '#E8573D',
+};
+
 export const Fonts = Platform.select({
   ios: {
     /** iOS `UIFontDescriptorSystemDesignDefault` */

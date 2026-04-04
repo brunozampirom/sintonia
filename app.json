@@ -3,7 +3,7 @@
     "name": "Wavelength",
     "slug": "Wavelength",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "wavelength",
     "userInterfaceStyle": "automatic",
