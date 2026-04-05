@@ -1,12 +1,12 @@
+import { GameColors } from '@/constants/theme';
+import * as Haptics from 'expo-haptics';
 import React from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
 } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
-import { GameColors } from '@/constants/theme';
 
 interface GameButtonProps {
   title: string;

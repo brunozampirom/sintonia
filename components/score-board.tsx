@@ -1,8 +1,8 @@
+import { AnimatedScore } from '@/components/animated-score';
+import { GameColors } from '@/constants/theme';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
-import { AnimatedScore } from '@/components/animated-score';
-import { GameColors } from '@/constants/theme';
 
 interface ScoreBoardProps {
   scores: [number, number];

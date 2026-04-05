@@ -67,7 +67,8 @@ function RoundCard({ record, playerNames, index }: { record: RoundRecord; player
       <View style={styles.playersRow}>
         <Text style={styles.playerInfo}>
           <Ionicons name="chatbubble-outline" size={11} color={GameColors.textMuted} />{' '}
-          {playerNames[record.clueGiver - 1]}
+          {record.clueGiverName ?? playerNames[record.clueGiver - 1]}
+          {record.teamName ? ` (${record.teamName})` : ''}
         </Text>
         <Text style={styles.playerInfo}>
           <Ionicons name="search-outline" size={11} color={GameColors.textMuted} />{' '}
@@ -88,7 +89,7 @@ export default function HistoryScreen() {
 
   const totalPoints = [0, 0];
   for (const r of history) {
-    totalPoints[r.guesser - 1] += r.score;
+    totalPoints[r.clueGiver - 1] += r.score;
   }
 
   const perfectRounds = history.filter((r) => r.score === 4).length;

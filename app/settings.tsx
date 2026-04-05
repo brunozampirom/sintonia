@@ -6,7 +6,6 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  useWindowDimensions,
   View,
 } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -16,55 +15,12 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { GameColors } from '@/constants/theme';
 import { useSettings } from '@/contexts/settings-context';
 
-const SCORE_OPTIONS = [5, 10, 15, 20];
-const SKIP_OPTIONS = [
-  { value: 0, label: '0' },
-  { value: 1, label: '1' },
-  { value: 2, label: '2' },
-  { value: 3, label: '3' },
-  { value: 5, label: '5' },
-  { value: -1, label: '∞' },
-];
-
-function ChipSelector({
-  options,
-  selected,
-  onSelect,
-}: {
-  options: { value: number; label: string }[];
-  selected: number;
-  onSelect: (value: number) => void;
-}) {
-  return (
-    <View style={styles.chipRow}>
-      {options.map((opt) => (
-        <Pressable
-          key={opt.value}
-          style={[styles.chip, selected === opt.value && styles.chipSelected]}
-          onPress={() => onSelect(opt.value)}
-        >
-          <Text
-            style={[
-              styles.chipText,
-              selected === opt.value && styles.chipTextSelected,
-            ]}
-          >
-            {opt.label}
-          </Text>
-        </Pressable>
-      ))}
-    </View>
-  );
-}
-
 export default function SettingsScreen() {
   const router = useRouter();
   const { settings, updateSettings } = useSettings();
   const [newLeft, setNewLeft] = useState('');
   const [newRight, setNewRight] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
-  const { width, height } = useWindowDimensions();
-  const isLandscape = width > height;
 
   const handleAddSpectrum = () => {
     const left = newLeft.trim();
@@ -86,12 +42,6 @@ export default function SettingsScreen() {
     updateSettings({ customSpectrums: next });
   };
 
-  const handleNameChange = (playerIndex: 0 | 1, name: string) => {
-    const names: [string, string] = [...settings.playerNames];
-    names[playerIndex] = name;
-    updateSettings({ playerNames: names });
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
@@ -105,76 +55,11 @@ export default function SettingsScreen() {
 
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={[styles.scrollContent, isLandscape && styles.scrollContentLandscape]}
+        contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={isLandscape ? styles.landscapeGrid : undefined}>
-        {/* Winning Score */}
-        <View style={isLandscape ? styles.sectionWrapLandscape : undefined}>
-        <Animated.View entering={FadeInDown.delay(100)} style={[styles.section, isLandscape && styles.sectionFill]}>
-          <View style={styles.sectionHeader}>
-            <Ionicons name="trophy-outline" size={20} color={GameColors.accent} />
-            <Text style={styles.sectionTitle}>Pontos pra Vencer</Text>
-          </View>
-          <ChipSelector
-            options={SCORE_OPTIONS.map((v) => ({ value: v, label: String(v) }))}
-            selected={settings.winningScore}
-            onSelect={(v) => updateSettings({ winningScore: v })}
-          />
-        </Animated.View>
-        </View>
-
-        {/* Player Names */}
-        <View style={isLandscape ? styles.sectionWrapLandscape : undefined}>
-        <Animated.View entering={FadeInDown.delay(200)} style={[styles.section, isLandscape && styles.sectionFill]}>
-          <View style={styles.sectionHeader}>
-            <Ionicons name="people-outline" size={20} color={GameColors.secondary} />
-            <Text style={styles.sectionTitle}>Nomes dos Jogadores</Text>
-          </View>
-          <View style={styles.inputRow}>
-            <TextInput
-              style={styles.nameInput}
-              value={settings.playerNames[0]}
-              onChangeText={(t) => handleNameChange(0, t)}
-              placeholder="Jogador 1"
-              placeholderTextColor={GameColors.textMuted}
-              maxLength={20}
-            />
-          </View>
-          <View style={styles.inputRow}>
-            <TextInput
-              style={styles.nameInput}
-              value={settings.playerNames[1]}
-              onChangeText={(t) => handleNameChange(1, t)}
-              placeholder="Jogador 2"
-              placeholderTextColor={GameColors.textMuted}
-              maxLength={20}
-            />
-          </View>
-        </Animated.View>
-        </View>
-
-        {/* Skips */}
-        <View style={isLandscape ? styles.sectionWrapLandscape : undefined}>
-        <Animated.View entering={FadeInDown.delay(300)} style={[styles.section, isLandscape && styles.sectionFill]}>
-          <View style={styles.sectionHeader}>
-            <Ionicons name="play-skip-forward-outline" size={20} color={GameColors.sky} />
-            <Text style={styles.sectionTitle}>Pulos por Jogador</Text>
-          </View>
-          <Text style={styles.sectionDesc}>
-            Quantidade de vezes que cada jogador pode pular o espectro por partida
-          </Text>
-          <ChipSelector
-            options={SKIP_OPTIONS}
-            selected={settings.skipsPerPlayer}
-            onSelect={(v) => updateSettings({ skipsPerPlayer: v })}
-          />
-        </Animated.View>
-        </View>
-
         {/* Custom Spectrums */}
-        <View style={isLandscape ? styles.sectionWrapLandscape : undefined}>
-        <Animated.View entering={FadeInDown.delay(400)} style={[styles.section, isLandscape && styles.sectionFill]}>
+        <Animated.View entering={FadeInDown.delay(100)} style={styles.section}>
           <View style={styles.sectionHeader}>
             <Ionicons name="create-outline" size={20} color={GameColors.pink} />
             <Text style={styles.sectionTitle}>Palavras Customizadas</Text>
@@ -185,7 +70,6 @@ export default function SettingsScreen() {
               : `${settings.customSpectrums.length} espectro${settings.customSpectrums.length > 1 ? 's' : ''} adicionado${settings.customSpectrums.length > 1 ? 's' : ''}`}
           </Text>
 
-          {/* Custom spectrum list */}
           {settings.customSpectrums.map((s, i) => (
             <View key={i} style={styles.spectrumItem}>
               <Text style={styles.spectrumText} numberOfLines={1}>
@@ -200,7 +84,6 @@ export default function SettingsScreen() {
             </View>
           ))}
 
-          {/* Add form */}
           {showAddForm ? (
             <View style={styles.addForm}>
               <TextInput
@@ -246,8 +129,6 @@ export default function SettingsScreen() {
             </Pressable>
           )}
         </Animated.View>
-        </View>
-        </View>
 
         <View style={{ height: 40 }} />
       </ScrollView>
@@ -291,29 +172,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 8,
   },
-  scrollContentLandscape: {
-    paddingHorizontal: 16,
-    paddingTop: 4,
-  },
-  landscapeGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'stretch',
-    columnGap: 12,
-    rowGap: 12,
-  },
-  sectionWrapLandscape: {
-    width: '49%',
-  },
   section: {
     backgroundColor: GameColors.surface,
     borderRadius: 16,
     padding: 20,
     marginBottom: 16,
-  },
-  sectionFill: {
-    flex: 1,
-    marginBottom: 0,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -330,43 +193,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: GameColors.textMuted,
     marginBottom: 12,
-  },
-  chipRow: {
-    flexDirection: 'row',
-    gap: 10,
-    flexWrap: 'wrap',
-  },
-  chip: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    backgroundColor: GameColors.surfaceLight,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  chipSelected: {
-    borderColor: GameColors.accent,
-    backgroundColor: GameColors.background,
-  },
-  chipText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: GameColors.textMuted,
-  },
-  chipTextSelected: {
-    color: GameColors.accent,
-  },
-  inputRow: {
-    marginBottom: 10,
-  },
-  nameInput: {
-    backgroundColor: GameColors.surfaceLight,
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    fontSize: 15,
-    fontWeight: '600',
-    color: GameColors.text,
   },
   spectrumItem: {
     flexDirection: 'row',

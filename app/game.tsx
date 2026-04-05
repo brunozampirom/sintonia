@@ -97,7 +97,7 @@ export default function GameScreen() {
     scores: game.scores,
     activePlayer: (game.phase === 'guess' ? game.guesser : game.activeClueGiver) as 1 | 2,
     round: game.round,
-    playerNames: settings.playerNames,
+    playerNames: game.sideNames,
     winningScore: settings.winningScore,
   } as const;
 
@@ -134,11 +134,11 @@ export default function GameScreen() {
               </View>
               <View style={styles.landscapeControlCol}>
                 <Text style={styles.landscapeTitle}>
-                  {settings.playerNames[game.activeClueGiver - 1]}, é sua vez!
+                  {game.clueGiverLabel}, é sua vez!
                 </Text>
                 <Text style={styles.landscapeSubtitle}>Veja o alvo e pense em uma dica</Text>
                 <Text style={styles.landscapeInstruction}>
-                  Diga a dica em voz alta e passe o celular para {settings.playerNames[game.guesser - 1]}
+                  Diga a dica em voz alta e passe o celular para {game.guesserLabel}
                 </Text>
                 <View style={styles.landscapeButtons}>
                   <GameButton title="PASSAR CELULAR" onPress={submitClue} />
@@ -173,7 +173,7 @@ export default function GameScreen() {
               </View>
               <View style={styles.landscapeControlCol}>
                 <Text style={styles.landscapeTitle}>
-                  {settings.playerNames[game.guesser - 1]}, sua vez!
+                  {game.guesserLabel}, sua vez!
                 </Text>
                 <Text style={styles.landscapeSubtitle}>Arraste a agulha para onde acha que está a dica</Text>
                 <View style={styles.landscapeButtons}>
@@ -224,17 +224,17 @@ export default function GameScreen() {
               <View style={styles.landscapeGameOverLeft}>
                 <Animated.View entering={ZoomIn.duration(600).springify()} style={styles.gameOverHeader}>
                   <Ionicons name="sparkles" size={22} color={GameColors.accent} />
-                  <Text style={styles.landscapeGameOverTitle}>{winner ? settings.playerNames[winner - 1].toUpperCase() : ''} VENCEU!</Text>
+                  <Text style={styles.landscapeGameOverTitle}>{winner ? game.sideNames[winner - 1].toUpperCase() : ''} VENCEU!</Text>
                   <Ionicons name="sparkles" size={22} color={GameColors.accent} />
                 </Animated.View>
                 <View style={styles.landscapeFinalScoreRow}>
                   <View style={styles.finalPlayerScore}>
-                    <Text style={styles.finalPlayerName}>{settings.playerNames[0]}</Text>
+                    <Text style={styles.finalPlayerName}>{game.sideNames[0]}</Text>
                     <Text style={[styles.landscapeFinalScore, winner === 1 && styles.winnerScore]}>{game.scores[0]}</Text>
                   </View>
                   <Text style={styles.finalVs}>×</Text>
                   <View style={styles.finalPlayerScore}>
-                    <Text style={styles.finalPlayerName}>{settings.playerNames[1]}</Text>
+                    <Text style={styles.finalPlayerName}>{game.sideNames[1]}</Text>
                     <Text style={[styles.landscapeFinalScore, winner === 2 && styles.winnerScore]}>{game.scores[1]}</Text>
                   </View>
                 </View>
@@ -247,7 +247,7 @@ export default function GameScreen() {
                   pathname: '/history',
                   params: {
                     history: JSON.stringify(game.roundHistory),
-                    playerNames: JSON.stringify(settings.playerNames),
+                    playerNames: JSON.stringify(game.sideNames),
                     scores: JSON.stringify(game.scores),
                   },
                 })} variant="secondary" />
@@ -270,7 +270,7 @@ export default function GameScreen() {
             {game.phase === 'clue' && (
               <Animated.View entering={FadeIn.duration(400)} style={styles.phaseContainer}>
                 <Animated.Text entering={FadeInDown.delay(100)} style={styles.phaseTitle}>
-                  {settings.playerNames[game.activeClueGiver - 1]}, é sua vez!
+                  {game.clueGiverLabel}, é sua vez!
                 </Animated.Text>
                 <Animated.Text entering={FadeInDown.delay(200)} style={styles.phaseSubtitle}>
                   Veja o alvo e pense em uma dica
@@ -286,7 +286,7 @@ export default function GameScreen() {
                 </View>
                 <SpectrumCard left={game.currentSpectrum.left} right={game.currentSpectrum.right} />
                 <Animated.Text entering={FadeInUp.delay(400)} style={styles.instructionText}>
-                  Diga a dica em voz alta e passe o celular para {settings.playerNames[game.guesser - 1]}
+                  Diga a dica em voz alta e passe o celular para {game.guesserLabel}
                 </Animated.Text>
                 <View style={styles.buttonSection}>
                   <GameButton title="PASSAR CELULAR" onPress={submitClue} />
@@ -307,7 +307,7 @@ export default function GameScreen() {
             {game.phase === 'guess' && (
               <Animated.View entering={FadeIn.duration(400)} style={styles.phaseContainer}>
                 <Animated.Text entering={FadeInDown.delay(100)} style={styles.phaseTitle}>
-                  {settings.playerNames[game.guesser - 1]}, sua vez!
+                  {game.guesserLabel}, sua vez!
                 </Animated.Text>
                 <Animated.Text entering={FadeInDown.delay(200)} style={styles.phaseSubtitle}>
                   Arraste a agulha para onde acha que está a dica
@@ -365,19 +365,19 @@ export default function GameScreen() {
               <Animated.View entering={FadeIn.duration(400)} style={styles.phaseContainer}>
                 <Animated.View entering={ZoomIn.duration(600).springify()} style={styles.gameOverHeader}>
                   <Ionicons name="sparkles" size={28} color={GameColors.accent} />
-                  <Text style={styles.gameOverTitle}>{winner ? settings.playerNames[winner - 1].toUpperCase() : ''} VENCEU!</Text>
+                  <Text style={styles.gameOverTitle}>{winner ? game.sideNames[winner - 1].toUpperCase() : ''} VENCEU!</Text>
                   <Ionicons name="sparkles" size={28} color={GameColors.accent} />
                 </Animated.View>
                 <View style={styles.finalScoreBlock}>
                   <Text style={styles.finalScoreLabel}>Placar Final</Text>
                   <View style={styles.finalScoreRow}>
                     <View style={styles.finalPlayerScore}>
-                      <Text style={styles.finalPlayerName}>{settings.playerNames[0]}</Text>
+                      <Text style={styles.finalPlayerName}>{game.sideNames[0]}</Text>
                       <Text style={[styles.finalScore, winner === 1 && styles.winnerScore]}>{game.scores[0]}</Text>
                     </View>
                     <Text style={styles.finalVs}>×</Text>
                     <View style={styles.finalPlayerScore}>
-                      <Text style={styles.finalPlayerName}>{settings.playerNames[1]}</Text>
+                      <Text style={styles.finalPlayerName}>{game.sideNames[1]}</Text>
                       <Text style={[styles.finalScore, winner === 2 && styles.winnerScore]}>{game.scores[1]}</Text>
                     </View>
                   </View>
@@ -390,7 +390,7 @@ export default function GameScreen() {
                     pathname: '/history',
                     params: {
                       history: JSON.stringify(game.roundHistory),
-                      playerNames: JSON.stringify(settings.playerNames),
+                      playerNames: JSON.stringify(game.sideNames),
                       scores: JSON.stringify(game.scores),
                     },
                   })} variant="secondary" />

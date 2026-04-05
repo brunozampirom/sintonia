@@ -34,7 +34,7 @@ export default function HomeScreen() {
   const actionSection = (
     <>
       <Animated.View entering={FadeInUp.duration(600).delay(800)} style={styles.buttonBlock}>
-        <GameButton title="JOGAR" onPress={() => router.push('/game')} />
+        <GameButton title="JOGAR" onPress={() => router.push('/game-setup')} />
         <View style={{ marginTop: 10 }}>
           <GameButton title="CONFIGURAÇÕES" onPress={() => router.push('/settings')} variant="secondary" />
         </View>

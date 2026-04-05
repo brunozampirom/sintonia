@@ -1,14 +1,14 @@
+import { GameColors } from '@/constants/theme';
 import React, { useEffect, useMemo } from 'react';
 import { StyleSheet, useWindowDimensions } from 'react-native';
 import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withDelay,
-  withSequence,
-  withTiming,
+    Easing,
+    useAnimatedStyle,
+    useSharedValue,
+    withDelay,
+    withSequence,
+    withTiming,
 } from 'react-native-reanimated';
-import { GameColors } from '@/constants/theme';
 
 const PARTICLE_COUNT = 50;
 const COLORS = [
