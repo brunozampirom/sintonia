@@ -32,7 +32,7 @@ export const GameColors = {
   surface: '#1A2744',
   surfaceLight: '#243354',
   primary: '#D3773F',
-  secondary: '#020202',
+  secondary: '#AAC573',
   accent: '#F5A623',
   yellow: '#F8E71C',
   pink: '#E84393',

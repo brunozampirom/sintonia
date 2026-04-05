@@ -1,3 +1,4 @@
+import { Confetti } from '@/components/confetti';
 import { GameButton } from '@/components/game-button';
 import { ScoreBoard } from '@/components/score-board';
 import { SpectrumCard } from '@/components/spectrum-card';
@@ -6,8 +7,9 @@ import { GameColors } from '@/constants/theme';
 import { useSettings } from '@/contexts/settings-context';
 import { useGameState } from '@/hooks/use-game-state';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, {
     FadeIn,
@@ -32,6 +34,7 @@ export default function GameScreen() {
   const { submitGuess, nextRound, startGame, submitClue, skipRound } = game;
 
   const handleSubmitGuess = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     submitGuess(currentGuessRef.current);
   }, [submitGuess]);
 
@@ -64,8 +67,24 @@ export default function GameScreen() {
     (game.skipsRemaining[game.activeClueGiver === 1 ? 0 : 1] > 0);
 
   const handleSkip = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     skipRound();
   }, [skipRound]);
+
+  // Haptic feedback on result reveal
+  useEffect(() => {
+    if (game.phase === 'result') {
+      if (game.lastRoundScore === 4) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } else if (game.lastRoundScore >= 2) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      } else {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
+    } else if (game.phase === 'gameover') {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+  }, [game.phase, game.lastRoundScore]);
 
   const winner =
     game.scores[0] >= settings.winningScore ? 1 : game.scores[1] >= settings.winningScore ? 2 : null;
@@ -84,12 +103,13 @@ export default function GameScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Confetti active={game.phase === 'result' && game.lastRoundScore === 4} />
       {/* Header — in landscape includes compact scoreboard */}
       <View style={isLandscape ? styles.landscapeHeader : styles.header}>
         <Pressable style={styles.closeButton} onPress={() => router.back()}>
           <Ionicons name="close" size={20} color={GameColors.textMuted} />
         </Pressable>
-        {isLandscape && (
+        {isLandscape && game.phase !== 'gameover' && (
           <View style={styles.landscapeScoreWrap}>
             <ScoreBoard {...scoreBoardProps} compact />
           </View>
@@ -223,6 +243,15 @@ export default function GameScreen() {
               <View style={styles.landscapeControlCol}>
                 <GameButton title="JOGAR NOVAMENTE" onPress={handleNewGame} />
                 <View style={{ height: 10 }} />
+                <GameButton title="VER HISTÓRICO" onPress={() => router.push({
+                  pathname: '/history',
+                  params: {
+                    history: JSON.stringify(game.roundHistory),
+                    playerNames: JSON.stringify(settings.playerNames),
+                    scores: JSON.stringify(game.scores),
+                  },
+                })} variant="secondary" />
+                <View style={{ height: 10 }} />
                 <GameButton title="MENU PRINCIPAL" onPress={() => router.back()} variant="secondary" />
               </View>
             </Animated.View>
@@ -235,7 +264,7 @@ export default function GameScreen() {
           showsVerticalScrollIndicator={false}
           bounces={false}
         >
-          <ScoreBoard {...scoreBoardProps} />
+          {game.phase !== 'gameover' && <ScoreBoard {...scoreBoardProps} />}
 
           <View style={styles.content}>
             {game.phase === 'clue' && (
@@ -357,6 +386,15 @@ export default function GameScreen() {
                 <View style={styles.buttonSection}>
                   <GameButton title="JOGAR NOVAMENTE" onPress={handleNewGame} />
                   <View style={{ height: 12 }} />
+                  <GameButton title="VER HISTÓRICO" onPress={() => router.push({
+                    pathname: '/history',
+                    params: {
+                      history: JSON.stringify(game.roundHistory),
+                      playerNames: JSON.stringify(settings.playerNames),
+                      scores: JSON.stringify(game.scores),
+                    },
+                  })} variant="secondary" />
+                  <View style={{ height: 12 }} />
                   <GameButton title="MENU PRINCIPAL" onPress={() => router.back()} variant="secondary" />
                 </View>
               </Animated.View>
@@ -448,6 +486,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
+    paddingHorizontal: 4,
   },
   gameOverTitle: {
     fontSize: 28,
@@ -455,6 +494,7 @@ const styles = StyleSheet.create({
     color: GameColors.accent,
     textAlign: 'center',
     letterSpacing: 1,
+    flexShrink: 1,
   },
   finalScoreBlock: {
     backgroundColor: GameColors.surface,

@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
+import { AnimatedScore } from '@/components/animated-score';
 import { GameColors } from '@/constants/theme';
 
 interface ScoreBoardProps {
@@ -18,7 +19,7 @@ export function ScoreBoard({ scores, activePlayer, round, playerNames = ['Jogado
       <View style={styles.scoreRow}>
         <View style={[styles.playerBox, compact && styles.playerBoxCompact, activePlayer === 1 && styles.activePlayerBox]}>
           <Text style={[styles.playerLabel, compact && styles.playerLabelCompact]} numberOfLines={1}>{playerNames[0]}</Text>
-          <Text style={[styles.scoreText, compact && styles.scoreTextCompact]}>{scores[0]}</Text>
+          <AnimatedScore value={scores[0]} style={[styles.scoreText, compact && styles.scoreTextCompact]} />
         </View>
         <View style={styles.centerInfo}>
           <Text style={[styles.roundText, compact && styles.roundTextCompact]}>R{round}</Text>
@@ -26,7 +27,7 @@ export function ScoreBoard({ scores, activePlayer, round, playerNames = ['Jogado
         </View>
         <View style={[styles.playerBox, compact && styles.playerBoxCompact, activePlayer === 2 && styles.activePlayerBox]}>
           <Text style={[styles.playerLabel, compact && styles.playerLabelCompact]} numberOfLines={1}>{playerNames[1]}</Text>
-          <Text style={[styles.scoreText, compact && styles.scoreTextCompact]}>{scores[1]}</Text>
+          <AnimatedScore value={scores[1]} style={[styles.scoreText, compact && styles.scoreTextCompact]} />
         </View>
       </View>
     </Animated.View>

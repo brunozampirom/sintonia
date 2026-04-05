@@ -5,6 +5,16 @@ import type { GameSettings } from '@/contexts/settings-context';
 
 export type GamePhase = 'clue' | 'guess' | 'result' | 'gameover';
 
+export interface RoundRecord {
+  round: number;
+  spectrum: Spectrum;
+  targetAngle: number;
+  guessAngle: number;
+  score: number;
+  clueGiver: 1 | 2;
+  guesser: 1 | 2;
+}
+
 interface Spectrum {
   left: string;
   right: string;
@@ -23,6 +33,7 @@ interface GameState {
   skipsRemaining: [number, number];
   winningScore: number;
   allSpectrums: Spectrum[];
+  roundHistory: RoundRecord[];
 }
 
 type GameAction =
@@ -71,6 +82,7 @@ function createInitialState(settings: GameSettings): GameState {
     skipsRemaining: [skips, skips],
     winningScore: settings.winningScore,
     allSpectrums: pool,
+    roundHistory: [],
   };
 }
 
@@ -91,12 +103,23 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       const isGameOver =
         newScores[0] >= state.winningScore || newScores[1] >= state.winningScore;
 
+      const record: RoundRecord = {
+        round: state.round,
+        spectrum: state.currentSpectrum,
+        targetAngle: state.targetAngle,
+        guessAngle: action.guessAngle,
+        score,
+        clueGiver: state.activeClueGiver,
+        guesser: (state.activeClueGiver === 1 ? 2 : 1) as 1 | 2,
+      };
+
       return {
         ...state,
         phase: isGameOver ? 'gameover' : 'result',
         guessAngle: action.guessAngle,
         scores: newScores,
         lastRoundScore: score,
+        roundHistory: [...state.roundHistory, record],
       };
     }
 

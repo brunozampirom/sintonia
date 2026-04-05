@@ -5,6 +5,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
 import { GameColors } from '@/constants/theme';
 
 interface GameButtonProps {
@@ -41,6 +42,7 @@ export function GameButton({
     <AnimatedPressable
       onPress={onPress}
       onPressIn={() => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         scale.value = withSpring(0.93, { damping: 15, stiffness: 300 });
       }}
       onPressOut={() => {

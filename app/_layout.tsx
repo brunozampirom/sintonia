@@ -12,6 +12,7 @@ export default function RootLayout() {
           <Stack.Screen name="index" />
           <Stack.Screen name="game" />
           <Stack.Screen name="settings" />
+          <Stack.Screen name="history" />
         </Stack>
         <StatusBar style="light" />
       </SettingsProvider>
