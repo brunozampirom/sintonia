@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import i18n, { getDeviceLanguage, type LanguagePreference, type SupportedLanguage } from '@/i18n';
 
 const STORAGE_KEY = '@wavelength_settings';
 
@@ -17,6 +18,7 @@ export type GameMode = 'individual' | 'teams';
 export type ScoringTarget = 'cluer' | 'guesser';
 
 export interface GameSettings {
+  language: LanguagePreference;
   gameMode: GameMode;
   scoringTarget: ScoringTarget;
   winningScore: number;
@@ -27,26 +29,29 @@ export interface GameSettings {
 }
 
 export const DEFAULT_SETTINGS: GameSettings = {
+  language: 'system',
   gameMode: 'individual',
   scoringTarget: 'cluer',
   winningScore: 10,
   skipsPerPlayer: 0,
-  playerNames: ['Jogador 1', 'Jogador 2'],
+  playerNames: ['Player 1', 'Player 2'],
   customSpectrums: [],
   teams: [
-    { name: 'Time 1', players: ['Jogador 1', 'Jogador 2'] },
-    { name: 'Time 2', players: ['Jogador 3', 'Jogador 4'] },
+    { name: 'Team 1', players: ['Player 1', 'Player 2'] },
+    { name: 'Team 2', players: ['Player 3', 'Player 4'] },
   ],
 };
 
 interface SettingsContextValue {
   settings: GameSettings;
+  effectiveLanguage: SupportedLanguage;
   loaded: boolean;
   updateSettings: (partial: Partial<GameSettings>) => void;
 }
 
 const SettingsContext = createContext<SettingsContextValue>({
   settings: DEFAULT_SETTINGS,
+  effectiveLanguage: 'pt-BR',
   loaded: false,
   updateSettings: () => {},
 });
@@ -54,6 +59,7 @@ const SettingsContext = createContext<SettingsContextValue>({
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
   const [loaded, setLoaded] = useState(false);
+  const [effectiveLanguage, setEffectiveLanguage] = useState<SupportedLanguage>(getDeviceLanguage());
 
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY)
@@ -75,6 +81,15 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       });
   }, []);
 
+  useEffect(() => {
+    const nextLanguage: SupportedLanguage = settings.language === 'system'
+      ? getDeviceLanguage()
+      : settings.language;
+
+    setEffectiveLanguage(nextLanguage);
+    void i18n.changeLanguage(nextLanguage);
+  }, [settings.language]);
+
   const updateSettings = useCallback((partial: Partial<GameSettings>) => {
     setSettings((prev) => {
       const next = { ...prev, ...partial };
@@ -84,7 +99,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <SettingsContext.Provider value={{ settings, loaded, updateSettings }}>
+    <SettingsContext.Provider value={{ settings, effectiveLanguage, loaded, updateSettings }}>
       {children}
     </SettingsContext.Provider>
   );

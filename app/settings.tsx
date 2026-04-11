@@ -14,19 +14,30 @@ import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { GameColors } from '@/constants/theme';
 import { useSettings } from '@/contexts/settings-context';
+import type { LanguagePreference } from '@/i18n';
+import { useTranslation } from 'react-i18next';
+
+const LANGUAGE_OPTIONS: LanguagePreference[] = ['system', 'pt-BR', 'en'];
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const { settings, updateSettings } = useSettings();
+  const { settings, updateSettings, effectiveLanguage } = useSettings();
+  const { t } = useTranslation();
   const [newLeft, setNewLeft] = useState('');
   const [newRight, setNewRight] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
+
+  const getLanguageLabel = (lang: LanguagePreference) => {
+    if (lang === 'system') return t('settings.language.system');
+    if (lang === 'pt-BR') return t('settings.language.ptBR');
+    return t('settings.language.en');
+  };
 
   const handleAddSpectrum = () => {
     const left = newLeft.trim();
     const right = newRight.trim();
     if (!left || !right) {
-      Alert.alert('Preencha os dois campos');
+      Alert.alert(t('settings.customSpectrums.fillBothFields'));
       return;
     }
     updateSettings({
@@ -49,7 +60,7 @@ export default function SettingsScreen() {
         <Pressable style={styles.backButton} onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={22} color={GameColors.text} />
         </Pressable>
-        <Text style={styles.headerTitle}>Configurações</Text>
+        <Text style={styles.headerTitle}>{t('settings.title')}</Text>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -58,16 +69,44 @@ export default function SettingsScreen() {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
+        <Animated.View entering={FadeInDown.delay(50)} style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="language-outline" size={20} color={GameColors.sky} />
+            <Text style={styles.sectionTitle}>{t('settings.language.title')}</Text>
+          </View>
+          <Text style={styles.sectionDesc}>{t('settings.language.description')}</Text>
+
+          <View style={styles.languageRow}>
+            {LANGUAGE_OPTIONS.map((option) => {
+              const isSelected = settings.language === option;
+              return (
+                <Pressable
+                  key={option}
+                  style={[styles.languageChip, isSelected && styles.languageChipSelected]}
+                  onPress={() => updateSettings({ language: option })}
+                >
+                  <Text style={[styles.languageChipText, isSelected && styles.languageChipTextSelected]}>
+                    {getLanguageLabel(option)}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+          <Text style={styles.effectiveLanguageText}>
+            {t('settings.language.effective', { language: getLanguageLabel(effectiveLanguage) })}
+          </Text>
+        </Animated.View>
+
         {/* Custom Spectrums */}
         <Animated.View entering={FadeInDown.delay(100)} style={styles.section}>
           <View style={styles.sectionHeader}>
             <Ionicons name="create-outline" size={20} color={GameColors.pink} />
-            <Text style={styles.sectionTitle}>Palavras Customizadas</Text>
+            <Text style={styles.sectionTitle}>{t('settings.customSpectrums.title')}</Text>
           </View>
           <Text style={styles.sectionDesc}>
             {settings.customSpectrums.length === 0
-              ? 'Adicione seus próprios espectros ao jogo'
-              : `${settings.customSpectrums.length} espectro${settings.customSpectrums.length > 1 ? 's' : ''} adicionado${settings.customSpectrums.length > 1 ? 's' : ''}`}
+              ? t('settings.customSpectrums.empty')
+              : t('settings.customSpectrums.count', { count: settings.customSpectrums.length })}
           </Text>
 
           {settings.customSpectrums.map((s, i) => (
@@ -90,7 +129,7 @@ export default function SettingsScreen() {
                 style={styles.addInput}
                 value={newLeft}
                 onChangeText={setNewLeft}
-                placeholder="Lado esquerdo"
+                placeholder={t('settings.customSpectrums.leftPlaceholder')}
                 placeholderTextColor={GameColors.textMuted}
                 maxLength={50}
               />
@@ -98,14 +137,14 @@ export default function SettingsScreen() {
                 style={styles.addInput}
                 value={newRight}
                 onChangeText={setNewRight}
-                placeholder="Lado direito"
+                placeholder={t('settings.customSpectrums.rightPlaceholder')}
                 placeholderTextColor={GameColors.textMuted}
                 maxLength={50}
               />
               <View style={styles.addFormButtons}>
                 <Pressable style={styles.addConfirmButton} onPress={handleAddSpectrum}>
                   <Ionicons name="checkmark" size={18} color={GameColors.text} />
-                  <Text style={styles.addConfirmText}>Adicionar</Text>
+                  <Text style={styles.addConfirmText}>{t('common.actions.add')}</Text>
                 </Pressable>
                 <Pressable
                   style={styles.addCancelButton}
@@ -115,7 +154,7 @@ export default function SettingsScreen() {
                     setNewRight('');
                   }}
                 >
-                  <Text style={styles.addCancelText}>Cancelar</Text>
+                  <Text style={styles.addCancelText}>{t('common.actions.cancel')}</Text>
                 </Pressable>
               </View>
             </View>
@@ -125,7 +164,7 @@ export default function SettingsScreen() {
               onPress={() => setShowAddForm(true)}
             >
               <Ionicons name="add-circle-outline" size={20} color={GameColors.secondary} />
-              <Text style={styles.addButtonText}>Adicionar Espectro</Text>
+              <Text style={styles.addButtonText}>{t('settings.customSpectrums.addSpectrum')}</Text>
             </Pressable>
           )}
         </Animated.View>
@@ -193,6 +232,36 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: GameColors.textMuted,
     marginBottom: 12,
+  },
+  languageRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 10,
+  },
+  languageChip: {
+    flex: 1,
+    backgroundColor: GameColors.surfaceLight,
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  languageChipSelected: {
+    borderColor: GameColors.sky,
+  },
+  languageChipText: {
+    color: GameColors.textMuted,
+    fontSize: 12,
+    textAlign: 'center',
+    fontWeight: '600',
+  },
+  languageChipTextSelected: {
+    color: GameColors.text,
+  },
+  effectiveLanguageText: {
+    color: GameColors.textMuted,
+    fontSize: 12,
   },
   spectrumItem: {
     flexDirection: 'row',

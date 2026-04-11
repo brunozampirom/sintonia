@@ -1,7 +1,9 @@
 import { calculateScore } from '@/constants/game';
 import type { GameMode, GameSettings, ScoringTarget } from '@/contexts/settings-context';
-import spectrums from '@/data/spectrums.json';
-import { useCallback, useReducer } from 'react';
+import spectrumsEN from '@/data/spectrums.en.json';
+import spectrumsPtBR from '@/data/spectrums.pt-BR.json';
+import type { SupportedLanguage } from '@/i18n';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
 
 export type GamePhase = 'clue' | 'guess' | 'result' | 'gameover';
 
@@ -52,10 +54,15 @@ type GameAction =
   | { type: 'SUBMIT_CLUE' }
   | { type: 'SUBMIT_GUESS'; guessAngle: number }
   | { type: 'NEXT_ROUND' }
-  | { type: 'SKIP_ROUND' };
+  | { type: 'SKIP_ROUND' }
+  | { type: 'SET_LOCALE_POOL'; pool: Spectrum[] };
 
-function buildSpectrumPool(customSpectrums: Spectrum[]): Spectrum[] {
-  return [...spectrums, ...customSpectrums];
+function getBaseSpectrums(language: SupportedLanguage): Spectrum[] {
+  return language === 'en' ? spectrumsEN : spectrumsPtBR;
+}
+
+function buildSpectrumPool(baseSpectrums: Spectrum[], customSpectrums: Spectrum[]): Spectrum[] {
+  return [...baseSpectrums, ...customSpectrums];
 }
 
 function pickRandomSpectrum(pool: Spectrum[], usedIndices: number[]): { spectrum: Spectrum; index: number } {
@@ -75,8 +82,8 @@ function randomTargetAngle(): number {
   return Math.floor(Math.random() * 150) + 15;
 }
 
-function createInitialState(settings: GameSettings): GameState {
-  const pool = buildSpectrumPool(settings.customSpectrums);
+function createInitialState(settings: GameSettings, baseSpectrums: Spectrum[]): GameState {
+  const pool = buildSpectrumPool(baseSpectrums, settings.customSpectrums);
   const { spectrum, index } = pickRandomSpectrum(pool, []);
   const skips = settings.skipsPerPlayer;
   return {
@@ -115,7 +122,7 @@ function getClueGiverName(state: GameState): string {
 function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case 'START_GAME':
-      return createInitialState(action.settings);
+      return createInitialState(action.settings, state.allSpectrums);
 
     case 'SUBMIT_CLUE':
       return { ...state, phase: 'guess' };
@@ -203,13 +210,26 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       };
     }
 
+    case 'SET_LOCALE_POOL':
+      return {
+        ...state,
+        allSpectrums: action.pool,
+        usedIndices: [],
+      };
+
     default:
       return state;
   }
 }
 
-export function useGameState(settings: GameSettings) {
-  const [state, dispatch] = useReducer(gameReducer, settings, createInitialState);
+export function useGameState(settings: GameSettings, language: SupportedLanguage) {
+  const baseSpectrums = useMemo(() => getBaseSpectrums(language), [language]);
+  const [state, dispatch] = useReducer(gameReducer, settings, (initial) => createInitialState(initial, baseSpectrums));
+
+  useEffect(() => {
+    const nextPool = buildSpectrumPool(baseSpectrums, settings.customSpectrums);
+    dispatch({ type: 'SET_LOCALE_POOL', pool: nextPool });
+  }, [baseSpectrums, settings.customSpectrums]);
 
   const startGame = useCallback(() => dispatch({ type: 'START_GAME', settings }), [settings]);
   const submitClue = useCallback(() => dispatch({ type: 'SUBMIT_CLUE' }), []);

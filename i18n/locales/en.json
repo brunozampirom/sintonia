@@ -1,0 +1,128 @@
+{
+  "common": {
+    "appName": "WAVELENGTH",
+    "actions": {
+      "play": "PLAY",
+      "settings": "SETTINGS",
+      "confirm": "CONFIRM",
+      "cancel": "Cancel",
+      "add": "Add",
+      "nextRound": "NEXT ROUND",
+      "passPhone": "PASS PHONE",
+      "skip": "SKIP",
+      "playAgain": "PLAY AGAIN",
+      "viewHistory": "VIEW HISTORY",
+      "mainMenu": "MAIN MENU"
+    },
+    "labels": {
+      "player": "Player",
+      "team": "Team",
+      "target": "Target",
+      "guess": "Guess",
+      "difference": "Difference"
+    }
+  },
+  "home": {
+    "subtitle": "A mind sync party game",
+    "description": "One player gives a clue, the other tries to guess where it lands on the spectrum. The closer, the more points!",
+    "rules": {
+      "firstToWin": "First to {{score}} points wins",
+      "alternating": "Players alternate giving clues",
+      "samePhone": "2-player game on the same phone"
+    }
+  },
+  "setup": {
+    "title": "New Match",
+    "mode": {
+      "individual": "Individual",
+      "teams": "Teams"
+    },
+    "sections": {
+      "winningScore": "Points to Win",
+      "skipsPer": "Skips per {{target}}",
+      "scoringTarget": "Who gets the points?",
+      "players": "Players"
+    },
+    "scoring": {
+      "cluer": "Clue giver",
+      "guesser": "Guesser"
+    },
+    "team": {
+      "title": "Team {{number}}",
+      "namePlaceholder": "Team {{number}} Name",
+      "minPlayersAlert": "Minimum 2 players per team",
+      "addPlayer": "Add Player"
+    }
+  },
+  "game": {
+    "turn": {
+      "clue": "{{name}}, your turn!",
+      "guess": "{{name}}, your turn!"
+    },
+    "clue": {
+      "subtitle": "Look at the target and think of a clue",
+      "instruction": "Say the clue out loud and pass the phone to {{name}}"
+    },
+    "guess": {
+      "subtitle": "Drag the needle to where you think the clue is"
+    },
+    "result": {
+      "perfect": "PERFECT! +4",
+      "close": "SO CLOSE! +3",
+      "near": "IN THE ZONE! +2",
+      "miss": "MISS! +0",
+      "details": "Target: {{target}}° | Guess: {{guess}}° | Difference: {{difference}}°"
+    },
+    "skip": {
+      "unlimited": "Unlimited skips",
+      "remaining_one": "{{count}} skip left",
+      "remaining_other": "{{count}} skips left"
+    },
+    "gameOver": {
+      "won": "{{name}} WON!",
+      "finalScore": "Final Score",
+      "roundsPlayed_one": "{{count}} round played",
+      "roundsPlayed_other": "{{count}} rounds played"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "language": {
+      "title": "Language",
+      "description": "Choose the interface and default spectrum language.",
+      "system": "System",
+      "ptBR": "Portuguese (Brazil)",
+      "en": "English",
+      "effective": "Active language: {{language}}"
+    },
+    "customSpectrums": {
+      "title": "Custom Spectrums",
+      "empty": "Add your own custom spectrums to the game",
+      "count_one": "{{count}} spectrum added",
+      "count_other": "{{count}} spectrums added",
+      "leftPlaceholder": "Left side",
+      "rightPlaceholder": "Right side",
+      "addSpectrum": "Add Spectrum",
+      "fillBothFields": "Fill in both fields"
+    }
+  },
+  "history": {
+    "title": "History",
+    "summary": {
+      "rounds": "Rounds",
+      "perfect": "Perfect",
+      "avgDiff": "Avg Diff"
+    },
+    "score": {
+      "perfect": "PERFECT!",
+      "close": "SO CLOSE!",
+      "near": "IN THE ZONE!",
+      "miss": "MISS!"
+    },
+    "round": "R{{round}}"
+  },
+  "scoreboard": {
+    "round": "R{{round}}",
+    "target": "Target: {{score}}"
+  }
+}

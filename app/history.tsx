@@ -5,6 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 function getScoreColor(score: number) {
@@ -16,16 +17,17 @@ function getScoreColor(score: number) {
   }
 }
 
-function getScoreLabel(score: number) {
+function getScoreLabel(score: number, t: (key: string) => string) {
   switch (score) {
-    case 4: return 'PERFEITO!';
-    case 3: return 'QUASE LÁ!';
-    case 2: return 'NA ÁREA!';
-    default: return 'ERROU!';
+    case 4: return t('history.score.perfect');
+    case 3: return t('history.score.close');
+    case 2: return t('history.score.near');
+    default: return t('history.score.miss');
   }
 }
 
 function RoundCard({ record, playerNames, index }: { record: RoundRecord; playerNames: [string, string]; index: number }) {
+  const { t } = useTranslation();
   const diff = Math.abs(record.targetAngle - record.guessAngle);
 
   return (
@@ -40,7 +42,7 @@ function RoundCard({ record, playerNames, index }: { record: RoundRecord; player
       </View>
 
       <Text style={[styles.scoreLabel, { color: getScoreColor(record.score) }]}>
-        {getScoreLabel(record.score)}
+        {getScoreLabel(record.score, t)}
       </Text>
 
       <View style={styles.spectrumRow}>
@@ -51,15 +53,15 @@ function RoundCard({ record, playerNames, index }: { record: RoundRecord; player
 
       <View style={styles.detailsRow}>
         <View style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Alvo</Text>
+          <Text style={styles.detailLabel}>{t('common.labels.target')}</Text>
           <Text style={styles.detailValue}>{record.targetAngle.toFixed(0)}°</Text>
         </View>
         <View style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Tentativa</Text>
+          <Text style={styles.detailLabel}>{t('common.labels.guess')}</Text>
           <Text style={styles.detailValue}>{record.guessAngle.toFixed(0)}°</Text>
         </View>
         <View style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Diferença</Text>
+          <Text style={styles.detailLabel}>{t('common.labels.difference')}</Text>
           <Text style={[styles.detailValue, { color: getScoreColor(record.score) }]}>{diff.toFixed(0)}°</Text>
         </View>
       </View>
@@ -81,11 +83,13 @@ function RoundCard({ record, playerNames, index }: { record: RoundRecord; player
 
 export default function HistoryScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const params = useLocalSearchParams<{ history: string; playerNames: string; scores: string }>();
 
   const history: RoundRecord[] = params.history ? JSON.parse(params.history) : [];
-  const playerNames: [string, string] = params.playerNames ? JSON.parse(params.playerNames) : ['Jogador 1', 'Jogador 2'];
-  const scores: [number, number] = params.scores ? JSON.parse(params.scores) : [0, 0];
+  const playerNames: [string, string] = params.playerNames
+    ? JSON.parse(params.playerNames)
+    : [`${t('common.labels.player')} 1`, `${t('common.labels.player')} 2`];
 
   const totalPoints = [0, 0];
   for (const r of history) {
@@ -103,22 +107,22 @@ export default function HistoryScreen() {
         <Pressable style={styles.backButton} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={20} color={GameColors.textMuted} />
         </Pressable>
-        <Text style={styles.headerTitle}>Histórico</Text>
+        <Text style={styles.headerTitle}>{t('history.title')}</Text>
         <View />
       </View>
 
       <View style={styles.summaryRow}>
         <View style={styles.summaryItem}>
           <Text style={styles.summaryValue}>{history.length}</Text>
-          <Text style={styles.summaryLabel}>Rodadas</Text>
+          <Text style={styles.summaryLabel}>{t('history.summary.rounds')}</Text>
         </View>
         <View style={styles.summaryItem}>
           <Text style={[styles.summaryValue, { color: GameColors.primary }]}>{perfectRounds}</Text>
-          <Text style={styles.summaryLabel}>Perfeitos</Text>
+          <Text style={styles.summaryLabel}>{t('history.summary.perfect')}</Text>
         </View>
         <View style={styles.summaryItem}>
           <Text style={styles.summaryValue}>{avgDiff.toFixed(0)}°</Text>
-          <Text style={styles.summaryLabel}>Média Diff</Text>
+          <Text style={styles.summaryLabel}>{t('history.summary.avgDiff')}</Text>
         </View>
       </View>
 

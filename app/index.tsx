@@ -1,31 +1,32 @@
-import React from 'react';
-import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
-import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
-import { Ionicons } from '@expo/vector-icons';
 import { GameButton } from '@/components/game-button';
 import { Starfield } from '@/components/starfield';
 import { GameColors } from '@/constants/theme';
 import { useSettings } from '@/contexts/settings-context';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const router = useRouter();
   const { settings } = useSettings();
+  const { t } = useTranslation();
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
 
   const titleSection = (
     <>
       <Animated.View entering={FadeInDown.duration(800).delay(200)} style={styles.titleBlock}>
-        <Text style={[styles.title, isLandscape && styles.titleLandscape]}>SINTONIA</Text>
-        <Text style={styles.subtitle}>Um jogo de sintonia mental</Text>
+        <Text style={[styles.title, isLandscape && styles.titleLandscape]}>{t('common.appName')}</Text>
+        <Text style={styles.subtitle}>{t('home.subtitle')}</Text>
       </Animated.View>
 
       <Animated.View entering={FadeInUp.duration(600).delay(500)} style={styles.descBlock}>
         <Text style={styles.description}>
-          Um jogador dá a dica, o outro tenta adivinhar onde ela cai no espectro.
-          Quanto mais próximo, mais pontos!
+          {t('home.description')}
         </Text>
       </Animated.View>
     </>
@@ -34,9 +35,9 @@ export default function HomeScreen() {
   const actionSection = (
     <>
       <Animated.View entering={FadeInUp.duration(600).delay(800)} style={styles.buttonBlock}>
-        <GameButton title="JOGAR" onPress={() => router.push('/game-setup')} />
+        <GameButton title={t('common.actions.play')} onPress={() => router.push('/game-setup')} />
         <View style={{ marginTop: 10 }}>
-          <GameButton title="CONFIGURAÇÕES" onPress={() => router.push('/settings')} variant="secondary" />
+          <GameButton title={t('common.actions.settings')} onPress={() => router.push('/settings')} variant="secondary" />
         </View>
       </Animated.View>
 
@@ -45,19 +46,19 @@ export default function HomeScreen() {
           <View style={styles.ruleIconBox}>
             <Ionicons name="trophy-outline" size={18} color={GameColors.accent} />
           </View>
-          <Text style={styles.ruleText}>Primeiro a {settings.winningScore} pontos vence</Text>
+          <Text style={styles.ruleText}>{t('home.rules.firstToWin', { score: settings.winningScore })}</Text>
         </View>
         <View style={styles.ruleRow}>
           <View style={styles.ruleIconBox}>
             <Ionicons name="swap-horizontal-outline" size={18} color={GameColors.secondary} />
           </View>
-          <Text style={styles.ruleText}>Jogadores alternam as dicas</Text>
+          <Text style={styles.ruleText}>{t('home.rules.alternating')}</Text>
         </View>
         <View style={styles.ruleRow}>
           <View style={styles.ruleIconBox}>
             <Ionicons name="phone-portrait-outline" size={18} color={GameColors.sky} />
           </View>
-          <Text style={styles.ruleText}>Jogo para 2 no mesmo celular</Text>
+          <Text style={styles.ruleText}>{t('home.rules.samePhone')}</Text>
         </View>
       </Animated.View>
     </>
@@ -183,7 +184,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   title: {
-    fontSize: 52,
+    fontSize: 40,
+    textAlign: 'center',
     fontWeight: '900',
     color: GameColors.text,
     letterSpacing: 6,

@@ -10,20 +10,22 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, {
-    FadeIn,
-    FadeInDown,
-    FadeInUp,
-    useSharedValue,
-    ZoomIn,
+  FadeIn,
+  FadeInDown,
+  FadeInUp,
+  useSharedValue,
+  ZoomIn,
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function GameScreen() {
   const router = useRouter();
-  const { settings } = useSettings();
-  const game = useGameState(settings);
+  const { settings, effectiveLanguage } = useSettings();
+  const { t } = useTranslation();
+  const game = useGameState(settings, effectiveLanguage);
   const guessAngle = useSharedValue(90);
   const currentGuessRef = React.useRef(90);
 
@@ -53,15 +55,17 @@ export default function GameScreen() {
   const getScoreMessage = (score: number) => {
     switch (score) {
       case 4:
-        return { text: 'PERFEITO! +4', color: GameColors.primary };
+        return { text: t('game.result.perfect'), color: GameColors.primary };
       case 3:
-        return { text: 'QUASE LÁ! +3', color: GameColors.accent };
+        return { text: t('game.result.close'), color: GameColors.accent };
       case 2:
-        return { text: 'NA ÁREA! +2', color: GameColors.yellow };
+        return { text: t('game.result.near'), color: GameColors.yellow };
       default:
-        return { text: 'ERROU! +0', color: GameColors.textMuted };
+        return { text: t('game.result.miss'), color: GameColors.textMuted };
     }
   };
+
+  const skipCount = game.skipsRemaining[game.activeClueGiver === 1 ? 0 : 1];
 
   const canSkip = settings.skipsPerPlayer === -1 ||
     (game.skipsRemaining[game.activeClueGiver === 1 ? 0 : 1] > 0);
@@ -134,21 +138,21 @@ export default function GameScreen() {
               </View>
               <View style={styles.landscapeControlCol}>
                 <Text style={styles.landscapeTitle}>
-                  {game.clueGiverLabel}, é sua vez!
+                  {t('game.turn.clue', { name: game.clueGiverLabel })}
                 </Text>
-                <Text style={styles.landscapeSubtitle}>Veja o alvo e pense em uma dica</Text>
+                <Text style={styles.landscapeSubtitle}>{t('game.clue.subtitle')}</Text>
                 <Text style={styles.landscapeInstruction}>
-                  Diga a dica em voz alta e passe o celular para {game.guesserLabel}
+                  {t('game.clue.instruction', { name: game.guesserLabel })}
                 </Text>
                 <View style={styles.landscapeButtons}>
-                  <GameButton title="PASSAR CELULAR" onPress={submitClue} />
+                  <GameButton title={t('common.actions.passPhone')} onPress={submitClue} />
                   {settings.skipsPerPlayer !== 0 && canSkip && (
                     <View style={{ marginTop: 8, alignItems: 'center' }}>
-                      <GameButton title="PULAR" onPress={handleSkip} variant="secondary" />
+                      <GameButton title={t('common.actions.skip')} onPress={handleSkip} variant="secondary" />
                       <Text style={styles.skipCountText}>
                         {settings.skipsPerPlayer === -1
-                          ? 'Pulos ilimitados'
-                          : `${game.skipsRemaining[game.activeClueGiver === 1 ? 0 : 1]} pulo${game.skipsRemaining[game.activeClueGiver === 1 ? 0 : 1] !== 1 ? 's' : ''} restante${game.skipsRemaining[game.activeClueGiver === 1 ? 0 : 1] !== 1 ? 's' : ''}`}
+                          ? t('game.skip.unlimited')
+                          : t('game.skip.remaining', { count: skipCount })}
                       </Text>
                     </View>
                   )}
@@ -173,11 +177,11 @@ export default function GameScreen() {
               </View>
               <View style={styles.landscapeControlCol}>
                 <Text style={styles.landscapeTitle}>
-                  {game.guesserLabel}, sua vez!
+                  {t('game.turn.guess', { name: game.guesserLabel })}
                 </Text>
-                <Text style={styles.landscapeSubtitle}>Arraste a agulha para onde acha que está a dica</Text>
+                <Text style={styles.landscapeSubtitle}>{t('game.guess.subtitle')}</Text>
                 <View style={styles.landscapeButtons}>
-                  <GameButton title="CONFIRMAR" onPress={handleSubmitGuess} color={GameColors.secondary} />
+                  <GameButton title={t('common.actions.confirm')} onPress={handleSubmitGuess} color={GameColors.secondary} />
                 </View>
               </View>
             </Animated.View>
@@ -209,10 +213,14 @@ export default function GameScreen() {
                   );
                 })()}
                 <Text style={styles.resultDetail}>
-                  Alvo: {game.targetAngle.toFixed(0)}° | Tentativa: {game.guessAngle.toFixed(0)}° | Diferença: {Math.abs(game.targetAngle - game.guessAngle).toFixed(0)}°
+                  {t('game.result.details', {
+                    target: game.targetAngle.toFixed(0),
+                    guess: game.guessAngle.toFixed(0),
+                    difference: Math.abs(game.targetAngle - game.guessAngle).toFixed(0),
+                  })}
                 </Text>
                 <View style={styles.landscapeButtons}>
-                  <GameButton title="PRÓXIMA RODADA" onPress={handleNextRound} />
+                  <GameButton title={t('common.actions.nextRound')} onPress={handleNextRound} />
                 </View>
               </View>
             </Animated.View>
@@ -224,7 +232,7 @@ export default function GameScreen() {
               <View style={styles.landscapeGameOverLeft}>
                 <Animated.View entering={ZoomIn.duration(600).springify()} style={styles.gameOverHeader}>
                   <Ionicons name="sparkles" size={22} color={GameColors.accent} />
-                  <Text style={styles.landscapeGameOverTitle}>{winner ? game.sideNames[winner - 1].toUpperCase() : ''} VENCEU!</Text>
+                  <Text style={styles.landscapeGameOverTitle}>{winner ? t('game.gameOver.won', { name: game.sideNames[winner - 1].toUpperCase() }) : ''}</Text>
                   <Ionicons name="sparkles" size={22} color={GameColors.accent} />
                 </Animated.View>
                 <View style={styles.landscapeFinalScoreRow}>
@@ -238,12 +246,12 @@ export default function GameScreen() {
                     <Text style={[styles.landscapeFinalScore, winner === 2 && styles.winnerScore]}>{game.scores[1]}</Text>
                   </View>
                 </View>
-                <Text style={styles.roundsPlayed}>{game.round} rodadas jogadas</Text>
+                <Text style={styles.roundsPlayed}>{t('game.gameOver.roundsPlayed', { count: game.round })}</Text>
               </View>
               <View style={styles.landscapeControlCol}>
-                <GameButton title="JOGAR NOVAMENTE" onPress={handleNewGame} />
+                <GameButton title={t('common.actions.playAgain')} onPress={handleNewGame} />
                 <View style={{ height: 10 }} />
-                <GameButton title="VER HISTÓRICO" onPress={() => router.push({
+                <GameButton title={t('common.actions.viewHistory')} onPress={() => router.push({
                   pathname: '/history',
                   params: {
                     history: JSON.stringify(game.roundHistory),
@@ -252,7 +260,7 @@ export default function GameScreen() {
                   },
                 })} variant="secondary" />
                 <View style={{ height: 10 }} />
-                <GameButton title="MENU PRINCIPAL" onPress={() => router.back()} variant="secondary" />
+                <GameButton title={t('common.actions.mainMenu')} onPress={() => router.back()} variant="secondary" />
               </View>
             </Animated.View>
           )}
@@ -270,10 +278,10 @@ export default function GameScreen() {
             {game.phase === 'clue' && (
               <Animated.View entering={FadeIn.duration(400)} style={styles.phaseContainer}>
                 <Animated.Text entering={FadeInDown.delay(100)} style={styles.phaseTitle}>
-                  {game.clueGiverLabel}, é sua vez!
+                  {t('game.turn.clue', { name: game.clueGiverLabel })}
                 </Animated.Text>
                 <Animated.Text entering={FadeInDown.delay(200)} style={styles.phaseSubtitle}>
-                  Veja o alvo e pense em uma dica
+                  {t('game.clue.subtitle')}
                 </Animated.Text>
                 <View style={styles.dialSection}>
                   <WavelengthDial
@@ -286,17 +294,17 @@ export default function GameScreen() {
                 </View>
                 <SpectrumCard left={game.currentSpectrum.left} right={game.currentSpectrum.right} />
                 <Animated.Text entering={FadeInUp.delay(400)} style={styles.instructionText}>
-                  Diga a dica em voz alta e passe o celular para {game.guesserLabel}
+                  {t('game.clue.instruction', { name: game.guesserLabel })}
                 </Animated.Text>
                 <View style={styles.buttonSection}>
-                  <GameButton title="PASSAR CELULAR" onPress={submitClue} />
+                  <GameButton title={t('common.actions.passPhone')} onPress={submitClue} />
                   {settings.skipsPerPlayer !== 0 && canSkip && (
                     <View style={{ marginTop: 10, alignItems: 'center' }}>
-                      <GameButton title="PULAR" onPress={handleSkip} variant="secondary" />
+                      <GameButton title={t('common.actions.skip')} onPress={handleSkip} variant="secondary" />
                       <Text style={styles.skipCountText}>
                         {settings.skipsPerPlayer === -1
-                          ? 'Pulos ilimitados'
-                          : `${game.skipsRemaining[game.activeClueGiver === 1 ? 0 : 1]} pulo${game.skipsRemaining[game.activeClueGiver === 1 ? 0 : 1] !== 1 ? 's' : ''} restante${game.skipsRemaining[game.activeClueGiver === 1 ? 0 : 1] !== 1 ? 's' : ''}`}
+                          ? t('game.skip.unlimited')
+                          : t('game.skip.remaining', { count: skipCount })}
                       </Text>
                     </View>
                   )}
@@ -307,10 +315,10 @@ export default function GameScreen() {
             {game.phase === 'guess' && (
               <Animated.View entering={FadeIn.duration(400)} style={styles.phaseContainer}>
                 <Animated.Text entering={FadeInDown.delay(100)} style={styles.phaseTitle}>
-                  {game.guesserLabel}, sua vez!
+                  {t('game.turn.guess', { name: game.guesserLabel })}
                 </Animated.Text>
                 <Animated.Text entering={FadeInDown.delay(200)} style={styles.phaseSubtitle}>
-                  Arraste a agulha para onde acha que está a dica
+                  {t('game.guess.subtitle')}
                 </Animated.Text>
                 <View style={styles.dialSection}>
                   <WavelengthDial
@@ -324,7 +332,7 @@ export default function GameScreen() {
                 </View>
                 <SpectrumCard left={game.currentSpectrum.left} right={game.currentSpectrum.right} />
                 <View style={styles.buttonSection}>
-                  <GameButton title="CONFIRMAR" onPress={handleSubmitGuess} color={GameColors.secondary} />
+                  <GameButton title={t('common.actions.confirm')} onPress={handleSubmitGuess} color={GameColors.secondary} />
                 </View>
               </Animated.View>
             )}
@@ -353,10 +361,14 @@ export default function GameScreen() {
                 </View>
                 <SpectrumCard left={game.currentSpectrum.left} right={game.currentSpectrum.right} />
                 <Animated.Text entering={FadeInUp.delay(300)} style={styles.resultDetail}>
-                  Alvo: {game.targetAngle.toFixed(0)}° | Tentativa: {game.guessAngle.toFixed(0)}° | Diferença: {Math.abs(game.targetAngle - game.guessAngle).toFixed(0)}°
+                  {t('game.result.details', {
+                    target: game.targetAngle.toFixed(0),
+                    guess: game.guessAngle.toFixed(0),
+                    difference: Math.abs(game.targetAngle - game.guessAngle).toFixed(0),
+                  })}
                 </Animated.Text>
                 <View style={styles.buttonSection}>
-                  <GameButton title="PRÓXIMA RODADA" onPress={handleNextRound} />
+                  <GameButton title={t('common.actions.nextRound')} onPress={handleNextRound} />
                 </View>
               </Animated.View>
             )}
@@ -365,11 +377,11 @@ export default function GameScreen() {
               <Animated.View entering={FadeIn.duration(400)} style={styles.phaseContainer}>
                 <Animated.View entering={ZoomIn.duration(600).springify()} style={styles.gameOverHeader}>
                   <Ionicons name="sparkles" size={28} color={GameColors.accent} />
-                  <Text style={styles.gameOverTitle}>{winner ? game.sideNames[winner - 1].toUpperCase() : ''} VENCEU!</Text>
+                  <Text style={styles.gameOverTitle}>{winner ? t('game.gameOver.won', { name: game.sideNames[winner - 1].toUpperCase() }) : ''}</Text>
                   <Ionicons name="sparkles" size={28} color={GameColors.accent} />
                 </Animated.View>
                 <View style={styles.finalScoreBlock}>
-                  <Text style={styles.finalScoreLabel}>Placar Final</Text>
+                  <Text style={styles.finalScoreLabel}>{t('game.gameOver.finalScore')}</Text>
                   <View style={styles.finalScoreRow}>
                     <View style={styles.finalPlayerScore}>
                       <Text style={styles.finalPlayerName}>{game.sideNames[0]}</Text>
@@ -381,12 +393,12 @@ export default function GameScreen() {
                       <Text style={[styles.finalScore, winner === 2 && styles.winnerScore]}>{game.scores[1]}</Text>
                     </View>
                   </View>
-                  <Text style={styles.roundsPlayed}>{game.round} rodadas jogadas</Text>
+                  <Text style={styles.roundsPlayed}>{t('game.gameOver.roundsPlayed', { count: game.round })}</Text>
                 </View>
                 <View style={styles.buttonSection}>
-                  <GameButton title="JOGAR NOVAMENTE" onPress={handleNewGame} />
+                  <GameButton title={t('common.actions.playAgain')} onPress={handleNewGame} />
                   <View style={{ height: 12 }} />
-                  <GameButton title="VER HISTÓRICO" onPress={() => router.push({
+                  <GameButton title={t('common.actions.viewHistory')} onPress={() => router.push({
                     pathname: '/history',
                     params: {
                       history: JSON.stringify(game.roundHistory),
@@ -395,7 +407,7 @@ export default function GameScreen() {
                     },
                   })} variant="secondary" />
                   <View style={{ height: 12 }} />
-                  <GameButton title="MENU PRINCIPAL" onPress={() => router.back()} variant="secondary" />
+                  <GameButton title={t('common.actions.mainMenu')} onPress={() => router.back()} variant="secondary" />
                 </View>
               </Animated.View>
             )}
@@ -577,7 +589,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    width: '55%',
   },
   landscapeControlCol: {
     flex: 1,

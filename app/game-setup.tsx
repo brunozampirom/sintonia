@@ -14,6 +14,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 
 const SCORE_OPTIONS = [5, 10, 15, 20];
 const SKIP_OPTIONS = [
@@ -52,6 +53,8 @@ function ChipSelector({
 }
 
 function ModeToggle({ mode, onChange }: { mode: GameMode; onChange: (m: GameMode) => void }) {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.toggleRow}>
       <Pressable
@@ -64,7 +67,7 @@ function ModeToggle({ mode, onChange }: { mode: GameMode; onChange: (m: GameMode
           color={mode === 'individual' ? GameColors.text : GameColors.textMuted}
         />
         <Text style={[styles.toggleText, mode === 'individual' && styles.toggleTextActive]}>
-          Individual
+          {t('setup.mode.individual')}
         </Text>
       </Pressable>
       <Pressable
@@ -77,7 +80,7 @@ function ModeToggle({ mode, onChange }: { mode: GameMode; onChange: (m: GameMode
           color={mode === 'teams' ? GameColors.text : GameColors.textMuted}
         />
         <Text style={[styles.toggleText, mode === 'teams' && styles.toggleTextActive]}>
-          Times
+          {t('setup.mode.teams')}
         </Text>
       </Pressable>
     </View>
@@ -87,6 +90,7 @@ function ModeToggle({ mode, onChange }: { mode: GameMode; onChange: (m: GameMode
 export default function GameSetupScreen() {
   const router = useRouter();
   const { settings, updateSettings } = useSettings();
+  const { t } = useTranslation();
 
   const [mode, setMode] = useState<GameMode>(settings.gameMode);
   const [scoringTarget, setScoringTarget] = useState<ScoringTarget>(settings.scoringTarget);
@@ -125,7 +129,7 @@ export default function GameSetupScreen() {
   const handleAddPlayer = (teamIdx: number) => {
     setTeams((prev) => {
       const next = [...prev];
-      const players = [...next[teamIdx].players, `Jogador ${next[teamIdx].players.length + 1}`];
+      const players = [...next[teamIdx].players, `${t('common.labels.player')} ${next[teamIdx].players.length + 1}`];
       next[teamIdx] = { ...next[teamIdx], players };
       return next;
     });
@@ -134,7 +138,7 @@ export default function GameSetupScreen() {
   const handleRemovePlayer = (teamIdx: number, playerIdx: number) => {
     setTeams((prev) => {
       if (prev[teamIdx].players.length <= 2) {
-        Alert.alert('Mínimo 2 jogadores por time');
+        Alert.alert(t('setup.team.minPlayersAlert'));
         return prev;
       }
       const next = [...prev];
@@ -165,7 +169,7 @@ export default function GameSetupScreen() {
         <Pressable style={styles.backButton} onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={22} color={GameColors.text} />
         </Pressable>
-        <Text style={styles.headerTitle}>Nova Partida</Text>
+        <Text style={styles.headerTitle}>{t('setup.title')}</Text>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -181,7 +185,7 @@ export default function GameSetupScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Ionicons name="trophy-outline" size={20} color={GameColors.accent} />
-            <Text style={styles.sectionTitle}>Pontos pra Vencer</Text>
+            <Text style={styles.sectionTitle}>{t('setup.sections.winningScore')}</Text>
           </View>
           <ChipSelector
             options={SCORE_OPTIONS.map((v) => ({ value: v, label: String(v) }))}
@@ -195,7 +199,7 @@ export default function GameSetupScreen() {
           <View style={styles.sectionHeader}>
             <Ionicons name="play-skip-forward-outline" size={20} color={GameColors.sky} />
             <Text style={styles.sectionTitle}>
-              Pulos por {mode === 'teams' ? 'Time' : 'Jogador'}
+              {t('setup.sections.skipsPer', { target: mode === 'teams' ? t('common.labels.team') : t('common.labels.player') })}
             </Text>
           </View>
           <ChipSelector options={SKIP_OPTIONS} selected={skips} onSelect={setSkips} />
@@ -206,7 +210,7 @@ export default function GameSetupScreen() {
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Ionicons name="star-outline" size={20} color={GameColors.mint} />
-              <Text style={styles.sectionTitle}>Quem ganha os pontos?</Text>
+              <Text style={styles.sectionTitle}>{t('setup.sections.scoringTarget')}</Text>
             </View>
             <View style={styles.scoringRow}>
               <Pressable
@@ -217,7 +221,7 @@ export default function GameSetupScreen() {
                   <Ionicons name="chatbubble" size={18} color={scoringTarget === 'cluer' ? GameColors.background : GameColors.textMuted} />
                 </View>
                 <Text style={[styles.scoringLabel, scoringTarget === 'cluer' && styles.scoringLabelActive]}>
-                  Quem dá a dica
+                  {t('setup.scoring.cluer')}
                 </Text>
               </Pressable>
               <Pressable
@@ -228,7 +232,7 @@ export default function GameSetupScreen() {
                   <Ionicons name="search" size={18} color={scoringTarget === 'guesser' ? GameColors.background : GameColors.textMuted} />
                 </View>
                 <Text style={[styles.scoringLabel, scoringTarget === 'guesser' && styles.scoringLabelActive]}>
-                  Quem adivinha
+                  {t('setup.scoring.guesser')}
                 </Text>
               </Pressable>
             </View>
@@ -240,13 +244,13 @@ export default function GameSetupScreen() {
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Ionicons name="people-outline" size={20} color={GameColors.secondary} />
-              <Text style={styles.sectionTitle}>Jogadores</Text>
+              <Text style={styles.sectionTitle}>{t('setup.sections.players')}</Text>
             </View>
             <TextInput
               style={styles.nameInput}
               value={playerNames[0]}
               onChangeText={(t) => handlePlayerNameChange(0, t)}
-              placeholder="Jogador 1"
+              placeholder={`${t('common.labels.player')} 1`}
               placeholderTextColor={GameColors.textMuted}
               maxLength={20}
             />
@@ -254,7 +258,7 @@ export default function GameSetupScreen() {
               style={styles.nameInput}
               value={playerNames[1]}
               onChangeText={(t) => handlePlayerNameChange(1, t)}
-              placeholder="Jogador 2"
+              placeholder={`${t('common.labels.player')} 2`}
               placeholderTextColor={GameColors.textMuted}
               maxLength={20}
             />
@@ -270,13 +274,13 @@ export default function GameSetupScreen() {
                     size={20}
                     color={teamIdx === 0 ? GameColors.sky : GameColors.primary}
                   />
-                  <Text style={styles.sectionTitle}>Time {teamIdx + 1}</Text>
+                  <Text style={styles.sectionTitle}>{t('setup.team.title', { number: teamIdx + 1 })}</Text>
                 </View>
                 <TextInput
                   style={styles.teamNameInput}
                   value={team.name}
                   onChangeText={(t) => handleTeamNameChange(teamIdx, t)}
-                  placeholder={`Nome do Time ${teamIdx + 1}`}
+                  placeholder={t('setup.team.namePlaceholder', { number: teamIdx + 1 })}
                   placeholderTextColor={GameColors.textMuted}
                   maxLength={20}
                 />
@@ -286,7 +290,7 @@ export default function GameSetupScreen() {
                       style={styles.teamPlayerInput}
                       value={player}
                       onChangeText={(t) => handleTeamPlayerChange(teamIdx, playerIdx, t)}
-                      placeholder={`Jogador ${playerIdx + 1}`}
+                      placeholder={`${t('common.labels.player')} ${playerIdx + 1}`}
                       placeholderTextColor={GameColors.textMuted}
                       maxLength={20}
                     />
@@ -300,7 +304,7 @@ export default function GameSetupScreen() {
                 ))}
                 <Pressable style={styles.addPlayerButton} onPress={() => handleAddPlayer(teamIdx)}>
                   <Ionicons name="add-circle-outline" size={18} color={GameColors.accent} />
-                  <Text style={styles.addPlayerText}>Adicionar Jogador</Text>
+                  <Text style={styles.addPlayerText}>{t('setup.team.addPlayer')}</Text>
                 </Pressable>
               </View>
             ))}
@@ -313,7 +317,7 @@ export default function GameSetupScreen() {
 
       {/* Floating Play Button */}
       <View style={styles.floatingButton}>
-        <GameButton title="JOGAR" onPress={handlePlay} />
+        <GameButton title={t('common.actions.play')} onPress={handlePlay} />
       </View>
     </SafeAreaView>
   );
