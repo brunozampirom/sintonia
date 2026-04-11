@@ -61,7 +61,7 @@
     },
     "clue": {
       "subtitle": "Look at the target and think of a clue",
-      "instruction": "Say the clue out loud and pass the phone to {{name}}"
+      "instruction": "Say the clue out loud and press \"pass the phone\" to {{name}}"
     },
     "guess": {
       "subtitle": "Drag the needle to where you think the clue is"
@@ -91,7 +91,7 @@
       "title": "Language",
       "description": "Choose the interface and default spectrum language.",
       "system": "System",
-      "ptBR": "Portuguese (Brazil)",
+      "ptBR": "Portuguese",
       "en": "English",
       "effective": "Active language: {{language}}"
     },

@@ -42,6 +42,50 @@ export const DEFAULT_SETTINGS: GameSettings = {
   ],
 };
 
+function localizeIndexedLabel(kind: 'player' | 'team', index: number, language: SupportedLanguage): string {
+  const base = kind === 'player'
+    ? (language === 'pt-BR' ? 'Jogador' : 'Player')
+    : (language === 'pt-BR' ? 'Time' : 'Team');
+  return `${base} ${index}`;
+}
+
+function parseDefaultIndexedLabel(name: string, kind: 'player' | 'team'): number | null {
+  const prefixes = kind === 'player' ? '(Jogador|Player)' : '(Time|Team)';
+  const match = name.match(new RegExp(`^${prefixes}\\s+(\\d+)$`, 'i'));
+  if (!match) return null;
+  const parsed = Number.parseInt(match[2], 10);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function localizeDefaultLikeNames(settings: GameSettings, language: SupportedLanguage): GameSettings {
+  const playerNames = settings.playerNames.map((name) => {
+    const idx = parseDefaultIndexedLabel(name, 'player');
+    return idx ? localizeIndexedLabel('player', idx, language) : name;
+  }) as [string, string];
+
+  const teams = settings.teams.map((team) => {
+    const teamIndex = parseDefaultIndexedLabel(team.name, 'team');
+    const localizedTeamName = teamIndex ? localizeIndexedLabel('team', teamIndex, language) : team.name;
+
+    const localizedPlayers = team.players.map((player) => {
+      const playerIndex = parseDefaultIndexedLabel(player, 'player');
+      return playerIndex ? localizeIndexedLabel('player', playerIndex, language) : player;
+    });
+
+    return {
+      ...team,
+      name: localizedTeamName,
+      players: localizedPlayers,
+    };
+  }) as [TeamConfig, TeamConfig];
+
+  return {
+    ...settings,
+    playerNames,
+    teams,
+  };
+}
+
 interface SettingsContextValue {
   settings: GameSettings;
   effectiveLanguage: SupportedLanguage;
@@ -88,6 +132,18 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
     setEffectiveLanguage(nextLanguage);
     void i18n.changeLanguage(nextLanguage);
+
+    setSettings((prev) => {
+      const localized = localizeDefaultLikeNames(prev, nextLanguage);
+      const changed = JSON.stringify(prev.playerNames) !== JSON.stringify(localized.playerNames)
+        || JSON.stringify(prev.teams) !== JSON.stringify(localized.teams);
+
+      if (changed) {
+        AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(localized)).catch(() => {});
+      }
+
+      return changed ? localized : prev;
+    });
   }, [settings.language]);
 
   const updateSettings = useCallback((partial: Partial<GameSettings>) => {

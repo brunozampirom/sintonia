@@ -266,7 +266,7 @@ export default function GameScreen() {
           )}
         </View>
       ) : (
-        /* ========== PORTRAIT LAYOUT (unchanged) ========== */
+        /* ========== PORTRAIT LAYOUT ========== */
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
@@ -450,7 +450,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     gap: 16,
   },
   phaseTitle: {

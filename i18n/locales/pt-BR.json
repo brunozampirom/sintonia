@@ -3,15 +3,15 @@
     "appName": "SINTONIA",
     "actions": {
       "play": "JOGAR",
-      "settings": "CONFIGURACOES",
+      "settings": "CONFIGURAÇÕES",
       "confirm": "CONFIRMAR",
       "cancel": "Cancelar",
       "add": "Adicionar",
-      "nextRound": "PROXIMA RODADA",
+      "nextRound": "PRÓXIMA RODADA",
       "passPhone": "PASSAR CELULAR",
       "skip": "PULAR",
       "playAgain": "JOGAR NOVAMENTE",
-      "viewHistory": "VER HISTORICO",
+      "viewHistory": "VER HISTÓRICO",
       "mainMenu": "MENU PRINCIPAL"
     },
     "labels": {
@@ -19,12 +19,12 @@
       "team": "Time",
       "target": "Alvo",
       "guess": "Tentativa",
-      "difference": "Diferenca"
+      "difference": "Diferença"
     }
   },
   "home": {
     "subtitle": "Um jogo de sintonia mental",
-    "description": "Um jogador da a dica, o outro tenta adivinhar onde ela cai no espectro. Quanto mais proximo, mais pontos!",
+    "description": "Um jogador dá a dica, o outro tenta adivinhar onde ela cai no espectro. Quanto mais próximo, mais pontos!",
     "rules": {
       "firstToWin": "Primeiro a {{score}} pontos vence",
       "alternating": "Jogadores alternam as dicas",
@@ -50,7 +50,7 @@
     "team": {
       "title": "Time {{number}}",
       "namePlaceholder": "Nome do Time {{number}}",
-      "minPlayersAlert": "Minimo 2 jogadores por time",
+      "minPlayersAlert": "Mínimo 2 jogadores por time",
       "addPlayer": "Adicionar Jogador"
     }
   },
@@ -71,7 +71,7 @@
       "close": "QUASE LA! +3",
       "near": "NA AREA! +2",
       "miss": "ERROU! +0",
-      "details": "Alvo: {{target}}° | Tentativa: {{guess}}° | Diferenca: {{difference}}°"
+      "details": "Alvo: {{target}}° | Tentativa: {{guess}}° | Diferença: {{difference}}°"
     },
     "skip": {
       "unlimited": "Pulos ilimitados",
@@ -86,18 +86,18 @@
     }
   },
   "settings": {
-    "title": "Configuracoes",
+    "title": "Configurações",
     "language": {
       "title": "Idioma",
-      "description": "Escolha o idioma da interface e dos espectros padrao.",
+      "description": "Escolha o idioma da interface e dos espectros padrão.",
       "system": "Sistema",
-      "ptBR": "Portugues (Brasil)",
+      "ptBR": "Português",
       "en": "English",
       "effective": "Idioma ativo: {{language}}"
     },
     "customSpectrums": {
       "title": "Palavras Customizadas",
-      "empty": "Adicione seus proprios espectros ao jogo",
+      "empty": "Adicione seus próprios espectros ao jogo",
       "count_one": "{{count}} espectro adicionado",
       "count_other": "{{count}} espectros adicionados",
       "leftPlaceholder": "Lado esquerdo",
@@ -107,11 +107,11 @@
     }
   },
   "history": {
-    "title": "Historico",
+    "title": "Histórico",
     "summary": {
       "rounds": "Rodadas",
       "perfect": "Perfeitos",
-      "avgDiff": "Media Diff"
+      "avgDiff": "Média Diff"
     },
     "score": {
       "perfect": "PERFEITO!",
