@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <!-- Glow filter for the arc -->
+    <filter id="arcGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <!-- Stronger glow for needle -->
+    <filter id="needleGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <!-- Soft glow for center dot -->
+    <filter id="centerGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Outer subtle ring -->
+  <path d="M 106 310 A 155 155 0 0 1 406 310"
+        fill="none" stroke="#1A2744" stroke-width="32"
+        stroke-linecap="round"/>
+
+  <!-- Spectrum arc background (muted) -->
+  <path d="M 106 310 A 155 155 0 0 1 406 310"
+        fill="none" stroke="#FFFFFF" stroke-width="24" opacity="0.06"
+        stroke-linecap="round"/>
+
+  <!-- Main spectrum arc with glow -->
+  <g filter="url(#arcGlow)">
+    <!-- Segment 1: Pink -->
+    <path d="M 106 310 A 155 155 0 0 1 137 218"
+          fill="none" stroke="#E84393" stroke-width="16"
+          stroke-linecap="round" opacity="0.9"/>
+    <!-- Segment 2: Coral -->
+    <path d="M 141 212 A 155 155 0 0 1 198 167"
+          fill="none" stroke="#FF6B6B" stroke-width="16"
+          stroke-linecap="round" opacity="0.9"/>
+    <!-- Segment 3: Orange -->
+    <path d="M 203 164 A 155 155 0 0 1 256 155"
+          fill="none" stroke="#F5A623" stroke-width="16"
+          stroke-linecap="round" opacity="0.9"/>
+    <!-- Segment 4: Yellow -->
+    <path d="M 261 155 A 155 155 0 0 1 318 168"
+          fill="none" stroke="#F8E71C" stroke-width="16"
+          stroke-linecap="round" opacity="0.9"/>
+    <!-- Segment 5: Green -->
+    <path d="M 323 172 A 155 155 0 0 1 374 216"
+          fill="none" stroke="#AAC573" stroke-width="16"
+          stroke-linecap="round" opacity="0.9"/>
+    <!-- Segment 6: Mint -->
+    <path d="M 378 222 A 155 155 0 0 1 406 310"
+          fill="none" stroke="#55EFC4" stroke-width="16"
+          stroke-linecap="round" opacity="0.9"/>
+  </g>
+
+  <!-- Tick marks -->
+  <g stroke="#FFFFFF" stroke-width="1.2" opacity="0.3">
+    <line x1="115" y1="280" x2="125" y2="284"/>
+    <line x1="132" y1="232" x2="142" y2="237"/>
+    <line x1="168" y1="192" x2="176" y2="200"/>
+    <line x1="212" y1="164" x2="218" y2="174"/>
+    <line x1="256" y1="155" x2="256" y2="166"/>
+    <line x1="300" y1="164" x2="294" y2="174"/>
+    <line x1="344" y1="192" x2="336" y2="200"/>
+    <line x1="380" y1="232" x2="370" y2="237"/>
+    <line x1="397" y1="280" x2="387" y2="284"/>
+  </g>
+
+  <!-- Needle pointing ~120 degrees -->
+  <g filter="url(#needleGlow)">
+    <line x1="256" y1="310" x2="343" y2="198"
+          stroke="#F5A623" stroke-width="3.5"
+          stroke-linecap="round" opacity="0.7"/>
+    <line x1="256" y1="310" x2="343" y2="198"
+          stroke="#FFFFFF" stroke-width="2"
+          stroke-linecap="round"/>
+    <!-- Needle tip glow dot -->
+    <circle cx="343" cy="198" r="3.5" fill="#FFFFFF" opacity="0.9"/>
+  </g>
+
+  <!-- Center pivot -->
+  <g filter="url(#centerGlow)">
+    <circle cx="256" cy="310" r="10" fill="#F5A623" opacity="0.5"/>
+    <circle cx="256" cy="310" r="5.5" fill="#FFFFFF"/>
+  </g>
+
+
+</svg>
