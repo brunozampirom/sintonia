@@ -6,9 +6,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -16,6 +16,7 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
+  const insets = useSafeAreaInsets();
 
   const titleSection = (
     <>
@@ -61,6 +62,18 @@ export default function HomeScreen() {
           <Text style={styles.ruleText}>{t('home.rules.samePhone')}</Text>
         </View>
       </Animated.View>
+
+      {isLandscape && (
+        <Animated.View entering={FadeInUp.duration(600).delay(1200)} style={styles.tutorialBlock}>
+          <Pressable
+            onPress={() => router.push('/tutorial')}
+            hitSlop={12}
+            style={({ pressed }) => [styles.tutorialLink, pressed && styles.tutorialLinkPressed]}
+          >
+            <Text style={styles.tutorialLinkText}>{t('home.tutorialButton')}</Text>
+          </Pressable>
+        </Animated.View>
+      )}
     </>
   );
 
@@ -99,7 +112,7 @@ export default function HomeScreen() {
       {arcsOverlay}
       <SafeAreaView style={styles.container}>
         <ScrollView
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 80 }]}
           showsVerticalScrollIndicator={false}
           bounces={false}
         >
@@ -109,6 +122,19 @@ export default function HomeScreen() {
           </View>
         </ScrollView>
       </SafeAreaView>
+      <Animated.View
+        entering={FadeInUp.duration(600).delay(1200)}
+        style={[styles.tutorialFloat, { bottom: insets.bottom + 20 }]}
+        pointerEvents="box-none"
+      >
+        <Pressable
+          onPress={() => router.push('/tutorial')}
+          hitSlop={12}
+          style={({ pressed }) => [styles.tutorialLink, pressed && styles.tutorialLinkPressed]}
+        >
+          <Text style={styles.tutorialLinkText}>{t('home.tutorialButton')}</Text>
+        </Pressable>
+      </Animated.View>
     </View>
   );
 }
@@ -234,6 +260,30 @@ const styles = StyleSheet.create({
     color: GameColors.textMuted,
     fontSize: 14,
     fontWeight: '500',
+  },
+  tutorialBlock: {
+    marginTop: 40,
+    alignItems: 'center',
+  },
+  tutorialFloat: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  tutorialLink: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  tutorialLinkPressed: {
+    opacity: 0.55,
+  },
+  tutorialLinkText: {
+    color: GameColors.textMuted,
+    fontSize: 14,
+    fontWeight: '600',
+    letterSpacing: 0.3,
+    textDecorationLine: 'underline',
   },
   // ===== Landscape =====
   landscapeContent: {

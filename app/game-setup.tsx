@@ -11,6 +11,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -91,6 +92,8 @@ export default function GameSetupScreen() {
   const router = useRouter();
   const { settings, updateSettings } = useSettings();
   const { t } = useTranslation();
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
 
   const [mode, setMode] = useState<GameMode>(settings.gameMode);
   const [scoringTarget, setScoringTarget] = useState<ScoringTarget>(settings.scoringTarget);
@@ -181,8 +184,9 @@ export default function GameSetupScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
+        <View style={isLandscape ? styles.grid : undefined}>
         {/* Winning Score */}
-        <View style={styles.section}>
+        <View style={[styles.section, isLandscape && styles.sectionLandscape]}>
           <View style={styles.sectionHeader}>
             <Ionicons name="trophy-outline" size={20} color={GameColors.accent} />
             <Text style={styles.sectionTitle}>{t('setup.sections.winningScore')}</Text>
@@ -195,7 +199,7 @@ export default function GameSetupScreen() {
         </View>
 
         {/* Skips */}
-        <View style={styles.section}>
+        <View style={[styles.section, isLandscape && styles.sectionLandscape]}>
           <View style={styles.sectionHeader}>
             <Ionicons name="play-skip-forward-outline" size={20} color={GameColors.sky} />
             <Text style={styles.sectionTitle}>
@@ -207,7 +211,7 @@ export default function GameSetupScreen() {
 
         {/* Scoring Target — only for individual mode */}
         {mode === 'individual' && (
-          <View style={styles.section}>
+          <View style={[styles.section, isLandscape && styles.sectionLandscape]}>
             <View style={styles.sectionHeader}>
               <Ionicons name="star-outline" size={20} color={GameColors.mint} />
               <Text style={styles.sectionTitle}>{t('setup.sections.scoringTarget')}</Text>
@@ -241,7 +245,7 @@ export default function GameSetupScreen() {
 
         {mode === 'individual' ? (
           /* ===== INDIVIDUAL ===== */
-          <View style={styles.section}>
+          <View style={[styles.section, isLandscape && styles.sectionLandscape]}>
             <View style={styles.sectionHeader}>
               <Ionicons name="people-outline" size={20} color={GameColors.secondary} />
               <Text style={styles.sectionTitle}>{t('setup.sections.players')}</Text>
@@ -267,7 +271,7 @@ export default function GameSetupScreen() {
           /* ===== TEAMS ===== */
           <>
             {teams.map((team, teamIdx) => (
-              <View key={teamIdx} style={styles.section}>
+              <View key={teamIdx} style={[styles.section, isLandscape && styles.sectionLandscape]}>
                 <View style={styles.sectionHeader}>
                   <Ionicons
                     name={teamIdx === 0 ? 'flag-outline' : 'flag'}
@@ -310,6 +314,7 @@ export default function GameSetupScreen() {
             ))}
           </>
         )}
+        </View>
 
         {/* Bottom spacing for floating button */}
         <View style={{ height: 100 }} />
@@ -392,6 +397,14 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     gap: 10,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  sectionLandscape: {
+    width: '48.5%',
   },
   sectionHeader: {
     flexDirection: 'row',

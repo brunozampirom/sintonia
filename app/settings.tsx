@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -23,6 +24,8 @@ export default function SettingsScreen() {
   const router = useRouter();
   const { settings, updateSettings, effectiveLanguage } = useSettings();
   const { t } = useTranslation();
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
   const [newLeft, setNewLeft] = useState('');
   const [newRight, setNewRight] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
@@ -69,7 +72,8 @@ export default function SettingsScreen() {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        <Animated.View entering={FadeInDown.delay(50)} style={styles.section}>
+        <View style={isLandscape ? styles.grid : undefined}>
+        <Animated.View entering={FadeInDown.delay(50)} style={[styles.section, isLandscape && styles.sectionLandscape]}>
           <View style={styles.sectionHeader}>
             <Ionicons name="language-outline" size={20} color={GameColors.sky} />
             <Text style={styles.sectionTitle}>{t('settings.language.title')}</Text>
@@ -98,7 +102,7 @@ export default function SettingsScreen() {
         </Animated.View>
 
         {/* Custom Spectrums */}
-        <Animated.View entering={FadeInDown.delay(100)} style={styles.section}>
+        <Animated.View entering={FadeInDown.delay(100)} style={[styles.section, isLandscape && styles.sectionLandscape]}>
           <View style={styles.sectionHeader}>
             <Ionicons name="create-outline" size={20} color={GameColors.pink} />
             <Text style={styles.sectionTitle}>{t('settings.customSpectrums.title')}</Text>
@@ -168,6 +172,7 @@ export default function SettingsScreen() {
             </Pressable>
           )}
         </Animated.View>
+        </View>
 
         <View style={{ height: 40 }} />
       </ScrollView>
@@ -216,6 +221,14 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     marginBottom: 16,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  sectionLandscape: {
+    width: '48.5%',
   },
   sectionHeader: {
     flexDirection: 'row',

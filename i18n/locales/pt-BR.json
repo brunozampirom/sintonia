@@ -25,10 +25,48 @@
   "home": {
     "subtitle": "Um jogo de sintonia mental",
     "description": "Um jogador dá a dica, o outro tenta adivinhar onde ela cai no espectro. Quanto mais próximo, mais pontos!",
+    "tutorialButton": "Aprenda a jogar",
     "rules": {
       "firstToWin": "Primeiro a {{score}} pontos vence",
       "alternating": "Jogadores alternam as dicas",
       "samePhone": "Jogo para 2 no mesmo celular"
+    }
+  },
+  "tutorial": {
+    "title": "Como Jogar",
+    "intro": "Aprenda o básico em 6 passos rápidos. Você e seu parceiro vão ler a mente um do outro num espectro.",
+    "cta": "VAMOS JOGAR",
+    "steps": {
+      "objective": {
+        "title": "O Objetivo",
+        "description": "Dois jogadores (ou times) se revezam no mesmo celular. Um dá uma dica, o outro tenta ler a mente e achar o ponto exato no espectro."
+      },
+      "clue": {
+        "title": "Dê a Dica",
+        "description": "Quem dá a dica vê em segredo um alvo no mostrador e um cartão de espectro. Invente uma palavra ou frase que sugira onde o alvo está entre os dois extremos.",
+        "exampleLeft": "Frio",
+        "exampleRight": "Quente"
+      },
+      "passPhone": {
+        "title": "Passe o Celular",
+        "description": "Diga a dica em voz alta e passe o celular para quem vai adivinhar, sem mostrar o alvo."
+      },
+      "guess": {
+        "title": "Arraste a Agulha",
+        "description": "Quem adivinha vê o mesmo espectro, mas sem o alvo. Arraste a agulha para onde a dica faz mais sentido."
+      },
+      "scoring": {
+        "title": "Pontue a Rodada",
+        "description": "Quanto mais perto do alvo, mais pontos você ganha.",
+        "perfect": "PERFEITO",
+        "close": "QUASE",
+        "near": "PERTO",
+        "miss": "ERROU"
+      },
+      "winning": {
+        "title": "Vença a Partida",
+        "description": "Os jogadores alternam papéis a cada rodada. Quem chegar primeiro na pontuação-alvo vence a partida."
+      }
     }
   },
   "setup": {

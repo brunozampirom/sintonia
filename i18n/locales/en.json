@@ -25,10 +25,48 @@
   "home": {
     "subtitle": "A mind sync party game",
     "description": "One player gives a clue, the other tries to guess where it lands on the spectrum. The closer, the more points!",
+    "tutorialButton": "How to play",
     "rules": {
       "firstToWin": "First to {{score}} points wins",
       "alternating": "Players alternate giving clues",
       "samePhone": "2-player game on the same phone"
+    }
+  },
+  "tutorial": {
+    "title": "How to Play",
+    "intro": "Learn the basics in 6 quick steps. You and a partner will read each other's minds on a spectrum.",
+    "cta": "LET'S PLAY",
+    "steps": {
+      "objective": {
+        "title": "The Goal",
+        "description": "Two players (or teams) take turns on the same phone. One gives a clue, the other tries to read their mind and find the exact spot on a spectrum."
+      },
+      "clue": {
+        "title": "Give the Clue",
+        "description": "The clue giver secretly sees a target on the dial and a spectrum card. Invent one word or phrase that hints at where the target sits between the two extremes.",
+        "exampleLeft": "Cold",
+        "exampleRight": "Hot"
+      },
+      "passPhone": {
+        "title": "Pass the Phone",
+        "description": "Say your clue out loud, then hand the phone to the guesser without showing them the target."
+      },
+      "guess": {
+        "title": "Drag the Needle",
+        "description": "The guesser sees the same spectrum but no target. Drag the needle to wherever the clue feels right."
+      },
+      "scoring": {
+        "title": "Score the Round",
+        "description": "The closer your guess is to the target, the more points you earn.",
+        "perfect": "PERFECT",
+        "close": "CLOSE",
+        "near": "NEAR",
+        "miss": "MISS"
+      },
+      "winning": {
+        "title": "Win the Match",
+        "description": "Players alternate roles every round. The first to reach the winning score takes the match."
+      }
     }
   },
   "setup": {
