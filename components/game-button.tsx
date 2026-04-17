@@ -1,7 +1,7 @@
 import { GameColors } from '@/constants/theme';
 import * as Haptics from 'expo-haptics';
 import React from 'react';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text } from 'react-native';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -42,7 +42,7 @@ export function GameButton({
     <AnimatedPressable
       onPress={onPress}
       onPressIn={() => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        if (Platform.OS !== 'web') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         scale.value = withSpring(0.93, { damping: 15, stiffness: 300 });
       }}
       onPressOut={() => {
@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 6,
     minWidth: 200,
+    ...Platform.select({ web: { cursor: 'pointer' as const } }),
   },
   text: {
     fontSize: 18,
