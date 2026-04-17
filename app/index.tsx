@@ -21,8 +21,8 @@ export default function HomeScreen() {
   const titleSection = (
     <>
       <Animated.View entering={FadeInDown.duration(800).delay(200)} style={styles.titleBlock}>
-        <Text style={[styles.title, isLandscape && styles.titleLandscape, { fontSize: 40 * scale }]}>{t('common.appName')}</Text>
-        <Text style={[styles.subtitle, { fontSize: 16 * scale }]}>{t('home.subtitle')}</Text>
+        <Text style={[styles.title, isLandscape && styles.titleLandscape, !isLandscape && { fontSize: 40 * scale }]}>{t('common.appName')}</Text>
+        <Text style={[styles.subtitle, !isLandscape && { fontSize: 16 * scale }]}>{t('home.subtitle')}</Text>
       </Animated.View>
 
       <Animated.View entering={FadeInUp.duration(600).delay(500)} style={styles.descBlock}>
