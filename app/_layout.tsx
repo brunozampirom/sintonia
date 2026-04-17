@@ -16,6 +16,7 @@ export default function RootLayout() {
           <Stack.Screen name="settings" />
           <Stack.Screen name="tutorial" />
           <Stack.Screen name="history" />
+          <Stack.Screen name="landing" />
         </Stack>
         <StatusBar style="light" />
       </SettingsProvider>

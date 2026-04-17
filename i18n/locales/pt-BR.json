@@ -162,5 +162,52 @@
   "scoreboard": {
     "round": "R{{round}}",
     "target": "Meta: {{score}}"
+  },
+  "landing": {
+    "hero": {
+      "subtitle": "Um jogo de sintonia mental",
+      "tagline": "aquele jogo que vai salvar suas festas de ficarem no celular"
+    },
+    "howItWorks": {
+      "title": "Como Funciona",
+      "step1": {
+        "title": "Dê uma Dica",
+        "desc": "Veja um alvo secreto no espectro e dê uma dica de uma palavra"
+      },
+      "step2": {
+        "title": "Leia a Mente",
+        "desc": "Seu parceiro arrasta a agulha para onde acha que a dica se encaixa"
+      },
+      "step3": {
+        "title": "Pontue",
+        "desc": "Quanto mais perto, mais pontos — primeiro a bater a meta vence"
+      }
+    },
+    "features": {
+      "title": "Por que Você Vai Curtir",
+      "samePhone": {
+        "title": "Mesmo Celular",
+        "desc": "Ninguém precisa baixar nada — é só passar o celular e jogar"
+      },
+      "spectrums": {
+        "title": "100+ Espectros",
+        "desc": "De 'Frio ↔ Quente' a 'Superestimado ↔ Subestimado' — nunca enjoa"
+      },
+      "bilingual": {
+        "title": "EN & PT-BR",
+        "desc": "Suporte completo para inglês e português brasileiro"
+      },
+      "custom": {
+        "title": "Espectros Custom",
+        "desc": "Crie seus próprios cartões de espectro com piadas internas"
+      }
+    },
+    "cta": {
+      "title": "Pronto pra sintonizar?",
+      "subtitle": "Grátis, sem anúncios, sem cadastro",
+      "playNow": "JOGAR AGORA",
+      "downloadOn": "Baixe na",
+      "getItOn": "Disponível no"
+    }
   }
 }

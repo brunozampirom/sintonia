@@ -162,5 +162,52 @@
   "scoreboard": {
     "round": "R{{round}}",
     "target": "Target: {{score}}"
+  },
+  "landing": {
+    "hero": {
+      "subtitle": "A mind sync party game",
+      "tagline": "finally a reason to look at the same phone together"
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "step1": {
+        "title": "Give a Clue",
+        "desc": "See a secret target on the spectrum and drop a one-word hint"
+      },
+      "step2": {
+        "title": "Read Their Mind",
+        "desc": "Your partner drags the needle to where they think the clue lands"
+      },
+      "step3": {
+        "title": "Score Points",
+        "desc": "The closer the guess, the more points — first to the target wins"
+      }
+    },
+    "features": {
+      "title": "Why You'll Love It",
+      "samePhone": {
+        "title": "Same Phone",
+        "desc": "No downloads needed for everyone — pass and play on one device"
+      },
+      "spectrums": {
+        "title": "100+ Spectrums",
+        "desc": "From 'Cold ↔ Hot' to 'Overrated ↔ Underrated' — never gets old"
+      },
+      "bilingual": {
+        "title": "EN & PT-BR",
+        "desc": "Full support for English and Brazilian Portuguese"
+      },
+      "custom": {
+        "title": "Custom Spectrums",
+        "desc": "Create your own spectrum cards for inside jokes and niche vibes"
+      }
+    },
+    "cta": {
+      "title": "Ready to sync minds?",
+      "subtitle": "Free to play, no ads, no accounts",
+      "playNow": "PLAY NOW",
+      "downloadOn": "Download on the",
+      "getItOn": "Get it on"
+    }
   }
 }
