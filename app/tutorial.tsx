@@ -3,11 +3,12 @@ import { SpectrumCard } from '@/components/spectrum-card';
 import { Starfield } from '@/components/starfield';
 import { WavelengthDial } from '@/components/wavelength-dial';
 import { GameColors } from '@/constants/theme';
+import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   FadeInDown,
   FadeInUp,
@@ -20,9 +21,6 @@ import Animated, {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const TUTORIAL_TARGET_ANGLE = 108;
-const DIAL_SCALE = 0.8;
-const DIAL_BASE_WIDTH = 300;
-const DIAL_BASE_HEIGHT = 170;
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -36,8 +34,10 @@ interface Step {
 export default function TutorialScreen() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { width, height } = useWindowDimensions();
-  const isLandscape = width > height;
+  const { isLandscape, isTablet, containerMaxWidth, dialSize } = useResponsiveLayout();
+
+  // Tutorial dials are always shown at a smaller scale
+  const tutorialDialSize = Math.round(dialSize * 0.8);
 
   const clueGuessAngle = useSharedValue(TUTORIAL_TARGET_ANGLE);
   const guessAngle = useSharedValue(90);
@@ -71,15 +71,14 @@ export default function TutorialScreen() {
       renderVisual: () => (
         <>
           <View style={styles.dialWrap}>
-            <View style={styles.dialScale}>
-              <WavelengthDial
-                targetAngle={TUTORIAL_TARGET_ANGLE}
-                guessAngle={clueGuessAngle}
-                showTarget
-                interactive={false}
-                showGuess={false}
-              />
-            </View>
+            <WavelengthDial
+              targetAngle={TUTORIAL_TARGET_ANGLE}
+              guessAngle={clueGuessAngle}
+              showTarget
+              interactive={false}
+              showGuess={false}
+              size={tutorialDialSize}
+            />
           </View>
           <View style={styles.spectrumHint}>
             <SpectrumCard
@@ -101,15 +100,14 @@ export default function TutorialScreen() {
       color: GameColors.pink,
       renderVisual: () => (
         <View style={styles.dialWrap}>
-          <View style={styles.dialScale}>
-            <WavelengthDial
-              targetAngle={0}
-              guessAngle={guessAngle}
-              showTarget={false}
-              interactive={false}
-              showGuess
-            />
-          </View>
+          <WavelengthDial
+            targetAngle={0}
+            guessAngle={guessAngle}
+            showTarget={false}
+            interactive={false}
+            showGuess
+            size={tutorialDialSize}
+          />
         </View>
       ),
     },
@@ -140,15 +138,14 @@ export default function TutorialScreen() {
             </View>
           </View>
           <View style={styles.dialWrap}>
-            <View style={styles.dialScale}>
-              <WavelengthDial
-                targetAngle={TUTORIAL_TARGET_ANGLE}
-                guessAngle={resultGuessAngle}
-                showTarget
-                interactive={false}
-                showGuess
-              />
-            </View>
+            <WavelengthDial
+              targetAngle={TUTORIAL_TARGET_ANGLE}
+              guessAngle={resultGuessAngle}
+              showTarget
+              interactive={false}
+              showGuess
+              size={tutorialDialSize}
+            />
           </View>
         </>
       ),
@@ -160,11 +157,17 @@ export default function TutorialScreen() {
     },
   ];
 
+  const responsiveContainer = isTablet ? {
+    maxWidth: containerMaxWidth,
+    alignSelf: 'center' as const,
+    width: '100%' as const,
+  } : undefined;
+
   return (
     <View style={styles.screenWrap}>
       <Starfield count={60} />
       <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
+        <View style={[styles.header, responsiveContainer]}>
           <Pressable style={styles.backButton} onPress={() => router.back()}>
             <Ionicons name="chevron-back" size={22} color={GameColors.text} />
           </Pressable>
@@ -174,7 +177,7 @@ export default function TutorialScreen() {
 
         <ScrollView
           style={styles.scroll}
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[styles.scrollContent, responsiveContainer]}
           showsVerticalScrollIndicator={false}
         >
           <Animated.Text
@@ -334,16 +337,7 @@ const styles = StyleSheet.create({
   },
   dialWrap: {
     marginTop: 14,
-    width: DIAL_BASE_WIDTH * DIAL_SCALE,
-    height: DIAL_BASE_HEIGHT * DIAL_SCALE,
     alignSelf: 'center',
-    overflow: 'hidden',
-  },
-  dialScale: {
-    width: DIAL_BASE_WIDTH,
-    height: DIAL_BASE_HEIGHT,
-    transform: [{ scale: DIAL_SCALE }],
-    transformOrigin: 'top left',
   },
   zoneRow: {
     flexDirection: 'row',

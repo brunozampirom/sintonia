@@ -1,6 +1,7 @@
 import { GameButton } from '@/components/game-button';
 import { GameColors } from '@/constants/theme';
 import { useSettings, type GameMode, type ScoringTarget } from '@/contexts/settings-context';
+import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -11,7 +12,6 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  useWindowDimensions,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -92,8 +92,7 @@ export default function GameSetupScreen() {
   const router = useRouter();
   const { settings, updateSettings } = useSettings();
   const { t } = useTranslation();
-  const { width, height } = useWindowDimensions();
-  const isLandscape = width > height;
+  const { isLandscape, isTablet, containerMaxWidth } = useResponsiveLayout();
 
   const [mode, setMode] = useState<GameMode>(settings.gameMode);
   const [scoringTarget, setScoringTarget] = useState<ScoringTarget>(settings.scoringTarget);
@@ -166,9 +165,15 @@ export default function GameSetupScreen() {
     router.push('/game');
   };
 
+  const responsiveContainer = isTablet ? {
+    maxWidth: containerMaxWidth,
+    alignSelf: 'center' as const,
+    width: '100%' as const,
+  } : undefined;
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, responsiveContainer]}>
         <Pressable style={styles.backButton} onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={22} color={GameColors.text} />
         </Pressable>
@@ -176,11 +181,13 @@ export default function GameSetupScreen() {
         <View style={styles.headerSpacer} />
       </View>
 
-      <ModeToggle mode={mode} onChange={setMode} />
+      <View style={responsiveContainer}>
+        <ModeToggle mode={mode} onChange={setMode} />
+      </View>
 
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, responsiveContainer]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >

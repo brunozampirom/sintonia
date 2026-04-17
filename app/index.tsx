@@ -2,11 +2,12 @@ import { GameButton } from '@/components/game-button';
 import { Starfield } from '@/components/starfield';
 import { GameColors } from '@/constants/theme';
 import { useSettings } from '@/contexts/settings-context';
+import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -14,19 +15,18 @@ export default function HomeScreen() {
   const router = useRouter();
   const { settings } = useSettings();
   const { t } = useTranslation();
-  const { width, height } = useWindowDimensions();
-  const isLandscape = width > height;
+  const { isLandscape, isTablet, scale, containerMaxWidth } = useResponsiveLayout();
   const insets = useSafeAreaInsets();
 
   const titleSection = (
     <>
       <Animated.View entering={FadeInDown.duration(800).delay(200)} style={styles.titleBlock}>
-        <Text style={[styles.title, isLandscape && styles.titleLandscape]}>{t('common.appName')}</Text>
-        <Text style={styles.subtitle}>{t('home.subtitle')}</Text>
+        <Text style={[styles.title, isLandscape && styles.titleLandscape, { fontSize: 40 * scale }]}>{t('common.appName')}</Text>
+        <Text style={[styles.subtitle, { fontSize: 16 * scale }]}>{t('home.subtitle')}</Text>
       </Animated.View>
 
       <Animated.View entering={FadeInUp.duration(600).delay(500)} style={styles.descBlock}>
-        <Text style={styles.description}>
+        <Text style={[styles.description, { fontSize: 15 * scale }]}>
           {t('home.description')}
         </Text>
       </Animated.View>
@@ -87,13 +87,19 @@ export default function HomeScreen() {
     </View>
   );
 
+  const responsiveContainer = {
+    maxWidth: containerMaxWidth,
+    alignSelf: 'center' as const,
+    width: '100%' as const,
+  };
+
   if (isLandscape) {
     return (
       <View style={styles.screenWrap}>
         <Starfield count={100} />
         {arcsOverlay}
         <SafeAreaView style={styles.container}>
-          <View style={styles.landscapeContent}>
+          <View style={[styles.landscapeContent, isTablet && responsiveContainer]}>
             <View style={styles.landscapeLeft}>
               {titleSection}
             </View>
@@ -116,7 +122,7 @@ export default function HomeScreen() {
           showsVerticalScrollIndicator={false}
           bounces={false}
         >
-          <View style={styles.content}>
+          <View style={[styles.content, isTablet && responsiveContainer]}>
             {titleSection}
             {actionSection}
           </View>
@@ -302,10 +308,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  decorativeContainerLandscape: {
-    top: -80,
-    height: 150,
   },
   titleLandscape: {
     fontSize: 40,

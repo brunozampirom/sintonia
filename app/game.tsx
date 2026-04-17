@@ -6,12 +6,13 @@ import { WavelengthDial } from '@/components/wavelength-dial';
 import { GameColors } from '@/constants/theme';
 import { useSettings } from '@/contexts/settings-context';
 import { useGameState } from '@/hooks/use-game-state';
+import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   FadeIn,
   FadeInDown,
@@ -21,6 +22,16 @@ import Animated, {
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+function triggerHaptic(style: Haptics.ImpactFeedbackStyle) {
+  if (Platform.OS === 'web') return;
+  Haptics.impactAsync(style);
+}
+
+function triggerNotification(type: Haptics.NotificationFeedbackType) {
+  if (Platform.OS === 'web') return;
+  Haptics.notificationAsync(type);
+}
+
 export default function GameScreen() {
   const router = useRouter();
   const { settings, effectiveLanguage } = useSettings();
@@ -28,6 +39,7 @@ export default function GameScreen() {
   const game = useGameState(settings, effectiveLanguage);
   const guessAngle = useSharedValue(90);
   const currentGuessRef = React.useRef(90);
+  const { isLandscape, isTablet, scale, containerMaxWidth, dialSize } = useResponsiveLayout();
 
   const handleGuessChange = useCallback((angle: number) => {
     currentGuessRef.current = angle;
@@ -36,7 +48,7 @@ export default function GameScreen() {
   const { submitGuess, nextRound, startGame, submitClue, skipRound } = game;
 
   const handleSubmitGuess = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    triggerHaptic(Haptics.ImpactFeedbackStyle.Medium);
     submitGuess(currentGuessRef.current);
   }, [submitGuess]);
 
@@ -71,7 +83,7 @@ export default function GameScreen() {
     (game.skipsRemaining[game.activeClueGiver === 1 ? 0 : 1] > 0);
 
   const handleSkip = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    triggerHaptic(Haptics.ImpactFeedbackStyle.Light);
     skipRound();
   }, [skipRound]);
 
@@ -79,22 +91,19 @@ export default function GameScreen() {
   useEffect(() => {
     if (game.phase === 'result') {
       if (game.lastRoundScore === 4) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        triggerNotification(Haptics.NotificationFeedbackType.Success);
       } else if (game.lastRoundScore >= 2) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        triggerNotification(Haptics.NotificationFeedbackType.Warning);
       } else {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        triggerNotification(Haptics.NotificationFeedbackType.Error);
       }
     } else if (game.phase === 'gameover') {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      triggerNotification(Haptics.NotificationFeedbackType.Success);
     }
   }, [game.phase, game.lastRoundScore]);
 
   const winner =
     game.scores[0] >= settings.winningScore ? 1 : game.scores[1] >= settings.winningScore ? 2 : null;
-
-  const { width, height } = useWindowDimensions();
-  const isLandscape = width > height;
 
   // Shared score board props
   const scoreBoardProps = {
@@ -105,11 +114,17 @@ export default function GameScreen() {
     winningScore: settings.winningScore,
   } as const;
 
+  const responsiveContainer = isTablet ? {
+    maxWidth: containerMaxWidth,
+    alignSelf: 'center' as const,
+    width: '100%' as const,
+  } : undefined;
+
   return (
     <SafeAreaView style={styles.container}>
       <Confetti active={game.phase === 'result' && game.lastRoundScore === 4} />
       {/* Header — in landscape includes compact scoreboard */}
-      <View style={isLandscape ? styles.landscapeHeader : styles.header}>
+      <View style={[isLandscape ? styles.landscapeHeader : styles.header, responsiveContainer]}>
         <Pressable style={styles.closeButton} onPress={() => router.back()}>
           <Ionicons name="close" size={20} color={GameColors.textMuted} />
         </Pressable>
@@ -122,7 +137,7 @@ export default function GameScreen() {
 
       {isLandscape ? (
         /* ========== LANDSCAPE LAYOUT ========== */
-        <View style={styles.landscapeBody}>
+        <View style={[styles.landscapeBody, responsiveContainer]}>
           {/* CLUE */}
           {game.phase === 'clue' && (
             <Animated.View entering={FadeIn.duration(300)} style={styles.landscapePhase}>
@@ -133,11 +148,12 @@ export default function GameScreen() {
                   showTarget={true}
                   interactive={false}
                   showGuess={false}
+                  size={dialSize}
                 />
                 <SpectrumCard left={game.currentSpectrum.left} right={game.currentSpectrum.right} />
               </View>
               <View style={styles.landscapeControlCol}>
-                <Text style={styles.landscapeTitle}>
+                <Text style={[styles.landscapeTitle, { fontSize: 18 * scale }]}>
                   {t('game.turn.clue', { name: game.clueGiverLabel })}
                 </Text>
                 <Text style={styles.landscapeSubtitle}>{t('game.clue.subtitle')}</Text>
@@ -172,11 +188,12 @@ export default function GameScreen() {
                   interactive={true}
                   showGuess={true}
                   onGuessChange={handleGuessChange}
+                  size={dialSize}
                 />
                 <SpectrumCard left={game.currentSpectrum.left} right={game.currentSpectrum.right} />
               </View>
               <View style={styles.landscapeControlCol}>
-                <Text style={styles.landscapeTitle}>
+                <Text style={[styles.landscapeTitle, { fontSize: 18 * scale }]}>
                   {t('game.turn.guess', { name: game.guesserLabel })}
                 </Text>
                 <Text style={styles.landscapeSubtitle}>{t('game.guess.subtitle')}</Text>
@@ -197,6 +214,7 @@ export default function GameScreen() {
                   showTarget={true}
                   interactive={false}
                   showGuess={true}
+                  size={dialSize}
                 />
                 <SpectrumCard left={game.currentSpectrum.left} right={game.currentSpectrum.right} />
               </View>
@@ -206,7 +224,7 @@ export default function GameScreen() {
                   return (
                     <Animated.Text
                       entering={ZoomIn.duration(500).springify()}
-                      style={[styles.landscapeScoreAnnouncement, { color: msg.color }]}
+                      style={[styles.landscapeScoreAnnouncement, { color: msg.color, fontSize: 28 * scale }]}
                     >
                       {msg.text}
                     </Animated.Text>
@@ -268,7 +286,7 @@ export default function GameScreen() {
       ) : (
         /* ========== PORTRAIT LAYOUT ========== */
         <ScrollView
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[styles.scrollContent, responsiveContainer]}
           showsVerticalScrollIndicator={false}
           bounces={false}
         >
@@ -277,7 +295,7 @@ export default function GameScreen() {
           <View style={styles.content}>
             {game.phase === 'clue' && (
               <Animated.View entering={FadeIn.duration(400)} style={styles.phaseContainer}>
-                <Animated.Text entering={FadeInDown.delay(100)} style={styles.phaseTitle}>
+                <Animated.Text entering={FadeInDown.delay(100)} style={[styles.phaseTitle, { fontSize: 22 * scale }]}>
                   {t('game.turn.clue', { name: game.clueGiverLabel })}
                 </Animated.Text>
                 <Animated.Text entering={FadeInDown.delay(200)} style={styles.phaseSubtitle}>
@@ -290,6 +308,7 @@ export default function GameScreen() {
                     showTarget={true}
                     interactive={false}
                     showGuess={false}
+                    size={dialSize}
                   />
                 </View>
                 <SpectrumCard left={game.currentSpectrum.left} right={game.currentSpectrum.right} />
@@ -314,7 +333,7 @@ export default function GameScreen() {
 
             {game.phase === 'guess' && (
               <Animated.View entering={FadeIn.duration(400)} style={styles.phaseContainer}>
-                <Animated.Text entering={FadeInDown.delay(100)} style={styles.phaseTitle}>
+                <Animated.Text entering={FadeInDown.delay(100)} style={[styles.phaseTitle, { fontSize: 22 * scale }]}>
                   {t('game.turn.guess', { name: game.guesserLabel })}
                 </Animated.Text>
                 <Animated.Text entering={FadeInDown.delay(200)} style={styles.phaseSubtitle}>
@@ -328,6 +347,7 @@ export default function GameScreen() {
                     interactive={true}
                     showGuess={true}
                     onGuessChange={handleGuessChange}
+                    size={dialSize}
                   />
                 </View>
                 <SpectrumCard left={game.currentSpectrum.left} right={game.currentSpectrum.right} />
@@ -344,7 +364,7 @@ export default function GameScreen() {
                   return (
                     <Animated.Text
                       entering={ZoomIn.duration(500).springify()}
-                      style={[styles.scoreAnnouncement, { color: msg.color }]}
+                      style={[styles.scoreAnnouncement, { color: msg.color, fontSize: 36 * scale }]}
                     >
                       {msg.text}
                     </Animated.Text>
@@ -357,6 +377,7 @@ export default function GameScreen() {
                     showTarget={true}
                     interactive={false}
                     showGuess={true}
+                    size={dialSize}
                   />
                 </View>
                 <SpectrumCard left={game.currentSpectrum.left} right={game.currentSpectrum.right} />
@@ -377,7 +398,7 @@ export default function GameScreen() {
               <Animated.View entering={FadeIn.duration(400)} style={styles.phaseContainer}>
                 <Animated.View entering={ZoomIn.duration(600).springify()} style={styles.gameOverHeader}>
                   <Ionicons name="sparkles" size={28} color={GameColors.accent} />
-                  <Text style={styles.gameOverTitle}>{winner ? t('game.gameOver.won', { name: game.sideNames[winner - 1].toUpperCase() }) : ''}</Text>
+                  <Text style={[styles.gameOverTitle, { fontSize: 28 * scale }]}>{winner ? t('game.gameOver.won', { name: game.sideNames[winner - 1].toUpperCase() }) : ''}</Text>
                   <Ionicons name="sparkles" size={28} color={GameColors.accent} />
                 </Animated.View>
                 <View style={styles.finalScoreBlock}>

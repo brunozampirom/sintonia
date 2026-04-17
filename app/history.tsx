@@ -1,5 +1,6 @@
 import { GameColors } from '@/constants/theme';
 import type { RoundRecord } from '@/hooks/use-game-state';
+import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
@@ -84,6 +85,7 @@ function RoundCard({ record, playerNames, index }: { record: RoundRecord; player
 export default function HistoryScreen() {
   const router = useRouter();
   const { t } = useTranslation();
+  const { isTablet, containerMaxWidth } = useResponsiveLayout();
   const params = useLocalSearchParams<{ history: string; playerNames: string; scores: string }>();
 
   const history: RoundRecord[] = params.history ? JSON.parse(params.history) : [];
@@ -101,9 +103,15 @@ export default function HistoryScreen() {
     ? (history.reduce((sum, r) => sum + Math.abs(r.targetAngle - r.guessAngle), 0) / history.length)
     : 0;
 
+  const responsiveContainer = isTablet ? {
+    maxWidth: containerMaxWidth,
+    alignSelf: 'center' as const,
+    width: '100%' as const,
+  } : undefined;
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, responsiveContainer]}>
         <Pressable style={styles.backButton} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={20} color={GameColors.textMuted} />
         </Pressable>
@@ -111,7 +119,7 @@ export default function HistoryScreen() {
         <View />
       </View>
 
-      <View style={styles.summaryRow}>
+      <View style={[styles.summaryRow, responsiveContainer]}>
         <View style={styles.summaryItem}>
           <Text style={styles.summaryValue}>{history.length}</Text>
           <Text style={styles.summaryLabel}>{t('history.summary.rounds')}</Text>
@@ -132,7 +140,7 @@ export default function HistoryScreen() {
         renderItem={({ item, index }) => (
           <RoundCard record={item} playerNames={playerNames} index={index} />
         )}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={[styles.listContent, responsiveContainer]}
         showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>

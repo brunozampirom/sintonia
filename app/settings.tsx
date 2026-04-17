@@ -6,7 +6,6 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  useWindowDimensions,
   View,
 } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -15,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { GameColors } from '@/constants/theme';
 import { useSettings } from '@/contexts/settings-context';
+import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import type { LanguagePreference } from '@/i18n';
 import { useTranslation } from 'react-i18next';
 
@@ -24,8 +24,7 @@ export default function SettingsScreen() {
   const router = useRouter();
   const { settings, updateSettings, effectiveLanguage } = useSettings();
   const { t } = useTranslation();
-  const { width, height } = useWindowDimensions();
-  const isLandscape = width > height;
+  const { isLandscape, isTablet, containerMaxWidth } = useResponsiveLayout();
   const [newLeft, setNewLeft] = useState('');
   const [newRight, setNewRight] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
@@ -56,10 +55,16 @@ export default function SettingsScreen() {
     updateSettings({ customSpectrums: next });
   };
 
+  const responsiveContainer = isTablet ? {
+    maxWidth: containerMaxWidth,
+    alignSelf: 'center' as const,
+    width: '100%' as const,
+  } : undefined;
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, responsiveContainer]}>
         <Pressable style={styles.backButton} onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={22} color={GameColors.text} />
         </Pressable>
@@ -69,7 +74,7 @@ export default function SettingsScreen() {
 
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, responsiveContainer]}
         keyboardShouldPersistTaps="handled"
       >
         <View style={isLandscape ? styles.grid : undefined}>
