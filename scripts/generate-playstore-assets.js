@@ -13,94 +13,107 @@ function featureSvg() {
   return `
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">
   <defs>
-    <radialGradient id="bg" cx="50%" cy="42%" r="75%">
-      <stop offset="0%" stop-color="#122B57"/>
-      <stop offset="100%" stop-color="#08162F"/>
+    <radialGradient id="bg" cx="50%" cy="45%" r="70%">
+      <stop offset="0%" stop-color="#1a1040"/>
+      <stop offset="100%" stop-color="#0a0618"/>
     </radialGradient>
-    <linearGradient id="signal" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#E84393"/>
-      <stop offset="25%" stop-color="#FF6B6B"/>
-      <stop offset="50%" stop-color="#F5A623"/>
-      <stop offset="75%" stop-color="#F8E71C"/>
-      <stop offset="100%" stop-color="#55EFC4"/>
+    <linearGradient id="wave1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF006E"/>
+      <stop offset="30%" stop-color="#FF4D6D"/>
+      <stop offset="60%" stop-color="#FF8500"/>
+      <stop offset="100%" stop-color="#FFBE0B"/>
     </linearGradient>
-    <linearGradient id="bands" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#E84393"/>
-      <stop offset="18%" stop-color="#FF6B6B"/>
-      <stop offset="36%" stop-color="#F5A623"/>
-      <stop offset="54%" stop-color="#F8E71C"/>
-      <stop offset="72%" stop-color="#55EFC4"/>
-      <stop offset="86%" stop-color="#74B9FF"/>
-      <stop offset="100%" stop-color="#A29BFE"/>
+    <linearGradient id="wave2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFBE0B"/>
+      <stop offset="40%" stop-color="#8AC926"/>
+      <stop offset="100%" stop-color="#06D6A0"/>
     </linearGradient>
-    <filter id="waveGlow" x="-100%" y="-100%" width="300%" height="300%">
-      <feGaussianBlur stdDeviation="6" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
+    <linearGradient id="wave3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06D6A0"/>
+      <stop offset="40%" stop-color="#118AB2"/>
+      <stop offset="100%" stop-color="#7B2FF7"/>
+    </linearGradient>
+    <linearGradient id="wave4" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7B2FF7"/>
+      <stop offset="50%" stop-color="#C77DFF"/>
+      <stop offset="100%" stop-color="#FF006E"/>
+    </linearGradient>
+    <radialGradient id="orb" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="25%" stop-color="#FFBE0B" stop-opacity="0.6"/>
+      <stop offset="55%" stop-color="#FF006E" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#FF006E" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FF006E" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#FF006E" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#7B2FF7" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#7B2FF7" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
     </filter>
-    <filter id="headShadow" x="-40%" y="-40%" width="180%" height="180%">
-      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#050B17" flood-opacity="0.5"/>
+    <filter id="bigGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="15"/>
     </filter>
-    <path id="headProfile" d="M 120 420
-      C 120 356 132 308 158 276
-      C 172 258 188 244 198 228
-      C 208 213 210 199 204 186
-      C 197 171 180 161 174 145
-      C 168 130 170 113 178 98
-      C 194 66 228 44 266 44
-      C 309 44 343 69 358 108
-      C 372 146 366 192 338 220
-      C 319 239 307 254 307 273
-      C 307 293 322 307 340 320
-      C 364 338 378 362 378 392
-      L 378 420 Z"/>
-    <clipPath id="headClip">
-      <use href="#headProfile"/>
-    </clipPath>
   </defs>
 
   <rect width="1024" height="500" fill="url(#bg)"/>
 
-  <!-- Left head -->
-  <g transform="translate(-8,18)" filter="url(#headShadow)">
-    <use href="#headProfile" fill="#0A1630"/>
-    <use href="#headProfile" fill="none" stroke="#0A1630" stroke-width="16"/>
+  <!-- Ambient glows -->
+  <circle cx="200" cy="170" r="150" fill="url(#glow1)"/>
+  <circle cx="800" cy="150" r="140" fill="url(#glow2)"/>
+
+  <!-- Background wave blurs -->
+  <g filter="url(#bigGlow)" opacity="0.4">
+    <path d="M -80 340 C 80 156, 280 390, 512 234 C 744 78, 940 317, 1104 146"
+          fill="none" stroke="url(#wave1)" stroke-width="45" stroke-linecap="round"/>
+  </g>
+  <g filter="url(#bigGlow)" opacity="0.35">
+    <path d="M -50 244 C 200 342, 350 146, 512 259 C 674 371, 820 170, 1074 268"
+          fill="none" stroke="url(#wave2)" stroke-width="38" stroke-linecap="round"/>
   </g>
 
-  <!-- Right head -->
-  <g transform="translate(1032,18) scale(-1,1)" filter="url(#headShadow)">
-    <use href="#headProfile" fill="#0A1630"/>
-    <use href="#headProfile" fill="none" stroke="#0A1630" stroke-width="16"/>
+  <!-- Crisp foreground waves -->
+  <g filter="url(#softGlow)">
+    <path d="M -60 340 C 90 166, 280 380, 512 234 C 744 88, 930 307, 1084 146"
+          fill="none" stroke="url(#wave1)" stroke-width="14" stroke-linecap="round" opacity="0.9"/>
+  </g>
+  <g filter="url(#softGlow)">
+    <path d="M -30 241 C 190 327, 340 166, 512 256 C 684 346, 830 180, 1054 259"
+          fill="none" stroke="url(#wave2)" stroke-width="11" stroke-linecap="round" opacity="0.85"/>
+  </g>
+  <g filter="url(#softGlow)">
+    <path d="M -30 224 C 170 298, 330 151, 512 239 C 694 327, 840 166, 1054 234"
+          fill="none" stroke="url(#wave3)" stroke-width="8" stroke-linecap="round" opacity="0.8"/>
+  </g>
+  <g filter="url(#softGlow)">
+    <path d="M -30 259 C 180 170, 350 312, 512 220 C 674 127, 840 283, 1054 210"
+          fill="none" stroke="url(#wave4)" stroke-width="5" stroke-linecap="round" opacity="0.7"/>
   </g>
 
-  <!-- Sine wave connecting heads -->
-  <path d="M 260 185
-           C 328 145, 396 225, 464 185
-           C 532 145, 600 225, 668 185
-           C 710 162, 742 165, 772 185"
-        fill="none" stroke="#0A1630" stroke-width="16" stroke-linecap="round" opacity="0.6"/>
-  <g filter="url(#waveGlow)">
-    <path d="M 260 185
-             C 328 145, 396 225, 464 185
-             C 532 145, 600 225, 668 185
-             C 710 162, 742 165, 772 185"
-          fill="none" stroke="url(#signal)" stroke-width="10" stroke-linecap="round"/>
-  </g>
-  <path d="M 260 185
-           C 328 145, 396 225, 464 185
-           C 532 145, 600 225, 668 185
-           C 710 162, 742 165, 772 185"
-        fill="none" stroke="url(#signal)" stroke-width="6" stroke-linecap="round"/>
+  <!-- Central orb -->
+  <circle cx="512" cy="237" r="78" fill="url(#orb)"/>
+  <circle cx="512" cy="237" r="25" fill="white" opacity="0.95"/>
+  <circle cx="512" cy="237" r="14" fill="white" opacity="0.4"/>
 
-  <g opacity="0.85">
-    <circle cx="464" cy="185" r="4" fill="#F7F1E3"/>
-    <circle cx="532" cy="185" r="4" fill="#F7F1E3"/>
-    <circle cx="600" cy="185" r="4" fill="#F7F1E3"/>
+  <!-- Particle dots -->
+  <g opacity="0.5">
+    <circle cx="180" cy="137" r="2" fill="#FF006E"/>
+    <circle cx="320" cy="98" r="1.5" fill="#FFBE0B"/>
+    <circle cx="700" cy="107" r="1.8" fill="#7B2FF7"/>
+    <circle cx="830" cy="185" r="1.5" fill="#06D6A0"/>
+    <circle cx="400" cy="73" r="1.2" fill="#C77DFF"/>
+    <circle cx="620" cy="405" r="1.5" fill="#FF4D6D"/>
+    <circle cx="870" cy="317" r="1.2" fill="#FFBE0B"/>
   </g>
 
-  <rect x="0" y="0" width="1024" height="500" fill="none" stroke="#1A2744" stroke-width="2" opacity="0.25"/>
+  <!-- Subtle rings -->
+  <circle cx="512" cy="237" r="49" fill="none" stroke="white" stroke-width="0.6" opacity="0.12"/>
+  <circle cx="512" cy="237" r="83" fill="none" stroke="white" stroke-width="0.4" opacity="0.06"/>
 </svg>
 `;
 }

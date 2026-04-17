@@ -40,9 +40,9 @@ async function generateIcons() {
     .toFile(path.join(IMAGES_DIR, 'android-icon-foreground.png'));
   console.log('✓ android-icon-foreground.png (1024x1024)');
 
-  // Android adaptive icon - background (solid dark color)
+  // Android adaptive icon - background (solid dark color matching icon bg)
   const bgSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024">
-    <rect width="1024" height="1024" fill="#0a172b"/>
+    <rect width="1024" height="1024" fill="#0a0618"/>
   </svg>`;
   await sharp(Buffer.from(bgSvg))
     .resize(1024, 1024)
@@ -51,15 +51,19 @@ async function generateIcons() {
   console.log('✓ android-icon-background.png (1024x1024)');
 
   // Android monochrome icon (white silhouette on transparent)
-  // Simplified version - just the arc shape
+  // Simplified waves + central orb matching icon-concept-1 design
   const monoSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-    <path d="M 222 590 A 300 300 0 0 1 802 590"
-          fill="none" stroke="#FFFFFF" stroke-width="44"
-          stroke-linecap="round"/>
-    <line x1="512" y1="590" x2="680" y2="370"
-          stroke="#FFFFFF" stroke-width="8"
-          stroke-linecap="round"/>
-    <circle cx="512" cy="590" r="14" fill="#FFFFFF"/>
+    <!-- Wave 1 -->
+    <path d="M -60 700 C 90 340, 280 780, 512 480 C 744 180, 930 630, 1084 300"
+          fill="none" stroke="#FFFFFF" stroke-width="28" stroke-linecap="round" opacity="0.9"/>
+    <!-- Wave 2 -->
+    <path d="M -30 495 C 190 670, 340 340, 512 525 C 684 710, 830 370, 1054 530"
+          fill="none" stroke="#FFFFFF" stroke-width="22" stroke-linecap="round" opacity="0.75"/>
+    <!-- Wave 3 -->
+    <path d="M -30 460 C 170 610, 330 310, 512 490 C 694 670, 840 340, 1054 480"
+          fill="none" stroke="#FFFFFF" stroke-width="16" stroke-linecap="round" opacity="0.6"/>
+    <!-- Central orb -->
+    <circle cx="512" cy="485" r="52" fill="#FFFFFF"/>
   </svg>`;
   await sharp(Buffer.from(monoSvg))
     .resize(1024, 1024)
