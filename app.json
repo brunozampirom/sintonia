@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Wavelength",
+    "name": "Sintonia",
     "slug": "Wavelength",
     "version": "1.0.1",
     "orientation": "default",
@@ -24,7 +24,8 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.bruno.wavelength"
+      "package": "com.bruno.wavelength",
+      "softwareKeyboardLayoutMode": "adjustResize"
     },
     "web": {
       "output": "static",

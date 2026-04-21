@@ -190,6 +190,7 @@ export default function GameSetupScreen() {
         contentContainerStyle={[styles.scrollContent, responsiveContainer]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
+        automaticallyAdjustKeyboardInsets
       >
         <View style={isLandscape ? styles.grid : undefined}>
         {/* Winning Score */}
@@ -323,8 +324,8 @@ export default function GameSetupScreen() {
         )}
         </View>
 
-        {/* Bottom spacing for floating button */}
-        <View style={{ height: 100 }} />
+        {/* Bottom spacing for floating button and keyboard */}
+        <View style={{ height: 140 }} />
       </ScrollView>
 
       {/* Floating Play Button */}
