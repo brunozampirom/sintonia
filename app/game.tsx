@@ -1,4 +1,5 @@
 import { Confetti } from '@/components/confetti';
+import { CountdownPill } from '@/components/countdown-pill';
 import { GameButton } from '@/components/game-button';
 import { GameOverPodium } from '@/components/game-over-podium';
 import { GuessSequenceBadge } from '@/components/guess-sequence-badge';
@@ -10,6 +11,7 @@ import { SpectrumCard } from '@/components/spectrum-card';
 import { WavelengthDial, type PlayerMarker } from '@/components/wavelength-dial';
 import { GameColors } from '@/constants/theme';
 import { useSettings } from '@/contexts/settings-context';
+import { useCountdown } from '@/hooks/use-countdown';
 import { rollRoles, useGameState } from '@/hooks/use-game-state';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { Ionicons } from '@expo/vector-icons';
@@ -98,6 +100,58 @@ export default function GameScreen() {
     triggerHaptic(Haptics.ImpactFeedbackStyle.Light);
     skipRound();
   }, [skipRound]);
+
+  // Timers — clue and guess can each have an independent countdown.
+  const clueActive = game.phase === 'clue' && settings.clueTimeLimit > 0;
+  const guessActive = game.phase === 'guess' && settings.guessTimeLimit > 0;
+
+  const handleClueExpire = useCallback(() => {
+    triggerHaptic(Haptics.ImpactFeedbackStyle.Medium);
+    submitClue();
+  }, [submitClue]);
+
+  const handleGuessExpire = useCallback(() => {
+    triggerHaptic(Haptics.ImpactFeedbackStyle.Medium);
+    submitGuess(currentGuessRef.current);
+  }, [submitGuess]);
+
+  const clueRemaining = useCountdown({
+    duration: settings.clueTimeLimit,
+    active: clueActive,
+    onExpire: handleClueExpire,
+    resetKey: `clue-${game.round}-${game.activeSideIndex}-${game.targetAngle}`,
+  });
+
+  const guessRemaining = useCountdown({
+    duration: settings.guessTimeLimit,
+    active: guessActive,
+    onExpire: handleGuessExpire,
+    resetKey: `guess-${game.round}-${game.currentGuesserIndex}`,
+  });
+
+  // Haptic warning when entering the last 5s of either timer
+  const clueWarnedRef = React.useRef(false);
+  const guessWarnedRef = React.useRef(false);
+  useEffect(() => {
+    if (!clueActive) {
+      clueWarnedRef.current = false;
+      return;
+    }
+    if (clueRemaining <= 5 && clueRemaining > 0 && !clueWarnedRef.current) {
+      clueWarnedRef.current = true;
+      triggerNotification(Haptics.NotificationFeedbackType.Warning);
+    }
+  }, [clueActive, clueRemaining]);
+  useEffect(() => {
+    if (!guessActive) {
+      guessWarnedRef.current = false;
+      return;
+    }
+    if (guessRemaining <= 5 && guessRemaining > 0 && !guessWarnedRef.current) {
+      guessWarnedRef.current = true;
+      triggerNotification(Haptics.NotificationFeedbackType.Warning);
+    }
+  }, [guessActive, guessRemaining]);
 
   // Haptic feedback on result reveal
   useEffect(() => {
@@ -265,6 +319,14 @@ export default function GameScreen() {
         <Pressable style={styles.closeButton} onPress={() => router.back()}>
           <Ionicons name="close" size={20} color={GameColors.textMuted} />
         </Pressable>
+        {(clueActive || guessActive) && (
+          <View style={styles.headerTimerWrap} pointerEvents="box-none">
+            <CountdownPill
+              remaining={clueActive ? clueRemaining : guessRemaining}
+              total={clueActive ? settings.clueTimeLimit : settings.guessTimeLimit}
+            />
+          </View>
+        )}
         {isLandscape && game.phase !== 'gameover' && (
           <View style={styles.landscapeScoreWrap}>
             <ScoreBoard {...scoreBoardProps} compact />
@@ -672,6 +734,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  headerTimerWrap: {
+    position: 'absolute',
+    top: 20,
+    left: 0,
+    right: 0,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 5,
+  },
   content: {
     flex: 1,
     minHeight: 400,
@@ -688,7 +760,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   phaseContainerResult: {
-    paddingTop: 16,
+    paddingTop: 32,
   },
   phaseTitle: {
     fontSize: 22,

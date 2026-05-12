@@ -18,7 +18,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
-const SCORE_OPTIONS = [5, 10, 15, 20];
+const SCORE_OPTIONS = [5, 10, 15, 20, 30];
 const SKIP_OPTIONS = [
   { value: 0, label: '0' },
   { value: 1, label: '1' },
@@ -26,6 +26,12 @@ const SKIP_OPTIONS = [
   { value: 3, label: '3' },
   { value: 5, label: '5' },
   { value: -1, label: '∞' },
+];
+const TIME_OPTIONS = [
+  { value: -1, label: '∞' },
+  { value: 15, label: '15s' },
+  { value: 30, label: '30s' },
+  { value: 60, label: '60s' },
 ];
 
 function ChipSelector({
@@ -99,6 +105,8 @@ export default function GameSetupScreen() {
   const [scoringTarget, setScoringTarget] = useState<ScoringTarget>(settings.scoringTarget);
   const [winningScore, setWinningScore] = useState(settings.winningScore);
   const [skips, setSkips] = useState(settings.skipsPerPlayer);
+  const [clueTimeLimit, setClueTimeLimit] = useState(settings.clueTimeLimit);
+  const [guessTimeLimit, setGuessTimeLimit] = useState(settings.guessTimeLimit);
   const [playerNames, setPlayerNames] = useState<string[]>(() => [...settings.playerNames]);
   const [playerColors, setPlayerColors] = useState<string[]>(() =>
     reconcileColors(settings.playerNames.length, settings.playerColors ?? assignDefaultColors(settings.playerNames.length)),
@@ -204,6 +212,8 @@ export default function GameSetupScreen() {
       scoringTarget,
       winningScore,
       skipsPerPlayer: skips,
+      clueTimeLimit,
+      guessTimeLimit,
       playerNames,
       playerColors,
       roundFlow,
@@ -483,6 +493,18 @@ export default function GameSetupScreen() {
           <ChipSelector options={SKIP_OPTIONS} selected={skips} onSelect={setSkips} />
         </View>
 
+        {/* 6. Time limits */}
+        <View style={[styles.section, isLandscape && styles.sectionLandscape]}>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="time-outline" size={20} color={GameColors.coral} />
+            <Text style={styles.sectionTitle}>{t('setup.sections.time')}</Text>
+          </View>
+          <Text style={styles.timeSubLabel}>{t('setup.time.clue')}</Text>
+          <ChipSelector options={TIME_OPTIONS} selected={clueTimeLimit} onSelect={setClueTimeLimit} />
+          <Text style={styles.timeSubLabel}>{t('setup.time.guess')}</Text>
+          <ChipSelector options={TIME_OPTIONS} selected={guessTimeLimit} onSelect={setGuessTimeLimit} />
+        </View>
+
         </View>
 
         {/* Bottom spacing for floating button and keyboard */}
@@ -669,6 +691,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
+  },
+  timeSubLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: GameColors.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+    marginTop: 2,
   },
   chip: {
     paddingHorizontal: 16,

@@ -1,90 +1,74 @@
 import { GameButton } from '@/components/game-button';
+import { HomeHeroWaves } from '@/components/home-hero-waves';
 import { Starfield } from '@/components/starfield';
 import { GameColors } from '@/constants/theme';
-import { useSettings } from '@/contexts/settings-context';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
+import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
+import Animated, { FadeIn, FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { settings } = useSettings();
   const { t } = useTranslation();
   const { isLandscape, isTablet, scale, containerMaxWidth } = useResponsiveLayout();
   const insets = useSafeAreaInsets();
 
-  const titleSection = (
-    <>
-      <Animated.View entering={FadeInDown.duration(800).delay(200)} style={styles.titleBlock}>
-        <Text style={[styles.title, isLandscape && styles.titleLandscape, !isLandscape && { fontSize: 40 * scale }]}>{t('common.appName')}</Text>
-        <Text style={[styles.subtitle, !isLandscape && { fontSize: 16 * scale }]}>{t('home.subtitle')}</Text>
-      </Animated.View>
+  const screenWidth = Dimensions.get('window').width;
+  const heroWidth = Math.min(screenWidth, 600);
+  const heroHeight = Math.round(heroWidth * (340 / 600));
 
-      <Animated.View entering={FadeInUp.duration(600).delay(500)} style={styles.descBlock}>
-        <Text style={[styles.description, { fontSize: 15 * scale }]}>
-          {t('home.description')}
-        </Text>
-      </Animated.View>
-    </>
+  const heroOverlay = (
+    <Animated.View entering={FadeIn.duration(800)} style={styles.decorativeContainer} pointerEvents="none">
+      <HomeHeroWaves width={heroWidth} height={heroHeight} />
+    </Animated.View>
   );
 
-  const actionSection = (
-    <>
-      <Animated.View entering={FadeInUp.duration(600).delay(800)} style={styles.buttonBlock}>
-        <GameButton title={t('common.actions.play')} onPress={() => router.push('/game-setup')} />
-        <View style={{ marginTop: 10 }}>
-          <GameButton title={t('common.actions.settings')} onPress={() => router.push('/settings')} variant="secondary" />
-        </View>
-      </Animated.View>
-
-      <Animated.View entering={FadeInUp.duration(600).delay(1000)} style={styles.rulesBlock}>
-        <View style={styles.ruleRow}>
-          <View style={styles.ruleIconBox}>
-            <Ionicons name="trophy-outline" size={18} color={GameColors.accent} />
-          </View>
-          <Text style={styles.ruleText}>{t('home.rules.firstToWin', { score: settings.winningScore })}</Text>
-        </View>
-        <View style={styles.ruleRow}>
-          <View style={styles.ruleIconBox}>
-            <Ionicons name="swap-horizontal-outline" size={18} color={GameColors.secondary} />
-          </View>
-          <Text style={styles.ruleText}>{t('home.rules.alternating')}</Text>
-        </View>
-        <View style={styles.ruleRow}>
-          <View style={styles.ruleIconBox}>
-            <Ionicons name="phone-portrait-outline" size={18} color={GameColors.sky} />
-          </View>
-          <Text style={styles.ruleText}>{t('home.rules.samePhone')}</Text>
-        </View>
-      </Animated.View>
-
-      {isLandscape && (
-        <Animated.View entering={FadeInUp.duration(600).delay(1200)} style={styles.tutorialBlock}>
-          <Pressable
-            onPress={() => router.push('/tutorial')}
-            hitSlop={12}
-            style={({ pressed }) => [styles.tutorialLink, pressed && styles.tutorialLinkPressed]}
-          >
-            <Text style={styles.tutorialLinkText}>{t('home.tutorialButton')}</Text>
-          </Pressable>
-        </Animated.View>
-      )}
-    </>
+  const titleBlock = (
+    <Animated.View entering={FadeInDown.duration(700).delay(200)} style={styles.titleBlock}>
+      <Text
+        style={[styles.title, { fontSize: 48 * scale }]}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+      >
+        {t('common.appName')}
+      </Text>
+      <Text style={[styles.subtitle, { fontSize: 14 * scale }]}>{t('home.subtitle')}</Text>
+      <Text style={[styles.description, { fontSize: 13 * scale }]}>{t('home.description')}</Text>
+    </Animated.View>
   );
 
-  const arcsOverlay = (
-    <View style={styles.decorativeContainer} pointerEvents="none">
-      <View style={[styles.arc, styles.arc1]} />
-      <View style={[styles.arc, styles.arc2]} />
-      <View style={[styles.arc, styles.arc3]} />
-      <View style={[styles.arc, styles.arc4]} />
-      <View style={[styles.arc, styles.arc5]} />
-    </View>
+  const buttonsBlock = (
+    <Animated.View entering={FadeInUp.duration(600).delay(400)} style={styles.buttonsBlock}>
+      <GameButton
+        fullWidth
+        title={t('common.actions.play')}
+        onPress={() => router.push('/game-setup')}
+      />
+      <View style={{ height: 10 }} />
+      <GameButton
+        fullWidth
+        title={t('common.actions.settings')}
+        onPress={() => router.push('/settings')}
+        variant="secondary"
+      />
+    </Animated.View>
+  );
+
+  const tutorialLink = (
+    <Animated.View entering={FadeInUp.duration(500).delay(650)} style={styles.tutorialWrap}>
+      <Pressable
+        onPress={() => router.push('/tutorial')}
+        hitSlop={12}
+        style={({ pressed }) => [styles.tutorialPill, pressed && styles.tutorialPillPressed]}
+      >
+        <Ionicons name="help-circle-outline" size={16} color={GameColors.textMuted} />
+        <Text style={styles.tutorialText}>{t('home.tutorialButton')}</Text>
+      </Pressable>
+    </Animated.View>
   );
 
   const responsiveContainer = {
@@ -93,54 +77,26 @@ export default function HomeScreen() {
     width: '100%' as const,
   };
 
-  if (isLandscape) {
-    return (
-      <View style={styles.screenWrap}>
-        <Starfield count={100} />
-        {arcsOverlay}
-        <SafeAreaView style={styles.container}>
-          <View style={[styles.landscapeContent, isTablet && responsiveContainer]}>
-            <View style={styles.landscapeLeft}>
-              {titleSection}
-            </View>
-            <View style={styles.landscapeRight}>
-              {actionSection}
-            </View>
-          </View>
-        </SafeAreaView>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.screenWrap}>
       <Starfield count={100} />
-      {arcsOverlay}
+      {heroOverlay}
       <SafeAreaView style={styles.container}>
-        <ScrollView
-          contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 80 }]}
-          showsVerticalScrollIndicator={false}
-          bounces={false}
+        <View
+          style={[
+            styles.content,
+            isLandscape && styles.contentLandscape,
+            isTablet && responsiveContainer,
+            { paddingBottom: insets.bottom + 24 },
+          ]}
         >
-          <View style={[styles.content, isTablet && responsiveContainer]}>
-            {titleSection}
-            {actionSection}
+          <View style={styles.centerStack}>
+            {titleBlock}
+            {buttonsBlock}
           </View>
-        </ScrollView>
+          {tutorialLink}
+        </View>
       </SafeAreaView>
-      <Animated.View
-        entering={FadeInUp.duration(600).delay(1200)}
-        style={[styles.tutorialFloat, { bottom: insets.bottom + 20 }]}
-        pointerEvents="box-none"
-      >
-        <Pressable
-          onPress={() => router.push('/tutorial')}
-          hitSlop={12}
-          style={({ pressed }) => [styles.tutorialLink, pressed && styles.tutorialLinkPressed]}
-        >
-          <Text style={styles.tutorialLinkText}>{t('home.tutorialButton')}</Text>
-        </Pressable>
-      </Animated.View>
     </View>
   );
 }
@@ -153,164 +109,83 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  scrollContent: {
-    flexGrow: 1,
-  },
   content: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 28,
+    paddingTop: 40,
+  },
+  contentLandscape: {
+    paddingTop: 20,
+  },
+  centerStack: {
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 30,
+    gap: 56,
   },
   decorativeContainer: {
     position: 'absolute',
-    top: -20,
+    top: 0,
     left: 0,
     right: 0,
     alignItems: 'center',
-    height: 200,
-  },
-  arc: {
-    position: 'absolute',
-    borderRadius: 999,
-    borderWidth: 3,
-    borderBottomWidth: 0,
-  },
-  arc1: {
-    width: 320,
-    height: 160,
-    borderColor: GameColors.primary,
-    opacity: 0.3,
-    top: 0,
-  },
-  arc2: {
-    width: 280,
-    height: 140,
-    borderColor: GameColors.accent,
-    opacity: 0.25,
-    top: 10,
-  },
-  arc3: {
-    width: 240,
-    height: 120,
-    borderColor: GameColors.secondary,
-    opacity: 0.2,
-    top: 20,
-  },
-  arc4: {
-    width: 200,
-    height: 100,
-    borderColor: GameColors.pink,
-    opacity: 0.15,
-    top: 30,
-  },
-  arc5: {
-    width: 160,
-    height: 80,
-    borderColor: GameColors.lavender,
-    opacity: 0.1,
-    top: 40,
   },
   titleBlock: {
     alignItems: 'center',
-    marginBottom: 12,
+    gap: 6,
   },
   title: {
-    fontSize: 40,
-    textAlign: 'center',
     fontWeight: '900',
     color: GameColors.text,
-    letterSpacing: 6,
+    letterSpacing: 5,
+    textAlign: 'center',
     textShadowColor: GameColors.primary,
     textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 20,
+    textShadowRadius: 22,
   },
   subtitle: {
-    fontSize: 16,
     color: GameColors.textMuted,
-    fontWeight: '500',
-    marginTop: 4,
-    letterSpacing: 1,
-  },
-  descBlock: {
-    marginVertical: 24,
-    paddingHorizontal: 10,
+    fontWeight: '600',
+    letterSpacing: 1.2,
+    textTransform: 'lowercase',
   },
   description: {
-    fontSize: 15,
     color: GameColors.textMuted,
     textAlign: 'center',
-    lineHeight: 22,
+    lineHeight: 18,
+    marginTop: 14,
+    paddingHorizontal: 24,
+    opacity: 0.85,
   },
-  buttonBlock: {
-    marginVertical: 20,
+  buttonsBlock: {
+    width: '100%',
+    maxWidth: 360,
+    alignSelf: 'center',
   },
-  rulesBlock: {
-    marginTop: 20,
-    gap: 12,
+  tutorialWrap: {
+    alignItems: 'center',
+    paddingTop: 12,
   },
-  ruleRow: {
+  tutorialPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: GameColors.surfaceLight,
   },
-  ruleIconBox: {
-    width: 32,
-    height: 32,
-    borderRadius: 10,
-    backgroundColor: GameColors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  ruleText: {
-    color: GameColors.textMuted,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  tutorialBlock: {
-    marginTop: 40,
-    alignItems: 'center',
-  },
-  tutorialFloat: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-  },
-  tutorialLink: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-  },
-  tutorialLinkPressed: {
+  tutorialPillPressed: {
     opacity: 0.55,
   },
-  tutorialLinkText: {
+  tutorialText: {
     color: GameColors.textMuted,
-    fontSize: 14,
-    fontWeight: '600',
-    letterSpacing: 0.3,
-    textDecorationLine: 'underline',
-  },
-  // ===== Landscape =====
-  landscapeContent: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    gap: 30,
-  },
-  landscapeLeft: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  landscapeRight: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  titleLandscape: {
-    fontSize: 40,
-    letterSpacing: 4,
+    fontSize: 13,
+    fontWeight: '700',
+    letterSpacing: 0.4,
   },
 });

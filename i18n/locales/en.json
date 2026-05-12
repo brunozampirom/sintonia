@@ -24,7 +24,7 @@
   },
   "home": {
     "subtitle": "A mind sync party game",
-    "description": "One player gives a clue, the other tries to guess where it lands on the spectrum. The closer, the more points!",
+    "description": "Drop a clue about a secret target on the spectrum. The closer the guess, the more points!",
     "tutorialButton": "How to play",
     "rules": {
       "firstToWin": "First to {{score}} points wins",
@@ -34,12 +34,12 @@
   },
   "tutorial": {
     "title": "How to Play",
-    "intro": "Learn the basics in 6 quick steps. You and a partner will read each other's minds on a spectrum.",
+    "intro": "Learn the basics in 6 quick steps. The game is all about syncing minds on a spectrum.",
     "cta": "LET'S PLAY",
     "steps": {
       "objective": {
         "title": "The Goal",
-        "description": "Two players (or teams) take turns on the same phone. One gives a clue, the other tries to read their mind and find the exact spot on a spectrum."
+        "description": "Players take turns on the same phone. Whoever's holding the phone sees a secret target on a spectrum and gives a clue for the others to guess where it lies."
       },
       "clue": {
         "title": "Give the Clue",
@@ -65,7 +65,7 @@
       },
       "winning": {
         "title": "Win the Match",
-        "description": "Players alternate roles every round. The first to reach the winning score takes the match."
+        "description": "Roles change every round. The first to reach the target score takes the match."
       }
     }
   },
@@ -79,7 +79,12 @@
       "winningScore": "Points to Win",
       "skipsPer": "Skips per {{target}}",
       "scoringTarget": "Who gets the points?",
-      "players": "Players"
+      "players": "Players",
+      "time": "Time"
+    },
+    "time": {
+      "clue": "Clue",
+      "guess": "Guess"
     },
     "scoring": {
       "cluer": "Clue giver",

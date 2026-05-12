@@ -32,9 +32,13 @@ export interface GameSettings {
   playerNames: string[];
   playerColors: string[];
   roundFlow: RoundFlow;
+  clueTimeLimit: number; // seconds; -1 = unlimited
+  guessTimeLimit: number; // seconds; -1 = unlimited
   customSpectrums: Spectrum[];
   teams: [TeamConfig, TeamConfig];
 }
+
+export const VALID_TIME_LIMITS = [-1, 15, 30, 60] as const;
 
 export const DEFAULT_SETTINGS: GameSettings = {
   language: 'system',
@@ -45,6 +49,8 @@ export const DEFAULT_SETTINGS: GameSettings = {
   playerNames: ['Player 1', 'Player 2'],
   playerColors: assignDefaultColors(2),
   roundFlow: 'single-guess',
+  clueTimeLimit: -1,
+  guessTimeLimit: -1,
   customSpectrums: [],
   teams: [
     { name: 'Team 1', players: ['Player 1', 'Player 2'], color: DEFAULT_TEAM_COLORS[0] },
@@ -116,6 +122,12 @@ function normalizeSettings(partial: Partial<GameSettings>): Partial<GameSettings
   next.playerColors = reconcileColors(names.length, next.playerColors ?? DEFAULT_SETTINGS.playerColors);
   if (next.roundFlow !== 'all-guess' && next.roundFlow !== 'single-guess') {
     next.roundFlow = DEFAULT_SETTINGS.roundFlow;
+  }
+  if (next.clueTimeLimit !== undefined && !VALID_TIME_LIMITS.includes(next.clueTimeLimit as typeof VALID_TIME_LIMITS[number])) {
+    next.clueTimeLimit = DEFAULT_SETTINGS.clueTimeLimit;
+  }
+  if (next.guessTimeLimit !== undefined && !VALID_TIME_LIMITS.includes(next.guessTimeLimit as typeof VALID_TIME_LIMITS[number])) {
+    next.guessTimeLimit = DEFAULT_SETTINGS.guessTimeLimit;
   }
   if (next.teams) {
     next.teams = next.teams.map((team, teamIdx) => ({

@@ -24,7 +24,7 @@
   },
   "home": {
     "subtitle": "Um jogo de sintonia mental",
-    "description": "Um jogador dá a dica, o outro tenta adivinhar onde ela cai no espectro. Quanto mais próximo, mais pontos!",
+    "description": "Dê uma dica sobre um alvo secreto no espectro. Quanto mais próximo, mais pontos!",
     "tutorialButton": "Aprenda a jogar",
     "rules": {
       "firstToWin": "Primeiro a {{score}} pontos vence",
@@ -34,12 +34,12 @@
   },
   "tutorial": {
     "title": "Como Jogar",
-    "intro": "Aprenda o básico em 6 passos rápidos. Você e seu parceiro vão ler a mente um do outro num espectro.",
+    "intro": "Aprenda o básico em 6 passos rápidos. O jogo é todo sobre se sintonizar com os outros num espectro.",
     "cta": "VAMOS JOGAR",
     "steps": {
       "objective": {
         "title": "O Objetivo",
-        "description": "Dois jogadores (ou times) se revezam no mesmo celular. Um dá uma dica, o outro tenta ler a mente e achar o ponto exato no espectro."
+        "description": "Os jogadores se revezam no mesmo celular. Quem está com o celular vê um alvo secreto num espectro e dá uma dica para os outros tentarem adivinhar onde ele está."
       },
       "clue": {
         "title": "Dê a Dica",
@@ -65,7 +65,7 @@
       },
       "winning": {
         "title": "Vença a Partida",
-        "description": "Os jogadores alternam papéis a cada rodada. Quem chegar primeiro na pontuação-alvo vence a partida."
+        "description": "A cada rodada os papéis mudam. Quem chegar primeiro na pontuação-alvo vence a partida."
       }
     }
   },
@@ -79,7 +79,12 @@
       "winningScore": "Pontos pra Vencer",
       "skipsPer": "Pulos por {{target}}",
       "scoringTarget": "Quem ganha os pontos?",
-      "players": "Jogadores"
+      "players": "Jogadores",
+      "time": "Tempo"
+    },
+    "time": {
+      "clue": "Dica",
+      "guess": "Tentativa"
     },
     "scoring": {
       "cluer": "Quem da a dica",
