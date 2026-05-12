@@ -44,7 +44,8 @@
             "backgroundColor": "#0a172b"
           }
         }
-      ]
+      ],
+      "./plugins/with-android-fullscreen-splash.js"
     ],
     "experiments": {
       "typedRoutes": true,
