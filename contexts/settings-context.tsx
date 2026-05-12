@@ -1,6 +1,10 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n, { getDeviceLanguage, type LanguagePreference, type SupportedLanguage } from '@/i18n';
+import { MAX_PLAYERS, MIN_PLAYERS, PLAYER_COLOR_PALETTE, assignDefaultColors, reconcileColors } from '@/constants/player-colors';
+import { GameColors } from '@/constants/theme';
+
+const DEFAULT_TEAM_COLORS: [string, string] = [GameColors.sky, GameColors.primary];
 
 const STORAGE_KEY = '@wavelength_settings';
 
@@ -12,10 +16,12 @@ export interface Spectrum {
 export interface TeamConfig {
   name: string;
   players: string[];
+  color?: string;
 }
 
 export type GameMode = 'individual' | 'teams';
 export type ScoringTarget = 'cluer' | 'guesser';
+export type RoundFlow = 'all-guess' | 'single-guess';
 
 export interface GameSettings {
   language: LanguagePreference;
@@ -23,7 +29,9 @@ export interface GameSettings {
   scoringTarget: ScoringTarget;
   winningScore: number;
   skipsPerPlayer: number; // -1 = unlimited
-  playerNames: [string, string];
+  playerNames: string[];
+  playerColors: string[];
+  roundFlow: RoundFlow;
   customSpectrums: Spectrum[];
   teams: [TeamConfig, TeamConfig];
 }
@@ -35,10 +43,12 @@ export const DEFAULT_SETTINGS: GameSettings = {
   winningScore: 10,
   skipsPerPlayer: 0,
   playerNames: ['Player 1', 'Player 2'],
+  playerColors: assignDefaultColors(2),
+  roundFlow: 'single-guess',
   customSpectrums: [],
   teams: [
-    { name: 'Team 1', players: ['Player 1', 'Player 2'] },
-    { name: 'Team 2', players: ['Player 3', 'Player 4'] },
+    { name: 'Team 1', players: ['Player 1', 'Player 2'], color: DEFAULT_TEAM_COLORS[0] },
+    { name: 'Team 2', players: ['Player 3', 'Player 4'], color: DEFAULT_TEAM_COLORS[1] },
   ],
 };
 
@@ -61,7 +71,7 @@ function localizeDefaultLikeNames(settings: GameSettings, language: SupportedLan
   const playerNames = settings.playerNames.map((name) => {
     const idx = parseDefaultIndexedLabel(name, 'player');
     return idx ? localizeIndexedLabel('player', idx, language) : name;
-  }) as [string, string];
+  });
 
   const teams = settings.teams.map((team) => {
     const teamIndex = parseDefaultIndexedLabel(team.name, 'team');
@@ -84,6 +94,39 @@ function localizeDefaultLikeNames(settings: GameSettings, language: SupportedLan
     playerNames,
     teams,
   };
+}
+
+function normalizePlayerNames(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [...DEFAULT_SETTINGS.playerNames];
+  const cleaned = raw.filter((n): n is string => typeof n === 'string' && n.trim().length > 0);
+  if (cleaned.length < MIN_PLAYERS) {
+    while (cleaned.length < MIN_PLAYERS) {
+      cleaned.push(`Player ${cleaned.length + 1}`);
+    }
+  }
+  return cleaned.slice(0, MAX_PLAYERS);
+}
+
+function normalizeSettings(partial: Partial<GameSettings>): Partial<GameSettings> {
+  const next: Partial<GameSettings> = { ...partial };
+  if (next.playerNames !== undefined) {
+    next.playerNames = normalizePlayerNames(next.playerNames);
+  }
+  const names = next.playerNames ?? DEFAULT_SETTINGS.playerNames;
+  next.playerColors = reconcileColors(names.length, next.playerColors ?? DEFAULT_SETTINGS.playerColors);
+  if (next.roundFlow !== 'all-guess' && next.roundFlow !== 'single-guess') {
+    next.roundFlow = DEFAULT_SETTINGS.roundFlow;
+  }
+  if (next.teams) {
+    next.teams = next.teams.map((team, teamIdx) => ({
+      name: team.name,
+      players: team.players,
+      color: team.color && PLAYER_COLOR_PALETTE.includes(team.color)
+        ? team.color
+        : DEFAULT_TEAM_COLORS[teamIdx] ?? DEFAULT_TEAM_COLORS[0],
+    })) as [TeamConfig, TeamConfig];
+  }
+  return next;
 }
 
 interface SettingsContextValue {
@@ -111,7 +154,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         if (raw) {
           try {
             const parsed = JSON.parse(raw) as Partial<GameSettings>;
-            setSettings((prev) => ({ ...prev, ...parsed }));
+            const normalized = normalizeSettings(parsed);
+            setSettings((prev) => ({ ...prev, ...normalized }));
           } catch {
             // ignore corrupt data
           }
@@ -148,7 +192,9 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   const updateSettings = useCallback((partial: Partial<GameSettings>) => {
     setSettings((prev) => {
-      const next = { ...prev, ...partial };
+      const merged = { ...prev, ...partial };
+      const normalized = normalizeSettings(merged);
+      const next = { ...merged, ...normalized } as GameSettings;
       AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next)).catch(() => {});
       return next;
     });

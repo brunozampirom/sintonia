@@ -1,6 +1,7 @@
 import { GameButton } from '@/components/game-button';
+import { MAX_PLAYERS, MIN_PLAYERS, PLAYER_COLOR_PALETTE, assignDefaultColors, reconcileColors } from '@/constants/player-colors';
 import { GameColors } from '@/constants/theme';
-import { useSettings, type GameMode, type ScoringTarget } from '@/contexts/settings-context';
+import { useSettings, type GameMode, type RoundFlow, type ScoringTarget } from '@/contexts/settings-context';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -98,24 +99,71 @@ export default function GameSetupScreen() {
   const [scoringTarget, setScoringTarget] = useState<ScoringTarget>(settings.scoringTarget);
   const [winningScore, setWinningScore] = useState(settings.winningScore);
   const [skips, setSkips] = useState(settings.skipsPerPlayer);
-  const [playerNames, setPlayerNames] = useState<[string, string]>([...settings.playerNames]);
+  const [playerNames, setPlayerNames] = useState<string[]>(() => [...settings.playerNames]);
+  const [playerColors, setPlayerColors] = useState<string[]>(() =>
+    reconcileColors(settings.playerNames.length, settings.playerColors ?? assignDefaultColors(settings.playerNames.length)),
+  );
+  const [roundFlow, setRoundFlow] = useState<RoundFlow>(settings.roundFlow);
+  const [openColorPicker, setOpenColorPicker] = useState<string | null>(null);
   const [teams, setTeams] = useState(() => [
-    { name: settings.teams[0].name, players: [...settings.teams[0].players] },
-    { name: settings.teams[1].name, players: [...settings.teams[1].players] },
+    {
+      name: settings.teams[0].name,
+      players: [...settings.teams[0].players],
+      color: settings.teams[0].color ?? GameColors.sky,
+    },
+    {
+      name: settings.teams[1].name,
+      players: [...settings.teams[1].players],
+      color: settings.teams[1].color ?? GameColors.primary,
+    },
   ]);
 
-  const handlePlayerNameChange = (idx: 0 | 1, name: string) => {
-    const next: [string, string] = [...playerNames];
-    next[idx] = name;
-    setPlayerNames(next);
-  };
-
-  const handleTeamNameChange = (teamIdx: number, name: string) => {
-    setTeams((prev) => {
+  const handlePlayerNameChange = (idx: number, name: string) => {
+    setPlayerNames((prev) => {
       const next = [...prev];
-      next[teamIdx] = { ...next[teamIdx], name };
+      next[idx] = name;
       return next;
     });
+  };
+
+  const handlePlayerColorChange = (idx: number, color: string) => {
+    setPlayerColors((prev) => {
+      const next = [...prev];
+      next[idx] = color;
+      return next;
+    });
+    setOpenColorPicker(null);
+  };
+
+  const handleTeamColorChange = (teamIdx: number, color: string) => {
+    setTeams((prev) => {
+      const next = [...prev];
+      next[teamIdx] = { ...next[teamIdx], color };
+      return next;
+    });
+    setOpenColorPicker(null);
+  };
+
+  const handleAddIndividualPlayer = () => {
+    if (playerNames.length >= MAX_PLAYERS) {
+      Alert.alert(t('setup.individual.maxPlayersAlert'));
+      return;
+    }
+    setPlayerNames((prev) => [...prev, `${t('common.labels.player')} ${prev.length + 1}`]);
+    setPlayerColors((prev) => {
+      const nextLen = prev.length + 1;
+      return reconcileColors(nextLen, prev);
+    });
+  };
+
+  const handleRemoveIndividualPlayer = (idx: number) => {
+    if (playerNames.length <= MIN_PLAYERS) {
+      Alert.alert(t('setup.individual.minPlayersAlert'));
+      return;
+    }
+    setPlayerNames((prev) => prev.filter((_, i) => i !== idx));
+    setPlayerColors((prev) => prev.filter((_, i) => i !== idx));
+    setOpenColorPicker(null);
   };
 
   const handleTeamPlayerChange = (teamIdx: number, playerIdx: number, name: string) => {
@@ -128,7 +176,7 @@ export default function GameSetupScreen() {
     });
   };
 
-  const handleAddPlayer = (teamIdx: number) => {
+  const handleAddTeamPlayer = (teamIdx: number) => {
     setTeams((prev) => {
       const next = [...prev];
       const players = [...next[teamIdx].players, `${t('common.labels.player')} ${next[teamIdx].players.length + 1}`];
@@ -137,7 +185,7 @@ export default function GameSetupScreen() {
     });
   };
 
-  const handleRemovePlayer = (teamIdx: number, playerIdx: number) => {
+  const handleRemoveTeamPlayer = (teamIdx: number, playerIdx: number) => {
     setTeams((prev) => {
       if (prev[teamIdx].players.length <= 2) {
         Alert.alert(t('setup.team.minPlayersAlert'));
@@ -157,9 +205,11 @@ export default function GameSetupScreen() {
       winningScore,
       skipsPerPlayer: skips,
       playerNames,
+      playerColors,
+      roundFlow,
       teams: [
-        { name: teams[0].name, players: teams[0].players },
-        { name: teams[1].name, players: teams[1].players },
+        { name: teams[0].name, players: teams[0].players, color: teams[0].color },
+        { name: teams[1].name, players: teams[1].players, color: teams[1].color },
       ],
     });
     router.push('/game');
@@ -170,6 +220,134 @@ export default function GameSetupScreen() {
     alignSelf: 'center' as const,
     width: '100%' as const,
   } : undefined;
+
+  const showRoundFlowSection = mode === 'individual' && playerNames.length >= 3;
+  const showScoringToggle = mode === 'individual' && (playerNames.length === 2 || roundFlow === 'single-guess');
+  const showAllGuessHint = mode === 'individual' && playerNames.length >= 3 && roundFlow === 'all-guess';
+
+  const playersSection = mode === 'individual' ? (
+    <View style={[styles.section, isLandscape && styles.sectionLandscape]}>
+      <View style={styles.sectionHeader}>
+        <Ionicons name="people-outline" size={20} color={GameColors.secondary} />
+        <Text style={styles.sectionTitle}>{t('setup.sections.players')}</Text>
+      </View>
+      {playerNames.map((name, idx) => {
+        const color = playerColors[idx] ?? GameColors.accent;
+        const pickerKey = `ind-${idx}`;
+        const isOpen = openColorPicker === pickerKey;
+        return (
+          <View key={idx}>
+            <View style={styles.individualRow}>
+              <Pressable
+                style={[styles.colorDot, { backgroundColor: color }, isOpen && styles.colorDotOpen]}
+                onPress={() => setOpenColorPicker(isOpen ? null : pickerKey)}
+              />
+              <TextInput
+                style={styles.individualNameInput}
+                value={name}
+                onChangeText={(t) => handlePlayerNameChange(idx, t)}
+                placeholder={`${t('common.labels.player')} ${idx + 1}`}
+                placeholderTextColor={GameColors.textMuted}
+                maxLength={20}
+              />
+              {playerNames.length > MIN_PLAYERS && (
+                <Pressable
+                  style={styles.removePlayerButton}
+                  onPress={() => handleRemoveIndividualPlayer(idx)}
+                >
+                  <Ionicons name="close-circle" size={22} color={GameColors.primary} />
+                </Pressable>
+              )}
+            </View>
+            {isOpen && (
+              <View style={styles.colorPalette}>
+                {PLAYER_COLOR_PALETTE.map((paletteColor) => {
+                  const selected = paletteColor === color;
+                  return (
+                    <Pressable
+                      key={paletteColor}
+                      style={[
+                        styles.paletteDot,
+                        { backgroundColor: paletteColor },
+                        selected && styles.paletteDotSelected,
+                      ]}
+                      onPress={() => handlePlayerColorChange(idx, paletteColor)}
+                    />
+                  );
+                })}
+              </View>
+            )}
+          </View>
+        );
+      })}
+      {playerNames.length < MAX_PLAYERS && (
+        <Pressable style={styles.addPlayerButton} onPress={handleAddIndividualPlayer}>
+          <Ionicons name="add-circle-outline" size={18} color={GameColors.accent} />
+          <Text style={styles.addPlayerText}>{t('setup.individual.addPlayer')}</Text>
+        </Pressable>
+      )}
+    </View>
+  ) : (
+    <>
+      {teams.map((team, teamIdx) => {
+        const pickerKey = `team-${teamIdx}`;
+        const isPickerOpen = openColorPicker === pickerKey;
+        return (
+          <View key={teamIdx} style={[styles.section, isLandscape && styles.sectionLandscape]}>
+            <View style={styles.sectionHeader}>
+              <Pressable
+                style={[styles.colorDot, { backgroundColor: team.color }, isPickerOpen && styles.colorDotOpen]}
+                onPress={() => setOpenColorPicker(isPickerOpen ? null : pickerKey)}
+              />
+              <Text style={styles.sectionTitle}>{t('setup.team.title', { number: teamIdx + 1 })}</Text>
+            </View>
+            {isPickerOpen && (
+              <View style={styles.colorPalette}>
+                {PLAYER_COLOR_PALETTE.map((paletteColor) => {
+                  const selected = paletteColor === team.color;
+                  return (
+                    <Pressable
+                      key={paletteColor}
+                      style={[
+                        styles.paletteDot,
+                        { backgroundColor: paletteColor },
+                        selected && styles.paletteDotSelected,
+                      ]}
+                      onPress={() => handleTeamColorChange(teamIdx, paletteColor)}
+                    />
+                  );
+                })}
+              </View>
+            )}
+            {team.players.map((player, playerIdx) => (
+              <View key={playerIdx} style={styles.individualRow}>
+                <TextInput
+                  style={styles.individualNameInput}
+                  value={player}
+                  onChangeText={(t) => handleTeamPlayerChange(teamIdx, playerIdx, t)}
+                  placeholder={`${t('common.labels.player')} ${playerIdx + 1}`}
+                  placeholderTextColor={GameColors.textMuted}
+                  maxLength={20}
+                />
+                {team.players.length > 2 && (
+                  <Pressable
+                    style={styles.removePlayerButton}
+                    onPress={() => handleRemoveTeamPlayer(teamIdx, playerIdx)}
+                  >
+                    <Ionicons name="close-circle" size={22} color={GameColors.primary} />
+                  </Pressable>
+                )}
+              </View>
+            ))}
+            <Pressable style={styles.addPlayerButton} onPress={() => handleAddTeamPlayer(teamIdx)}>
+              <Ionicons name="add-circle-outline" size={18} color={GameColors.accent} />
+              <Text style={styles.addPlayerText}>{t('setup.team.addPlayer')}</Text>
+            </Pressable>
+          </View>
+        );
+      })}
+    </>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -193,32 +371,51 @@ export default function GameSetupScreen() {
         automaticallyAdjustKeyboardInsets
       >
         <View style={isLandscape ? styles.grid : undefined}>
-        {/* Winning Score */}
-        <View style={[styles.section, isLandscape && styles.sectionLandscape]}>
-          <View style={styles.sectionHeader}>
-            <Ionicons name="trophy-outline" size={20} color={GameColors.accent} />
-            <Text style={styles.sectionTitle}>{t('setup.sections.winningScore')}</Text>
-          </View>
-          <ChipSelector
-            options={SCORE_OPTIONS.map((v) => ({ value: v, label: String(v) }))}
-            selected={winningScore}
-            onSelect={setWinningScore}
-          />
-        </View>
+        {/* 1. Players (or Teams) */}
+        {playersSection}
 
-        {/* Skips */}
-        <View style={[styles.section, isLandscape && styles.sectionLandscape]}>
-          <View style={styles.sectionHeader}>
-            <Ionicons name="play-skip-forward-outline" size={20} color={GameColors.sky} />
-            <Text style={styles.sectionTitle}>
-              {t('setup.sections.skipsPer', { target: mode === 'teams' ? t('common.labels.team') : t('common.labels.player') })}
-            </Text>
+        {/* 2. Round flow — só individual com 3+ jogadores */}
+        {showRoundFlowSection && (
+          <View style={[styles.section, isLandscape && styles.sectionLandscape]}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="shuffle" size={20} color={GameColors.lavender} />
+              <Text style={styles.sectionTitle}>{t('setup.roundFlow.title')}</Text>
+            </View>
+            <View style={styles.flowRow}>
+              <Pressable
+                style={[styles.flowCard, roundFlow === 'single-guess' && styles.flowCardActive]}
+                onPress={() => setRoundFlow('single-guess')}
+              >
+                <Ionicons
+                  name="dice"
+                  size={22}
+                  color={roundFlow === 'single-guess' ? GameColors.accent : GameColors.textMuted}
+                />
+                <Text style={[styles.flowTitle, roundFlow === 'single-guess' && styles.flowTitleActive]}>
+                  {t('setup.roundFlow.singleGuess')}
+                </Text>
+                <Text style={styles.flowDesc}>{t('setup.roundFlow.singleGuessDesc')}</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.flowCard, roundFlow === 'all-guess' && styles.flowCardActive]}
+                onPress={() => setRoundFlow('all-guess')}
+              >
+                <Ionicons
+                  name="bulb"
+                  size={22}
+                  color={roundFlow === 'all-guess' ? GameColors.accent : GameColors.textMuted}
+                />
+                <Text style={[styles.flowTitle, roundFlow === 'all-guess' && styles.flowTitleActive]}>
+                  {t('setup.roundFlow.allGuess')}
+                </Text>
+                <Text style={styles.flowDesc}>{t('setup.roundFlow.allGuessDesc')}</Text>
+              </Pressable>
+            </View>
           </View>
-          <ChipSelector options={SKIP_OPTIONS} selected={skips} onSelect={setSkips} />
-        </View>
+        )}
 
-        {/* Scoring Target — only for individual mode */}
-        {mode === 'individual' && (
+        {/* 3. Scoring Target — only individual + (2 players OR single-guess) */}
+        {showScoringToggle && (
           <View style={[styles.section, isLandscape && styles.sectionLandscape]}>
             <View style={styles.sectionHeader}>
               <Ionicons name="star-outline" size={20} color={GameColors.mint} />
@@ -251,77 +448,41 @@ export default function GameSetupScreen() {
           </View>
         )}
 
-        {mode === 'individual' ? (
-          /* ===== INDIVIDUAL ===== */
-          <View style={[styles.section, isLandscape && styles.sectionLandscape]}>
+        {/* All-guess scoring hint (replaces toggle) */}
+        {showAllGuessHint && (
+          <View style={[styles.section, styles.hintSection, isLandscape && styles.sectionLandscape]}>
             <View style={styles.sectionHeader}>
-              <Ionicons name="people-outline" size={20} color={GameColors.secondary} />
-              <Text style={styles.sectionTitle}>{t('setup.sections.players')}</Text>
+              <Ionicons name="information-circle-outline" size={20} color={GameColors.mint} />
+              <Text style={styles.sectionTitle}>{t('setup.sections.scoringTarget')}</Text>
             </View>
-            <TextInput
-              style={styles.nameInput}
-              value={playerNames[0]}
-              onChangeText={(t) => handlePlayerNameChange(0, t)}
-              placeholder={`${t('common.labels.player')} 1`}
-              placeholderTextColor={GameColors.textMuted}
-              maxLength={20}
-            />
-            <TextInput
-              style={styles.nameInput}
-              value={playerNames[1]}
-              onChangeText={(t) => handlePlayerNameChange(1, t)}
-              placeholder={`${t('common.labels.player')} 2`}
-              placeholderTextColor={GameColors.textMuted}
-              maxLength={20}
-            />
+            <Text style={styles.hintText}>{t('setup.roundFlow.scoringHint')}</Text>
           </View>
-        ) : (
-          /* ===== TEAMS ===== */
-          <>
-            {teams.map((team, teamIdx) => (
-              <View key={teamIdx} style={[styles.section, isLandscape && styles.sectionLandscape]}>
-                <View style={styles.sectionHeader}>
-                  <Ionicons
-                    name={teamIdx === 0 ? 'flag-outline' : 'flag'}
-                    size={20}
-                    color={teamIdx === 0 ? GameColors.sky : GameColors.primary}
-                  />
-                  <Text style={styles.sectionTitle}>{t('setup.team.title', { number: teamIdx + 1 })}</Text>
-                </View>
-                <TextInput
-                  style={styles.teamNameInput}
-                  value={team.name}
-                  onChangeText={(t) => handleTeamNameChange(teamIdx, t)}
-                  placeholder={t('setup.team.namePlaceholder', { number: teamIdx + 1 })}
-                  placeholderTextColor={GameColors.textMuted}
-                  maxLength={20}
-                />
-                {team.players.map((player, playerIdx) => (
-                  <View key={playerIdx} style={styles.teamPlayerRow}>
-                    <TextInput
-                      style={styles.teamPlayerInput}
-                      value={player}
-                      onChangeText={(t) => handleTeamPlayerChange(teamIdx, playerIdx, t)}
-                      placeholder={`${t('common.labels.player')} ${playerIdx + 1}`}
-                      placeholderTextColor={GameColors.textMuted}
-                      maxLength={20}
-                    />
-                    <Pressable
-                      style={styles.removePlayerButton}
-                      onPress={() => handleRemovePlayer(teamIdx, playerIdx)}
-                    >
-                      <Ionicons name="close-circle" size={22} color={GameColors.primary} />
-                    </Pressable>
-                  </View>
-                ))}
-                <Pressable style={styles.addPlayerButton} onPress={() => handleAddPlayer(teamIdx)}>
-                  <Ionicons name="add-circle-outline" size={18} color={GameColors.accent} />
-                  <Text style={styles.addPlayerText}>{t('setup.team.addPlayer')}</Text>
-                </Pressable>
-              </View>
-            ))}
-          </>
         )}
+
+        {/* 4. Winning Score */}
+        <View style={[styles.section, isLandscape && styles.sectionLandscape]}>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="trophy-outline" size={20} color={GameColors.accent} />
+            <Text style={styles.sectionTitle}>{t('setup.sections.winningScore')}</Text>
+          </View>
+          <ChipSelector
+            options={SCORE_OPTIONS.map((v) => ({ value: v, label: String(v) }))}
+            selected={winningScore}
+            onSelect={setWinningScore}
+          />
+        </View>
+
+        {/* 5. Skips */}
+        <View style={[styles.section, isLandscape && styles.sectionLandscape]}>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="play-skip-forward-outline" size={20} color={GameColors.sky} />
+            <Text style={styles.sectionTitle}>
+              {t('setup.sections.skipsPer', { target: mode === 'teams' ? t('common.labels.team') : t('common.labels.player') })}
+            </Text>
+          </View>
+          <ChipSelector options={SKIP_OPTIONS} selected={skips} onSelect={setSkips} />
+        </View>
+
         </View>
 
         {/* Bottom spacing for floating button and keyboard */}
@@ -406,6 +567,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     gap: 10,
   },
+  hintSection: {
+    paddingVertical: 12,
+  },
+  hintText: {
+    fontSize: 13,
+    color: GameColors.textMuted,
+    lineHeight: 18,
+  },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -464,6 +633,38 @@ const styles = StyleSheet.create({
   scoringLabelActive: {
     color: GameColors.accent,
   },
+  flowRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  flowCard: {
+    flex: 1,
+    alignItems: 'flex-start',
+    gap: 6,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 14,
+    backgroundColor: GameColors.surfaceLight,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  flowCardActive: {
+    borderColor: GameColors.accent,
+  },
+  flowTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: GameColors.textMuted,
+    letterSpacing: 0.4,
+  },
+  flowTitleActive: {
+    color: GameColors.accent,
+  },
+  flowDesc: {
+    fontSize: 11,
+    color: GameColors.textMuted,
+    lineHeight: 14,
+  },
   chipRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -489,7 +690,13 @@ const styles = StyleSheet.create({
   chipTextSelected: {
     color: GameColors.accent,
   },
-  nameInput: {
+  individualRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  individualNameInput: {
+    flex: 1,
     backgroundColor: GameColors.surfaceLight,
     borderRadius: 12,
     paddingHorizontal: 16,
@@ -497,6 +704,40 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: GameColors.text,
+  },
+  colorDot: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  colorDotSmall: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  colorDotOpen: {
+    borderColor: GameColors.text,
+  },
+  colorPalette: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    paddingHorizontal: 4,
+    paddingVertical: 8,
+  },
+  paletteDot: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  paletteDotSelected: {
+    borderColor: GameColors.text,
   },
   teamNameInput: {
     backgroundColor: GameColors.surfaceLight,

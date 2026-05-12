@@ -11,7 +11,7 @@
       "passPhone": "PASSAR CELULAR",
       "skip": "PULAR",
       "playAgain": "JOGAR NOVAMENTE",
-      "viewHistory": "VER HISTÓRICO",
+      "viewHistory": "RESUMO DA PARTIDA",
       "mainMenu": "MENU PRINCIPAL"
     },
     "labels": {
@@ -29,7 +29,7 @@
     "rules": {
       "firstToWin": "Primeiro a {{score}} pontos vence",
       "alternating": "Jogadores alternam as dicas",
-      "samePhone": "Jogo para 2 no mesmo celular"
+      "samePhone": "Jogo de 2 a 8 no mesmo celular"
     }
   },
   "tutorial": {
@@ -90,6 +90,20 @@
       "namePlaceholder": "Nome do Time {{number}}",
       "minPlayersAlert": "Mínimo 2 jogadores por time",
       "addPlayer": "Adicionar Jogador"
+    },
+    "individual": {
+      "addPlayer": "Adicionar Jogador",
+      "minPlayersAlert": "Mínimo 2 jogadores",
+      "maxPlayersAlert": "Máximo 8 jogadores",
+      "pickColor": "Escolher cor"
+    },
+    "roundFlow": {
+      "title": "Modo de rodada",
+      "allGuess": "Todos adivinham",
+      "allGuessDesc": "A cada rodada, um jogador dá a dica e todos tentam adivinhar.",
+      "singleGuess": "Sorteio aleatório",
+      "singleGuessDesc": "Quem dá a dica e quem adivinha são sorteados a cada rodada.",
+      "scoringHint": "Quem dá a dica ganha um ponto para cada jogador que adivinhar, e quem adivinhar pontua pela distância."
     }
   },
   "game": {
@@ -102,14 +116,27 @@
       "instruction": "Diga a dica em voz alta e passe o celular para {{name}}"
     },
     "guess": {
-      "subtitle": "Arraste a agulha para onde acha que esta a dica"
+      "subtitle": "Arraste a agulha para onde acha que esta a dica",
+      "sequence": "{{current}} de {{total}}",
+      "passToNext": "Passe pra {{name}}",
+      "passLabel": "Passe pra",
+      "imHere": "ESTOU AQUI"
+    },
+    "selection": {
+      "title": "Sorteio da Rodada",
+      "cluerLabel": "QUEM DÁ A DICA",
+      "guesserLabel": "QUEM ADIVINHA",
+      "letsGo": "VAMOS!"
     },
     "result": {
       "perfect": "PERFEITO! +4",
       "close": "QUASE LA! +3",
       "near": "NA AREA! +2",
       "miss": "ERROU! +0",
-      "details": "Alvo: {{target}}° | Tentativa: {{guess}}° | Diferença: {{difference}}°"
+      "details": "Alvo: {{target}}° | Tentativa: {{guess}}° | Diferença: {{difference}}°",
+      "allReveals": "Todas as tentativas",
+      "cluerBonus_one": "Bônus da dica: +{{count}}",
+      "cluerBonus_other": "Bônus da dica: +{{count}}"
     },
     "skip": {
       "unlimited": "Pulos ilimitados",
@@ -120,7 +147,13 @@
       "won": "{{name}} VENCEU!",
       "finalScore": "Placar Final",
       "roundsPlayed_one": "{{count}} rodada jogada",
-      "roundsPlayed_other": "{{count}} rodadas jogadas"
+      "roundsPlayed_other": "{{count}} rodadas jogadas",
+      "podium": {
+        "first": "Campeão",
+        "second": "2º Lugar",
+        "third": "3º Lugar",
+        "ranking": "Ranking final"
+      }
     }
   },
   "settings": {

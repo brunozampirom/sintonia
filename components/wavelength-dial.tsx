@@ -1,17 +1,24 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
 import Animated, {
   useAnimatedStyle,
   withSpring,
   SharedValue,
   runOnJS,
+  FadeIn,
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { GameColors } from '@/constants/theme';
 import { SCORE_ZONES } from '@/constants/game';
 
 const DEFAULT_SIZE = 300;
+
+export interface PlayerMarker {
+  angle: number;
+  color: string;
+  name: string;
+}
 
 interface WavelengthDialProps {
   targetAngle: number; // 0 = left, 180 = right
@@ -21,6 +28,7 @@ interface WavelengthDialProps {
   showGuess: boolean;
   onGuessChange?: (angle: number) => void;
   size?: number;
+  playerMarkers?: PlayerMarker[];
 }
 
 /**
@@ -72,6 +80,38 @@ function describeWedge(
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
+interface MarkerPosition extends PlayerMarker {
+  radius: number;
+}
+
+function placePlayerMarkers(markers: PlayerMarker[], baseRadius: number): MarkerPosition[] {
+  if (markers.length === 0) return [];
+  const sorted = markers
+    .map((m, i) => ({ ...m, original: i }))
+    .sort((a, b) => a.angle - b.angle);
+  const COLLISION_THRESHOLD = 18;
+  const RADIAL_STEP = 28;
+  const result: MarkerPosition[] = [];
+  let lastAngle = -999;
+  let level = 0;
+  for (const m of sorted) {
+    if (Math.abs(m.angle - lastAngle) < COLLISION_THRESHOLD) {
+      level += 1;
+    } else {
+      level = 0;
+    }
+    const offset = level * RADIAL_STEP;
+    result.push({
+      angle: m.angle,
+      color: m.color,
+      name: m.name,
+      radius: Math.max(40, baseRadius - offset),
+    });
+    lastAngle = m.angle;
+  }
+  return result;
+}
+
 export function WavelengthDial({
   targetAngle,
   guessAngle,
@@ -80,6 +120,7 @@ export function WavelengthDial({
   showGuess,
   onGuessChange,
   size = DEFAULT_SIZE,
+  playerMarkers,
 }: WavelengthDialProps) {
   const centerX = size / 2;
   const centerY = size / 2;
@@ -189,6 +230,14 @@ export function WavelengthDial({
       })()
     : null;
 
+  const markerBaseRadius = arcRadius - 38;
+  const markerPositions = useMemo(
+    () => (playerMarkers && playerMarkers.length > 0 ? placePlayerMarkers(playerMarkers, markerBaseRadius) : []),
+    [playerMarkers, markerBaseRadius],
+  );
+  const MARKER_DIAMETER = Math.max(22, Math.round(size * 28 / DEFAULT_SIZE));
+  const MARKER_NAME_WIDTH = MARKER_DIAMETER + 32;
+
   const stars = useMemo(() => {
     const result = [];
     for (let i = 0; i < 40; i++) {
@@ -257,6 +306,41 @@ export function WavelengthDial({
             <Circle cx={centerX} cy={centerY} r={pivotInnerRadius} fill={GameColors.background} />
           </Svg>
 
+          {/* Player markers (all-guess result reveal) */}
+          {markerPositions.map((m, idx) => {
+            const pos = polarToCartesian(centerX, centerY, m.radius, m.angle);
+            return (
+              <Animated.View
+                key={`marker-${idx}-${m.name}`}
+                entering={FadeIn.delay(80 * idx).duration(280)}
+                style={[
+                  styles.markerWrap,
+                  {
+                    left: pos.x - MARKER_NAME_WIDTH / 2,
+                    top: pos.y - MARKER_DIAMETER / 2,
+                    width: MARKER_NAME_WIDTH,
+                  },
+                ]}
+                pointerEvents="none"
+              >
+                <View
+                  style={[
+                    styles.markerDot,
+                    {
+                      width: MARKER_DIAMETER,
+                      height: MARKER_DIAMETER,
+                      borderRadius: MARKER_DIAMETER / 2,
+                      backgroundColor: m.color,
+                    },
+                  ]}
+                />
+                <Text style={styles.markerName} numberOfLines={1}>
+                  {m.name.toUpperCase()}
+                </Text>
+              </Animated.View>
+            );
+          })}
+
           {/* Animated needle */}
           {(interactive || showGuess) && (
             <AnimatedView
@@ -314,5 +398,29 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  markerWrap: {
+    position: 'absolute',
+    alignItems: 'center',
+    gap: 2,
+  },
+  markerDot: {
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 3,
+    elevation: 4,
+  },
+  markerName: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 0.4,
+    textAlign: 'center',
+    textShadowColor: 'rgba(0,0,0,0.6)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
 });

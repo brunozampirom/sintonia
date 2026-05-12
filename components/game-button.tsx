@@ -14,6 +14,7 @@ interface GameButtonProps {
   color?: string;
   textColor?: string;
   variant?: 'primary' | 'secondary';
+  fullWidth?: boolean;
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -24,6 +25,7 @@ export function GameButton({
   color,
   textColor,
   variant = 'primary',
+  fullWidth = false,
 }: GameButtonProps) {
   const scale = useSharedValue(1);
 
@@ -50,6 +52,7 @@ export function GameButton({
       }}
       style={[
         styles.button,
+        fullWidth && styles.buttonFullWidth,
         {
           backgroundColor: bgColor,
           borderColor: borderColor,
@@ -77,6 +80,10 @@ const styles = StyleSheet.create({
     elevation: 6,
     minWidth: 200,
     ...Platform.select({ web: { cursor: 'pointer' as const } }),
+  },
+  buttonFullWidth: {
+    alignSelf: 'stretch',
+    minWidth: 0,
   },
   text: {
     fontSize: 18,

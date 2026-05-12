@@ -11,7 +11,7 @@
       "passPhone": "PASS PHONE",
       "skip": "SKIP",
       "playAgain": "PLAY AGAIN",
-      "viewHistory": "VIEW HISTORY",
+      "viewHistory": "MATCH RECAP",
       "mainMenu": "MAIN MENU"
     },
     "labels": {
@@ -29,7 +29,7 @@
     "rules": {
       "firstToWin": "First to {{score}} points wins",
       "alternating": "Players alternate giving clues",
-      "samePhone": "2-player game on the same phone"
+      "samePhone": "2-8 players on the same phone"
     }
   },
   "tutorial": {
@@ -90,6 +90,20 @@
       "namePlaceholder": "Team {{number}} Name",
       "minPlayersAlert": "Minimum 2 players per team",
       "addPlayer": "Add Player"
+    },
+    "individual": {
+      "addPlayer": "Add Player",
+      "minPlayersAlert": "Minimum 2 players",
+      "maxPlayersAlert": "Maximum 8 players",
+      "pickColor": "Pick color"
+    },
+    "roundFlow": {
+      "title": "Round mode",
+      "allGuess": "All guess",
+      "allGuessDesc": "Each round, one player gives the clue and everyone else tries to guess.",
+      "singleGuess": "Random draw",
+      "singleGuessDesc": "One psychic and one guesser are picked each round.",
+      "scoringHint": "The clue giver earns one point for each player who scores, and guessers also score by distance."
     }
   },
   "game": {
@@ -102,14 +116,27 @@
       "instruction": "Say the clue out loud and press \"pass the phone\" to {{name}}"
     },
     "guess": {
-      "subtitle": "Drag the needle to where you think the clue is"
+      "subtitle": "Drag the needle to where you think the clue is",
+      "sequence": "{{current}} of {{total}}",
+      "passToNext": "Pass to {{name}}",
+      "passLabel": "Pass to",
+      "imHere": "I'M HERE"
+    },
+    "selection": {
+      "title": "Round Draw",
+      "cluerLabel": "WHO GIVES THE CLUE",
+      "guesserLabel": "WHO GUESSES",
+      "letsGo": "LET'S GO!"
     },
     "result": {
       "perfect": "PERFECT! +4",
       "close": "SO CLOSE! +3",
       "near": "IN THE ZONE! +2",
       "miss": "MISS! +0",
-      "details": "Target: {{target}}° | Guess: {{guess}}° | Difference: {{difference}}°"
+      "details": "Target: {{target}}° | Guess: {{guess}}° | Difference: {{difference}}°",
+      "allReveals": "All guesses",
+      "cluerBonus_one": "Psychic bonus: +{{count}}",
+      "cluerBonus_other": "Psychic bonus: +{{count}}"
     },
     "skip": {
       "unlimited": "Unlimited skips",
@@ -120,7 +147,13 @@
       "won": "{{name}} WON!",
       "finalScore": "Final Score",
       "roundsPlayed_one": "{{count}} round played",
-      "roundsPlayed_other": "{{count}} rounds played"
+      "roundsPlayed_other": "{{count}} rounds played",
+      "podium": {
+        "first": "Champion",
+        "second": "Runner-up",
+        "third": "Third Place",
+        "ranking": "Final ranking"
+      }
     }
   },
   "settings": {
