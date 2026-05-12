@@ -171,6 +171,10 @@
       "en": "English",
       "effective": "Active language: {{language}}"
     },
+    "haptics": {
+      "title": "Haptics",
+      "description": "Turn off if you'd rather play without vibration feedback."
+    },
     "customSpectrums": {
       "title": "Custom Spectrums",
       "empty": "Add your own custom spectrums to the game",

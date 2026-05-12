@@ -14,12 +14,12 @@ import { useSettings } from '@/contexts/settings-context';
 import { useCountdown } from '@/hooks/use-countdown';
 import { rollRoles, useGameState } from '@/hooks/use-game-state';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
+import { haptics } from '@/lib/haptics';
 import { Ionicons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   FadeIn,
   FadeInDown,
@@ -27,17 +27,7 @@ import Animated, {
   useSharedValue,
   ZoomIn,
 } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-function triggerHaptic(style: Haptics.ImpactFeedbackStyle) {
-  if (Platform.OS === 'web') return;
-  Haptics.impactAsync(style);
-}
-
-function triggerNotification(type: Haptics.NotificationFeedbackType) {
-  if (Platform.OS === 'web') return;
-  Haptics.notificationAsync(type);
-}
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function GameScreen() {
   const router = useRouter();
@@ -47,6 +37,7 @@ export default function GameScreen() {
   const guessAngle = useSharedValue(90);
   const currentGuessRef = React.useRef(90);
   const { isLandscape, isTablet, scale, containerMaxWidth, dialSize } = useResponsiveLayout();
+  const insets = useSafeAreaInsets();
 
   const handleGuessChange = useCallback((angle: number) => {
     currentGuessRef.current = angle;
@@ -54,30 +45,43 @@ export default function GameScreen() {
 
   const { submitGuess, nextRound, startGame, submitClue, skipRound, dismissPass, rollRoles: rollRolesAction } = game;
 
-  const resetDial = useCallback(() => {
-    guessAngle.value = 90;
-    currentGuessRef.current = 90;
-  }, [guessAngle]);
+  // Reset the dial back to center whenever a fresh guess turn starts — i.e.
+  // when phase becomes 'guess' (covers both new round and next guesser inside
+  // a multi-guess round). useLayoutEffect runs synchronously in commit phase
+  // before paint, so the new guess screen always paints with the needle at 90°.
+  // We deliberately do NOT reset on the result→next-round button press, because
+  // that would snap the needle to center on the still-visible result screen.
+  useLayoutEffect(() => {
+    if (game.phase === 'guess') {
+      guessAngle.value = 90;
+      currentGuessRef.current = 90;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [game.phase, game.currentGuesserIndex, game.round]);
 
   const handleSubmitGuess = useCallback(() => {
-    triggerHaptic(Haptics.ImpactFeedbackStyle.Medium);
+    haptics.submitGuess();
     submitGuess(currentGuessRef.current);
   }, [submitGuess]);
 
   const handleNextRound = useCallback(() => {
-    resetDial();
+    haptics.nextRound();
     nextRound();
-  }, [nextRound, resetDial]);
+  }, [nextRound]);
+
+  const handleSubmitClue = useCallback(() => {
+    haptics.submitClue();
+    submitClue();
+  }, [submitClue]);
 
   const handleNewGame = useCallback(() => {
-    resetDial();
+    haptics.play();
     startGame();
-  }, [startGame, resetDial]);
+  }, [startGame]);
 
   const handleDismissPass = useCallback(() => {
-    resetDial();
     dismissPass();
-  }, [dismissPass, resetDial]);
+  }, [dismissPass]);
 
   const getScoreMessage = (score: number) => {
     switch (score) {
@@ -97,7 +101,7 @@ export default function GameScreen() {
   const canSkip = settings.skipsPerPlayer === -1 || skipCount > 0;
 
   const handleSkip = useCallback(() => {
-    triggerHaptic(Haptics.ImpactFeedbackStyle.Light);
+    haptics.skip();
     skipRound();
   }, [skipRound]);
 
@@ -106,12 +110,12 @@ export default function GameScreen() {
   const guessActive = game.phase === 'guess' && settings.guessTimeLimit > 0;
 
   const handleClueExpire = useCallback(() => {
-    triggerHaptic(Haptics.ImpactFeedbackStyle.Medium);
+    haptics.timerExpire();
     submitClue();
   }, [submitClue]);
 
   const handleGuessExpire = useCallback(() => {
-    triggerHaptic(Haptics.ImpactFeedbackStyle.Medium);
+    haptics.timerExpire();
     submitGuess(currentGuessRef.current);
   }, [submitGuess]);
 
@@ -129,42 +133,59 @@ export default function GameScreen() {
     resetKey: `guess-${game.round}-${game.currentGuesserIndex}`,
   });
 
-  // Haptic warning when entering the last 5s of either timer
-  const clueWarnedRef = React.useRef(false);
-  const guessWarnedRef = React.useRef(false);
+  // Haptic feedback during the final 5s: a continuous Drone background
+  // kicks in on entry, and a discrete "tun" tick fires on each second change.
+  const lastClueSecondRef = React.useRef<number | null>(null);
+  const lastGuessSecondRef = React.useRef<number | null>(null);
   useEffect(() => {
     if (!clueActive) {
-      clueWarnedRef.current = false;
+      lastClueSecondRef.current = null;
       return;
     }
-    if (clueRemaining <= 5 && clueRemaining > 0 && !clueWarnedRef.current) {
-      clueWarnedRef.current = true;
-      triggerNotification(Haptics.NotificationFeedbackType.Warning);
+    const sec = Math.ceil(clueRemaining);
+    const prev = lastClueSecondRef.current;
+    if (prev === null) {
+      lastClueSecondRef.current = sec;
+      return;
+    }
+    if (sec !== prev) {
+      if (prev > 5 && sec === 5) haptics.timerDrone();
+      if (sec > 0 && sec <= 5) haptics.timerTick();
+      lastClueSecondRef.current = sec;
     }
   }, [clueActive, clueRemaining]);
   useEffect(() => {
     if (!guessActive) {
-      guessWarnedRef.current = false;
+      lastGuessSecondRef.current = null;
       return;
     }
-    if (guessRemaining <= 5 && guessRemaining > 0 && !guessWarnedRef.current) {
-      guessWarnedRef.current = true;
-      triggerNotification(Haptics.NotificationFeedbackType.Warning);
+    const sec = Math.ceil(guessRemaining);
+    const prev = lastGuessSecondRef.current;
+    if (prev === null) {
+      lastGuessSecondRef.current = sec;
+      return;
+    }
+    if (sec !== prev) {
+      if (prev > 5 && sec === 5) haptics.timerDrone();
+      if (sec > 0 && sec <= 5) haptics.timerTick();
+      lastGuessSecondRef.current = sec;
     }
   }, [guessActive, guessRemaining]);
 
-  // Haptic feedback on result reveal
+  // Haptic feedback on result reveal — distinct preset per outcome.
   useEffect(() => {
     if (game.phase === 'result') {
       if (game.lastRoundScore === 4) {
-        triggerNotification(Haptics.NotificationFeedbackType.Success);
-      } else if (game.lastRoundScore >= 2) {
-        triggerNotification(Haptics.NotificationFeedbackType.Warning);
+        haptics.perfect();
+      } else if (game.lastRoundScore === 3) {
+        haptics.close();
+      } else if (game.lastRoundScore === 2) {
+        haptics.near();
       } else {
-        triggerNotification(Haptics.NotificationFeedbackType.Error);
+        haptics.miss();
       }
     } else if (game.phase === 'gameover') {
-      triggerNotification(Haptics.NotificationFeedbackType.Success);
+      haptics.gameOver();
     }
   }, [game.phase, game.lastRoundScore]);
 
@@ -187,6 +208,7 @@ export default function GameScreen() {
 
   const handleSelectionConfirm = useCallback(() => {
     if (!rolled.current) return;
+    haptics.play();
     rollRolesAction(rolled.current.cluer, rolled.current.guesser);
   }, [rollRolesAction]);
 
@@ -254,9 +276,9 @@ export default function GameScreen() {
     const guesserTarget = rolled.current?.guesser ?? 0;
     const bothSettled = reelsSettled.cluer && reelsSettled.guesser;
     return (
-      <SafeAreaView style={styles.container}>
+      <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
         <View style={[styles.header, responsiveContainer]}>
-          <Pressable style={styles.closeButton} onPress={() => router.back()}>
+          <Pressable style={styles.closeButton} onPress={() => { haptics.back(); router.back(); }}>
             <Ionicons name="close" size={20} color={GameColors.textMuted} />
           </Pressable>
         </View>
@@ -278,6 +300,8 @@ export default function GameScreen() {
               label={t('game.selection.guesserLabel')}
               duration={2900}
               onSettled={onGuesserReelSettled}
+              emitHaptics
+              peerSettleTime={2200}
             />
           </View>
           <View style={styles.selectionCtaSlot}>
@@ -288,7 +312,7 @@ export default function GameScreen() {
             )}
           </View>
         </Animated.View>
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -316,7 +340,7 @@ export default function GameScreen() {
 
       {/* Header — in landscape includes compact scoreboard */}
       <View style={[isLandscape ? styles.landscapeHeader : styles.header, responsiveContainer]}>
-        <Pressable style={styles.closeButton} onPress={() => router.back()}>
+        <Pressable style={styles.closeButton} onPress={() => { haptics.back(); router.back(); }}>
           <Ionicons name="close" size={20} color={GameColors.textMuted} />
         </Pressable>
         {(clueActive || guessActive) && (
@@ -359,7 +383,7 @@ export default function GameScreen() {
                   {t('game.clue.instruction', { name: game.guesserLabel })}
                 </Text>
                 <View style={styles.landscapeButtons}>
-                  <GameButton title={t('common.actions.passPhone')} onPress={submitClue} />
+                  <GameButton title={t('common.actions.passPhone')} onPress={handleSubmitClue} />
                   {settings.skipsPerPlayer !== 0 && canSkip && (
                     <View style={{ marginTop: 8, alignItems: 'center' }}>
                       <GameButton title={t('common.actions.skip')} onPress={handleSkip} variant="secondary" />
@@ -516,7 +540,7 @@ export default function GameScreen() {
                   },
                 })} variant="secondary" />
                 <View style={{ height: 10 }} />
-                <GameButton fullWidth title={t('common.actions.mainMenu')} onPress={() => router.back()} variant="secondary" />
+                <GameButton fullWidth title={t('common.actions.mainMenu')} onPress={() => { haptics.back(); router.back(); }} variant="secondary" />
               </View>
             </Animated.View>
           )}
@@ -554,7 +578,7 @@ export default function GameScreen() {
                   {t('game.clue.instruction', { name: game.guesserLabel })}
                 </Animated.Text>
                 <View style={styles.buttonSection}>
-                  <GameButton title={t('common.actions.passPhone')} onPress={submitClue} />
+                  <GameButton title={t('common.actions.passPhone')} onPress={handleSubmitClue} />
                   {settings.skipsPerPlayer !== 0 && canSkip && (
                     <View style={{ marginTop: 10, alignItems: 'center' }}>
                       <GameButton title={t('common.actions.skip')} onPress={handleSkip} variant="secondary" />
@@ -702,7 +726,7 @@ export default function GameScreen() {
                     },
                   })} variant="secondary" />
                   <View style={{ height: 12 }} />
-                  <GameButton fullWidth title={t('common.actions.mainMenu')} onPress={() => router.back()} variant="secondary" />
+                  <GameButton fullWidth title={t('common.actions.mainMenu')} onPress={() => { haptics.back(); router.back(); }} variant="secondary" />
                 </View>
               </Animated.View>
             )}

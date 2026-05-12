@@ -3,6 +3,7 @@ import { HomeHeroWaves } from '@/components/home-hero-waves';
 import { Starfield } from '@/components/starfield';
 import { GameColors } from '@/constants/theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
+import { haptics } from '@/lib/haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -46,13 +47,19 @@ export default function HomeScreen() {
       <GameButton
         fullWidth
         title={t('common.actions.play')}
-        onPress={() => router.push('/game-setup')}
+        onPress={() => {
+          haptics.play();
+          router.push('/game-setup');
+        }}
       />
       <View style={{ height: 10 }} />
       <GameButton
         fullWidth
         title={t('common.actions.settings')}
-        onPress={() => router.push('/settings')}
+        onPress={() => {
+          haptics.play();
+          router.push('/settings');
+        }}
         variant="secondary"
       />
     </Animated.View>
@@ -61,7 +68,10 @@ export default function HomeScreen() {
   const tutorialLink = (
     <Animated.View entering={FadeInUp.duration(500).delay(650)} style={styles.tutorialWrap}>
       <Pressable
-        onPress={() => router.push('/tutorial')}
+        onPress={() => {
+          haptics.play();
+          router.push('/tutorial');
+        }}
         hitSlop={12}
         style={({ pressed }) => [styles.tutorialPill, pressed && styles.tutorialPillPressed]}
       >

@@ -4,6 +4,7 @@ import { Starfield } from '@/components/starfield';
 import { WavelengthDial } from '@/components/wavelength-dial';
 import { GameColors } from '@/constants/theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
+import { haptics } from '@/lib/haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
@@ -168,7 +169,7 @@ export default function TutorialScreen() {
       <Starfield count={60} />
       <SafeAreaView style={styles.container}>
         <View style={[styles.header, responsiveContainer]}>
-          <Pressable style={styles.backButton} onPress={() => router.back()}>
+          <Pressable style={styles.backButton} onPress={() => { haptics.back(); router.back(); }}>
             <Ionicons name="chevron-back" size={22} color={GameColors.text} />
           </Pressable>
           <Text style={styles.headerTitle}>{t('tutorial.title')}</Text>
@@ -221,7 +222,10 @@ export default function TutorialScreen() {
           >
             <GameButton
               title={t('tutorial.cta')}
-              onPress={() => router.replace('/game-setup')}
+              onPress={() => {
+                haptics.play();
+                router.replace('/game-setup');
+              }}
             />
           </Animated.View>
 

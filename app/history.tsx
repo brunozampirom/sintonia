@@ -1,6 +1,7 @@
 import { GameColors } from '@/constants/theme';
 import type { RoundGuess, RoundRecord } from '@/hooks/use-game-state';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
+import { haptics } from '@/lib/haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
@@ -171,7 +172,7 @@ export default function HistoryScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={[styles.header, responsiveContainer]}>
-        <Pressable style={styles.backButton} onPress={() => router.back()}>
+        <Pressable style={styles.backButton} onPress={() => { haptics.back(); router.back(); }}>
           <Ionicons name="arrow-back" size={20} color={GameColors.textMuted} />
         </Pressable>
         <Text style={styles.headerTitle}>{t('history.title')}</Text>

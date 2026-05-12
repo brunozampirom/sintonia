@@ -1,7 +1,8 @@
 import { GameButton } from '@/components/game-button';
 import { GameColors } from '@/constants/theme';
+import { haptics } from '@/lib/haptics';
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
@@ -14,6 +15,15 @@ interface PassPhoneCardProps {
 }
 
 export function PassPhoneCard({ name, color, ctaLabel, message, onPress }: PassPhoneCardProps) {
+  useEffect(() => {
+    haptics.passPhone();
+  }, []);
+
+  const handlePress = () => {
+    haptics.iAmHere();
+    onPress();
+  };
+
   return (
     <Animated.View
       entering={FadeIn.duration(180)}
@@ -31,7 +41,7 @@ export function PassPhoneCard({ name, color, ctaLabel, message, onPress }: PassP
           {name}
         </Text>
         <View style={styles.button}>
-          <GameButton title={ctaLabel} onPress={onPress} color={color} textColor={GameColors.background} />
+          <GameButton title={ctaLabel} onPress={handlePress} color={color} textColor={GameColors.background} />
         </View>
       </Animated.View>
     </Animated.View>

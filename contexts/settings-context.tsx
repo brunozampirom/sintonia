@@ -34,6 +34,7 @@ export interface GameSettings {
   roundFlow: RoundFlow;
   clueTimeLimit: number; // seconds; -1 = unlimited
   guessTimeLimit: number; // seconds; -1 = unlimited
+  hapticsEnabled: boolean;
   customSpectrums: Spectrum[];
   teams: [TeamConfig, TeamConfig];
 }
@@ -51,6 +52,7 @@ export const DEFAULT_SETTINGS: GameSettings = {
   roundFlow: 'single-guess',
   clueTimeLimit: -1,
   guessTimeLimit: -1,
+  hapticsEnabled: true,
   customSpectrums: [],
   teams: [
     { name: 'Team 1', players: ['Player 1', 'Player 2'], color: DEFAULT_TEAM_COLORS[0] },
@@ -128,6 +130,9 @@ function normalizeSettings(partial: Partial<GameSettings>): Partial<GameSettings
   }
   if (next.guessTimeLimit !== undefined && !VALID_TIME_LIMITS.includes(next.guessTimeLimit as typeof VALID_TIME_LIMITS[number])) {
     next.guessTimeLimit = DEFAULT_SETTINGS.guessTimeLimit;
+  }
+  if (typeof next.hapticsEnabled !== 'boolean') {
+    next.hapticsEnabled = DEFAULT_SETTINGS.hapticsEnabled;
   }
   if (next.teams) {
     next.teams = next.teams.map((team, teamIdx) => ({

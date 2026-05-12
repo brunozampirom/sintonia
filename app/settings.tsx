@@ -4,6 +4,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   View,
@@ -16,6 +17,7 @@ import { GameColors } from '@/constants/theme';
 import { useSettings } from '@/contexts/settings-context';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import type { LanguagePreference } from '@/i18n';
+import { haptics } from '@/lib/haptics';
 import { useTranslation } from 'react-i18next';
 
 const LANGUAGE_OPTIONS: LanguagePreference[] = ['system', 'pt-BR', 'en'];
@@ -65,7 +67,7 @@ export default function SettingsScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={[styles.header, responsiveContainer]}>
-        <Pressable style={styles.backButton} onPress={() => router.back()}>
+        <Pressable style={styles.backButton} onPress={() => { haptics.back(); router.back(); }}>
           <Ionicons name="chevron-back" size={22} color={GameColors.text} />
         </Pressable>
         <Text style={styles.headerTitle}>{t('settings.title')}</Text>
@@ -104,6 +106,31 @@ export default function SettingsScreen() {
           <Text style={styles.effectiveLanguageText}>
             {t('settings.language.effective', { language: getLanguageLabel(effectiveLanguage) })}
           </Text>
+        </Animated.View>
+
+        {/* Haptics */}
+        <Animated.View entering={FadeInDown.delay(75)} style={[styles.section, isLandscape && styles.sectionLandscape]}>
+          <View style={styles.toggleSectionHeader}>
+            <View style={styles.toggleSectionTitleRow}>
+              <Ionicons name="pulse-outline" size={20} color={GameColors.accent} />
+              <Text style={styles.sectionTitle}>{t('settings.haptics.title')}</Text>
+            </View>
+            <Switch
+              value={settings.hapticsEnabled}
+              onValueChange={(value) => {
+                updateSettings({ hapticsEnabled: value });
+                // Confirm with a tap so the user feels the change immediately
+                // when turning ON. When turning OFF, the next call will already
+                // be muted by the bridge.
+                if (value) {
+                  setTimeout(() => haptics.buttonPress(), 50);
+                }
+              }}
+              trackColor={{ false: GameColors.surfaceLight, true: GameColors.accent }}
+              thumbColor={GameColors.text}
+            />
+          </View>
+          <Text style={styles.sectionDesc}>{t('settings.haptics.description')}</Text>
         </Animated.View>
 
         {/* Custom Spectrums */}
@@ -240,6 +267,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     marginBottom: 12,
+  },
+  toggleSectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  toggleSectionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   sectionTitle: {
     fontSize: 16,

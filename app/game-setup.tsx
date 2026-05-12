@@ -1,4 +1,5 @@
 import { GameButton } from '@/components/game-button';
+import { haptics } from '@/lib/haptics';
 import { MAX_PLAYERS, MIN_PLAYERS, PLAYER_COLOR_PALETTE, assignDefaultColors, reconcileColors } from '@/constants/player-colors';
 import { GameColors } from '@/constants/theme';
 import { useSettings, type GameMode, type RoundFlow, type ScoringTarget } from '@/contexts/settings-context';
@@ -49,7 +50,10 @@ function ChipSelector({
         <Pressable
           key={opt.value}
           style={[styles.chip, selected === opt.value && styles.chipSelected]}
-          onPress={() => onSelect(opt.value)}
+          onPress={() => {
+            if (selected !== opt.value) haptics.selection();
+            onSelect(opt.value);
+          }}
         >
           <Text style={[styles.chipText, selected === opt.value && styles.chipTextSelected]}>
             {opt.label}
@@ -63,11 +67,16 @@ function ChipSelector({
 function ModeToggle({ mode, onChange }: { mode: GameMode; onChange: (m: GameMode) => void }) {
   const { t } = useTranslation();
 
+  const pick = (m: GameMode) => {
+    if (m !== mode) haptics.selection();
+    onChange(m);
+  };
+
   return (
     <View style={styles.toggleRow}>
       <Pressable
         style={[styles.toggleButton, mode === 'individual' && styles.toggleActive]}
-        onPress={() => onChange('individual')}
+        onPress={() => pick('individual')}
       >
         <Ionicons
           name="person"
@@ -80,7 +89,7 @@ function ModeToggle({ mode, onChange }: { mode: GameMode; onChange: (m: GameMode
       </Pressable>
       <Pressable
         style={[styles.toggleButton, mode === 'teams' && styles.toggleActive]}
-        onPress={() => onChange('teams')}
+        onPress={() => pick('teams')}
       >
         <Ionicons
           name="people"
@@ -135,6 +144,7 @@ export default function GameSetupScreen() {
   };
 
   const handlePlayerColorChange = (idx: number, color: string) => {
+    haptics.colorPick();
     setPlayerColors((prev) => {
       const next = [...prev];
       next[idx] = color;
@@ -144,6 +154,7 @@ export default function GameSetupScreen() {
   };
 
   const handleTeamColorChange = (teamIdx: number, color: string) => {
+    haptics.colorPick();
     setTeams((prev) => {
       const next = [...prev];
       next[teamIdx] = { ...next[teamIdx], color };
@@ -157,6 +168,7 @@ export default function GameSetupScreen() {
       Alert.alert(t('setup.individual.maxPlayersAlert'));
       return;
     }
+    haptics.addRemovePlayer();
     setPlayerNames((prev) => [...prev, `${t('common.labels.player')} ${prev.length + 1}`]);
     setPlayerColors((prev) => {
       const nextLen = prev.length + 1;
@@ -169,6 +181,7 @@ export default function GameSetupScreen() {
       Alert.alert(t('setup.individual.minPlayersAlert'));
       return;
     }
+    haptics.addRemovePlayer();
     setPlayerNames((prev) => prev.filter((_, i) => i !== idx));
     setPlayerColors((prev) => prev.filter((_, i) => i !== idx));
     setOpenColorPicker(null);
@@ -185,6 +198,7 @@ export default function GameSetupScreen() {
   };
 
   const handleAddTeamPlayer = (teamIdx: number) => {
+    haptics.addRemovePlayer();
     setTeams((prev) => {
       const next = [...prev];
       const players = [...next[teamIdx].players, `${t('common.labels.player')} ${next[teamIdx].players.length + 1}`];
@@ -194,9 +208,11 @@ export default function GameSetupScreen() {
   };
 
   const handleRemoveTeamPlayer = (teamIdx: number, playerIdx: number) => {
+    let blocked = false;
     setTeams((prev) => {
       if (prev[teamIdx].players.length <= 2) {
         Alert.alert(t('setup.team.minPlayersAlert'));
+        blocked = true;
         return prev;
       }
       const next = [...prev];
@@ -204,9 +220,11 @@ export default function GameSetupScreen() {
       next[teamIdx] = { ...next[teamIdx], players };
       return next;
     });
+    if (!blocked) haptics.addRemovePlayer();
   };
 
   const handlePlay = () => {
+    haptics.play();
     updateSettings({
       gameMode: mode,
       scoringTarget,
@@ -362,7 +380,7 @@ export default function GameSetupScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={[styles.header, responsiveContainer]}>
-        <Pressable style={styles.backButton} onPress={() => router.back()}>
+        <Pressable style={styles.backButton} onPress={() => { haptics.back(); router.back(); }}>
           <Ionicons name="chevron-back" size={22} color={GameColors.text} />
         </Pressable>
         <Text style={styles.headerTitle}>{t('setup.title')}</Text>
@@ -394,7 +412,10 @@ export default function GameSetupScreen() {
             <View style={styles.flowRow}>
               <Pressable
                 style={[styles.flowCard, roundFlow === 'single-guess' && styles.flowCardActive]}
-                onPress={() => setRoundFlow('single-guess')}
+                onPress={() => {
+                  if (roundFlow !== 'single-guess') haptics.selection();
+                  setRoundFlow('single-guess');
+                }}
               >
                 <Ionicons
                   name="dice"
@@ -408,7 +429,10 @@ export default function GameSetupScreen() {
               </Pressable>
               <Pressable
                 style={[styles.flowCard, roundFlow === 'all-guess' && styles.flowCardActive]}
-                onPress={() => setRoundFlow('all-guess')}
+                onPress={() => {
+                  if (roundFlow !== 'all-guess') haptics.selection();
+                  setRoundFlow('all-guess');
+                }}
               >
                 <Ionicons
                   name="bulb"
@@ -434,7 +458,10 @@ export default function GameSetupScreen() {
             <View style={styles.scoringRow}>
               <Pressable
                 style={[styles.scoringOption, scoringTarget === 'cluer' && styles.scoringOptionActive]}
-                onPress={() => setScoringTarget('cluer')}
+                onPress={() => {
+                  if (scoringTarget !== 'cluer') haptics.selection();
+                  setScoringTarget('cluer');
+                }}
               >
                 <View style={[styles.scoringIconWrap, scoringTarget === 'cluer' && styles.scoringIconWrapActive]}>
                   <Ionicons name="chatbubble" size={18} color={scoringTarget === 'cluer' ? GameColors.background : GameColors.textMuted} />
@@ -445,7 +472,10 @@ export default function GameSetupScreen() {
               </Pressable>
               <Pressable
                 style={[styles.scoringOption, scoringTarget === 'guesser' && styles.scoringOptionActive]}
-                onPress={() => setScoringTarget('guesser')}
+                onPress={() => {
+                  if (scoringTarget !== 'guesser') haptics.selection();
+                  setScoringTarget('guesser');
+                }}
               >
                 <View style={[styles.scoringIconWrap, scoringTarget === 'guesser' && styles.scoringIconWrapActive]}>
                   <Ionicons name="search" size={18} color={scoringTarget === 'guesser' ? GameColors.background : GameColors.textMuted} />

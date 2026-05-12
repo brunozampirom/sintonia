@@ -1,6 +1,7 @@
 import { GameColors } from '@/constants/theme';
+import { haptics } from '@/lib/haptics';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown, ZoomIn } from 'react-native-reanimated';
 
@@ -62,6 +63,18 @@ export function GameOverPodium({ names, colors, scores, avgDiffs, labels }: Game
     [names, colors, scores, avgDiffs],
   );
   const top = ranked.slice(0, 3);
+
+  // Haptic reveal in the same visual order/stagger as FadeInDown.delay(180 * i):
+  // pedestals render [silver(i=0), gold(i=1), bronze(i=2)].
+  useEffect(() => {
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+    if (top[1]) timeouts.push(setTimeout(() => haptics.podiumSilver(), 0));
+    if (top[0]) timeouts.push(setTimeout(() => haptics.podiumGold(), 180));
+    if (top[2]) timeouts.push(setTimeout(() => haptics.podiumBronze(), 360));
+    return () => timeouts.forEach(clearTimeout);
+    // intentionally only on mount — podium doesn't change after game over
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const rest = ranked.slice(top.length);
 
   const podiumOrder: { player: Ranked | undefined; height: number; label: string }[] = [

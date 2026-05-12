@@ -2,7 +2,9 @@ import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
 import Animated, {
+  useAnimatedReaction,
   useAnimatedStyle,
+  useSharedValue,
   withSpring,
   SharedValue,
   runOnJS,
@@ -11,6 +13,9 @@ import Animated, {
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { GameColors } from '@/constants/theme';
 import { SCORE_ZONES } from '@/constants/game';
+import { haptics } from '@/lib/haptics';
+
+const DIAL_TICK_DEGREES = 9;
 
 const DEFAULT_SIZE = 300;
 
@@ -135,6 +140,22 @@ export function WavelengthDial({
   const needleAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${guessAngle.value - 180}deg` }],
   }));
+
+  // Emit a light haptic tick each time the needle crosses a 9° tick while
+  // the user is actively dragging (interactive only — never fires in result/clue).
+  const lastTickIdx = useSharedValue(Math.floor(90 / DIAL_TICK_DEGREES));
+  useAnimatedReaction(
+    () => guessAngle.value,
+    (current) => {
+      'worklet';
+      if (!interactive) return;
+      const tickIdx = Math.floor(current / DIAL_TICK_DEGREES);
+      if (tickIdx !== lastTickIdx.value) {
+        lastTickIdx.value = tickIdx;
+        runOnJS(haptics.dialTick)();
+      }
+    },
+  );
 
   const panGesture = Gesture.Pan()
     .enabled(interactive)

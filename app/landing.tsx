@@ -1,5 +1,6 @@
 import { GameColors } from '@/constants/theme';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
+import { haptics } from '@/lib/haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -169,7 +170,10 @@ export default function LandingScreen() {
 
           <Pressable
             style={({ pressed }) => [styles.ctaButton, pressed && { opacity: 0.8 }]}
-            onPress={() => router.push('/')}
+            onPress={() => {
+              haptics.play();
+              router.push('/');
+            }}
           >
             <Text style={styles.ctaButtonText}>{t('landing.cta.playNow')}</Text>
           </Pressable>

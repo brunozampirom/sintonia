@@ -171,6 +171,10 @@
       "en": "English",
       "effective": "Idioma ativo: {{language}}"
     },
+    "haptics": {
+      "title": "Vibração",
+      "description": "Desligue se preferir jogar sem feedback tátil."
+    },
     "customSpectrums": {
       "title": "Palavras Customizadas",
       "empty": "Adicione seus próprios espectros ao jogo",

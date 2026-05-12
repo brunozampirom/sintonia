@@ -1,5 +1,4 @@
 import { GameColors } from '@/constants/theme';
-import * as Haptics from 'expo-haptics';
 import React from 'react';
 import { Platform, Pressable, StyleSheet, Text } from 'react-native';
 import Animated, {
@@ -44,7 +43,9 @@ export function GameButton({
     <AnimatedPressable
       onPress={onPress}
       onPressIn={() => {
-        if (Platform.OS !== 'web') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        // No generic haptic here on purpose — each button's onPress handler
+        // fires the semantic haptic that fits the action (submit, skip,
+        // next round, …). A press-in tap would stack on top and feel busy.
         scale.value = withSpring(0.93, { damping: 15, stiffness: 300 });
       }}
       onPressOut={() => {
