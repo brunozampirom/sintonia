@@ -159,6 +159,12 @@
         "third": "Third Place",
         "ranking": "Final ranking"
       }
+    },
+    "review": {
+      "title": "Enjoying the game?",
+      "description": "Your feedback helps us improve",
+      "yes": "Yes",
+      "no": "No"
     }
   },
   "settings": {

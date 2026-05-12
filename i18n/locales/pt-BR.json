@@ -159,6 +159,12 @@
         "third": "3º Lugar",
         "ranking": "Ranking final"
       }
+    },
+    "review": {
+      "title": "Está gostando do jogo?",
+      "description": "Seu feedback ajuda a gente a melhorar",
+      "yes": "Sim",
+      "no": "Não"
     }
   },
   "settings": {

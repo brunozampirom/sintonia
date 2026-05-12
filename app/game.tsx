@@ -4,6 +4,7 @@ import { GameButton } from '@/components/game-button';
 import { GameOverPodium } from '@/components/game-over-podium';
 import { GuessSequenceBadge } from '@/components/guess-sequence-badge';
 import { PassPhoneCard } from '@/components/pass-phone-card';
+import { ReviewPromptModal } from '@/components/review-prompt-modal';
 import { RoundResultsBreakdown } from '@/components/round-results-breakdown';
 import { ScoreBoard } from '@/components/score-board';
 import { SlotReel } from '@/components/slot-reel';
@@ -15,9 +16,11 @@ import { useCountdown } from '@/hooks/use-countdown';
 import { rollRoles, useGameState } from '@/hooks/use-game-state';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { haptics } from '@/lib/haptics';
+import { getReviewState, recordGameCompleted, recordReviewResponse, shouldShowReviewPrompt } from '@/lib/review-state';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
+import * as StoreReview from 'expo-store-review';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, {
@@ -74,10 +77,53 @@ export default function GameScreen() {
     submitClue();
   }, [submitClue]);
 
-  const handleNewGame = useCallback(() => {
-    haptics.play();
-    startGame();
+  // In-app review pre-prompt: shown when the user taps "Play Again" after a
+  // game completion, gated by lib/review-state. If shown, startGame() is
+  // deferred until the user responds; otherwise it runs immediately.
+  const [reviewModalVisible, setReviewModalVisible] = useState(false);
+  const pendingNewGameRef = useRef(false);
+  const incrementedForGameRef = useRef(false);
+
+  useEffect(() => {
+    if (game.phase === 'gameover') {
+      if (!incrementedForGameRef.current) {
+        incrementedForGameRef.current = true;
+        recordGameCompleted().catch(() => {});
+      }
+    } else {
+      incrementedForGameRef.current = false;
+    }
+  }, [game.phase]);
+
+  const handleReviewResponse = useCallback(async (accepted: boolean) => {
+    setReviewModalVisible(false);
+    await recordReviewResponse(accepted);
+    if (accepted) {
+      try {
+        if (await StoreReview.isAvailableAsync()) {
+          await StoreReview.requestReview();
+        }
+      } catch {
+        // ignore — the user's intent is captured, store availability is best-effort
+      }
+    }
+    if (pendingNewGameRef.current) {
+      pendingNewGameRef.current = false;
+      startGame();
+    }
   }, [startGame]);
+
+  const handleNewGame = useCallback(async () => {
+    haptics.play();
+    if (pendingNewGameRef.current || reviewModalVisible) return;
+    const state = await getReviewState();
+    if (shouldShowReviewPrompt(state)) {
+      pendingNewGameRef.current = true;
+      setReviewModalVisible(true);
+      return;
+    }
+    startGame();
+  }, [startGame, reviewModalVisible]);
 
   const handleDismissPass = useCallback(() => {
     dismissPass();
@@ -336,6 +382,10 @@ export default function GameScreen() {
           message={t('game.guess.passLabel')}
           onPress={handleDismissPass}
         />
+      )}
+
+      {reviewModalVisible && (
+        <ReviewPromptModal onResponse={handleReviewResponse} />
       )}
 
       {/* Header — in landscape includes compact scoreboard */}
