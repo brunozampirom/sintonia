@@ -16,7 +16,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 const SCORE_OPTIONS = [5, 10, 15, 20, 30];
@@ -109,6 +109,7 @@ export default function GameSetupScreen() {
   const { settings, updateSettings } = useSettings();
   const { t } = useTranslation();
   const { isLandscape, isTablet, containerMaxWidth } = useResponsiveLayout();
+  const insets = useSafeAreaInsets();
 
   const [mode, setMode] = useState<GameMode>(settings.gameMode);
   const [scoringTarget, setScoringTarget] = useState<ScoringTarget>(settings.scoringTarget);
@@ -538,11 +539,11 @@ export default function GameSetupScreen() {
         </View>
 
         {/* Bottom spacing for floating button and keyboard */}
-        <View style={{ height: 140 }} />
+        <View style={{ height: 140 + insets.bottom }} />
       </ScrollView>
 
       {/* Floating Play Button */}
-      <View style={styles.floatingButton}>
+      <View style={[styles.floatingButton, { paddingBottom: insets.bottom + 16 }]}>
         <GameButton title={t('common.actions.play')} onPress={handlePlay} />
       </View>
     </SafeAreaView>
@@ -849,7 +850,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     paddingHorizontal: 20,
-    paddingBottom: 32,
     paddingTop: 12,
     backgroundColor: GameColors.background,
     alignItems: 'center',

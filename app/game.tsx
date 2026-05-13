@@ -824,6 +824,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
+    paddingBottom: 24,
   },
   phaseContainer: {
     flex: 1,
