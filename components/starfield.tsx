@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -63,13 +63,22 @@ function TwinklingStar({ star }: { star: StarData }) {
   );
 }
 
+// Android's mid-range haptic motors aren't the only weak spot — the GPU/UI
+// thread also chokes on dozens of concurrent Reanimated loops. Cap the
+// effective star count and twinkle rate on Android so we don't ship 35+
+// infinite `withRepeat` animations to budget devices.
+const MAX_STARS_ANDROID = 50;
+const TWINKLE_PROB = Platform.OS === 'android' ? 0 : 0.35;
+
 export function Starfield({ count = 80 }: StarfieldProps) {
+  const effectiveCount =
+    Platform.OS === 'android' ? Math.min(count, MAX_STARS_ANDROID) : count;
   const stars = useMemo(() => {
     const result: StarData[] = [];
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < effectiveCount; i++) {
       const size = Math.random() < 0.15 ? 3 : Math.random() < 0.4 ? 2 : 1;
       const opacity = 0.15 + Math.random() * 0.35;
-      const twinkle = Math.random() < 0.35;
+      const twinkle = Math.random() < TWINKLE_PROB;
       result.push({
         key: i,
         left: `${Math.random() * 100}%`,
@@ -84,7 +93,7 @@ export function Starfield({ count = 80 }: StarfieldProps) {
       });
     }
     return result;
-  }, [count]);
+  }, [effectiveCount]);
 
   return (
     <View style={styles.container} pointerEvents="none">

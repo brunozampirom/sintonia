@@ -13,7 +13,7 @@ export default function RootLayout() {
       <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <SettingsProvider>
           <HapticsBridge />
-          <Stack screenOptions={{ headerShown: false }}>
+          <Stack screenOptions={{ headerShown: false, freezeOnBlur: true }}>
             <Stack.Screen name="index" />
             <Stack.Screen name="game-setup" />
             <Stack.Screen name="game" />

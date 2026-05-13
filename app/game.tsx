@@ -12,7 +12,6 @@ import { SpectrumCard } from '@/components/spectrum-card';
 import { WavelengthDial, type PlayerMarker } from '@/components/wavelength-dial';
 import { GameColors } from '@/constants/theme';
 import { useSettings } from '@/contexts/settings-context';
-import { useCountdown } from '@/hooks/use-countdown';
 import { rollRoles, useGameState } from '@/hooks/use-game-state';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { haptics } from '@/lib/haptics';
@@ -164,59 +163,6 @@ export default function GameScreen() {
     haptics.timerExpire();
     submitGuess(currentGuessRef.current);
   }, [submitGuess]);
-
-  const clueRemaining = useCountdown({
-    duration: settings.clueTimeLimit,
-    active: clueActive,
-    onExpire: handleClueExpire,
-    resetKey: `clue-${game.round}-${game.activeSideIndex}-${game.targetAngle}`,
-  });
-
-  const guessRemaining = useCountdown({
-    duration: settings.guessTimeLimit,
-    active: guessActive,
-    onExpire: handleGuessExpire,
-    resetKey: `guess-${game.round}-${game.currentGuesserIndex}`,
-  });
-
-  // Haptic feedback during the final 5s: a continuous Drone background
-  // kicks in on entry, and a discrete "tun" tick fires on each second change.
-  const lastClueSecondRef = React.useRef<number | null>(null);
-  const lastGuessSecondRef = React.useRef<number | null>(null);
-  useEffect(() => {
-    if (!clueActive) {
-      lastClueSecondRef.current = null;
-      return;
-    }
-    const sec = Math.ceil(clueRemaining);
-    const prev = lastClueSecondRef.current;
-    if (prev === null) {
-      lastClueSecondRef.current = sec;
-      return;
-    }
-    if (sec !== prev) {
-      if (prev > 5 && sec === 5) haptics.timerDrone();
-      if (sec > 0 && sec <= 5) haptics.timerTick();
-      lastClueSecondRef.current = sec;
-    }
-  }, [clueActive, clueRemaining]);
-  useEffect(() => {
-    if (!guessActive) {
-      lastGuessSecondRef.current = null;
-      return;
-    }
-    const sec = Math.ceil(guessRemaining);
-    const prev = lastGuessSecondRef.current;
-    if (prev === null) {
-      lastGuessSecondRef.current = sec;
-      return;
-    }
-    if (sec !== prev) {
-      if (prev > 5 && sec === 5) haptics.timerDrone();
-      if (sec > 0 && sec <= 5) haptics.timerTick();
-      lastGuessSecondRef.current = sec;
-    }
-  }, [guessActive, guessRemaining]);
 
   // Haptic feedback on result reveal — distinct preset per outcome.
   useEffect(() => {
@@ -396,8 +342,14 @@ export default function GameScreen() {
         {(clueActive || guessActive) && (
           <View style={styles.headerTimerWrap} pointerEvents="box-none">
             <CountdownPill
-              remaining={clueActive ? clueRemaining : guessRemaining}
-              total={clueActive ? settings.clueTimeLimit : settings.guessTimeLimit}
+              duration={clueActive ? settings.clueTimeLimit : settings.guessTimeLimit}
+              active={clueActive || guessActive}
+              onExpire={clueActive ? handleClueExpire : handleGuessExpire}
+              resetKey={
+                clueActive
+                  ? `clue-${game.round}-${game.activeSideIndex}-${game.targetAngle}`
+                  : `guess-${game.round}-${game.currentGuesserIndex}`
+              }
             />
           </View>
         )}

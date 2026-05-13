@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import Animated, {
   useAnimatedProps,
   useAnimatedStyle,
@@ -134,13 +134,18 @@ function WaveLayer({
   );
 }
 
+// Android's mid-range chipsets choke on per-frame Reanimated work driving four
+// concurrent animated SVG paths. Skip the per-frame tick so `t` stays at 0 and
+// the waves render once in their phase-zero pose (still pretty, just static).
+const ANIMATE_WAVES = Platform.OS !== 'android';
+
 export function HomeHeroWaves({ width, height }: HomeHeroWavesProps) {
   // t tracks real time (in seconds) via a per-frame callback. No looping or
   // resetting — just continuously increasing. sin() of it stays smooth forever.
   const t = useSharedValue(0);
   useFrameCallback((frameInfo) => {
     t.value = frameInfo.timestamp / 1000;
-  }, true);
+  }, ANIMATE_WAVES);
 
   return (
     <View style={[styles.wrap, { width, height }]} pointerEvents="none">

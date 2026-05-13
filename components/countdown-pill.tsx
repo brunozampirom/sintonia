@@ -1,6 +1,8 @@
 import { GameColors } from '@/constants/theme';
+import { useCountdown } from '@/hooks/use-countdown';
+import { haptics } from '@/lib/haptics';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, {
   Easing,
@@ -12,17 +14,24 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+// CountdownPill owns its own countdown state so the 5Hz tick doesn't
+// re-render the entire GameScreen subtree (which carries the dial, scoreboard,
+// confetti, etc.). Parent passes duration/active/onExpire — leaf re-renders.
 interface CountdownPillProps {
-  remaining: number;
-  total: number;
+  duration: number;
+  active: boolean;
+  onExpire: () => void;
+  resetKey?: string | number;
 }
 
 const WARNING_THRESHOLD = 5;
 
-export function CountdownPill({ remaining, total }: CountdownPillProps) {
+export function CountdownPill({ duration, active, onExpire, resetKey }: CountdownPillProps) {
+  const remaining = useCountdown({ duration, active, onExpire, resetKey });
+
   const warning = remaining <= WARNING_THRESHOLD && remaining > 0;
   const color = warning ? GameColors.coral : GameColors.accent;
-  const progress = total > 0 ? Math.max(0, Math.min(1, remaining / total)) : 0;
+  const progress = duration > 0 ? Math.max(0, Math.min(1, remaining / duration)) : 0;
   const scale = useSharedValue(1);
 
   useEffect(() => {
@@ -43,6 +52,28 @@ export function CountdownPill({ remaining, total }: CountdownPillProps) {
       cancelAnimation(scale);
     };
   }, [warning, scale]);
+
+  // Haptic feedback during the final 5s: a continuous Drone background kicks in
+  // on entry, and a discrete "tun" tick fires on each second change. Lives here
+  // (instead of in GameScreen) so the 5Hz remaining ticks don't propagate up.
+  const lastSecondRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (!active) {
+      lastSecondRef.current = null;
+      return;
+    }
+    const sec = Math.ceil(remaining);
+    const prev = lastSecondRef.current;
+    if (prev === null) {
+      lastSecondRef.current = sec;
+      return;
+    }
+    if (sec !== prev) {
+      if (prev > 5 && sec === 5) haptics.timerDrone();
+      if (sec > 0 && sec <= 5) haptics.timerTick();
+      lastSecondRef.current = sec;
+    }
+  }, [active, remaining]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],

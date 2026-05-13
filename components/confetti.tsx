@@ -1,6 +1,6 @@
 import { GameColors } from '@/constants/theme';
 import React, { useEffect, useMemo } from 'react';
-import { StyleSheet, useWindowDimensions } from 'react-native';
+import { Platform, StyleSheet, useWindowDimensions } from 'react-native';
 import Animated, {
     Easing,
     useAnimatedStyle,
@@ -10,7 +10,10 @@ import Animated, {
     withTiming,
 } from 'react-native-reanimated';
 
-const PARTICLE_COUNT = 50;
+// 50 simultaneous Reanimated tracks spike the UI thread hard on budget Android
+// (~80% of the perfect-guess "drop absurdo"). Cap at 20 there — still reads as
+// a celebratory burst, no more jank.
+const PARTICLE_COUNT = Platform.OS === 'android' ? 20 : 50;
 const COLORS = [
   GameColors.primary,
   GameColors.accent,
