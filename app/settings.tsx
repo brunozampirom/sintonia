@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   Alert,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -112,8 +113,14 @@ export default function SettingsScreen() {
         <Animated.View entering={FadeInDown.delay(75)} style={[styles.section, isLandscape && styles.sectionLandscape]}>
           <View style={styles.toggleSectionHeader}>
             <View style={styles.toggleSectionTitleRow}>
-              <Ionicons name="pulse-outline" size={20} color={GameColors.accent} />
-              <Text style={styles.sectionTitle}>{t('settings.haptics.title')}</Text>
+              <Ionicons
+                name={Platform.OS === 'android' ? 'musical-notes-outline' : 'pulse-outline'}
+                size={20}
+                color={GameColors.accent}
+              />
+              <Text style={styles.sectionTitle}>
+                {t(Platform.OS === 'android' ? 'settings.haptics.titleAndroid' : 'settings.haptics.title')}
+              </Text>
             </View>
             <Switch
               value={settings.hapticsEnabled}
@@ -130,7 +137,9 @@ export default function SettingsScreen() {
               thumbColor={GameColors.text}
             />
           </View>
-          <Text style={styles.sectionDesc}>{t('settings.haptics.description')}</Text>
+          <Text style={styles.sectionDesc}>
+            {t(Platform.OS === 'android' ? 'settings.haptics.descriptionAndroid' : 'settings.haptics.description')}
+          </Text>
         </Animated.View>
 
         {/* Custom Spectrums */}

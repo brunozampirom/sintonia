@@ -179,7 +179,9 @@
     },
     "haptics": {
       "title": "Haptics",
-      "description": "Turn off if you'd rather play without vibration feedback."
+      "titleAndroid": "Sounds",
+      "description": "Turn off if you'd rather play without vibration feedback.",
+      "descriptionAndroid": "Turn off if you'd rather play without sound feedback."
     },
     "customSpectrums": {
       "title": "Custom Spectrums",

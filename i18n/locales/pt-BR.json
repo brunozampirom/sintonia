@@ -179,7 +179,9 @@
     },
     "haptics": {
       "title": "Vibração",
-      "description": "Desligue se preferir jogar sem feedback tátil."
+      "titleAndroid": "Sons",
+      "description": "Desligue se preferir jogar sem feedback tátil.",
+      "descriptionAndroid": "Desligue se preferir jogar sem feedback sonoro."
     },
     "customSpectrums": {
       "title": "Palavras Customizadas",

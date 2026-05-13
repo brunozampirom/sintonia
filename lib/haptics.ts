@@ -1,14 +1,16 @@
+import { Platform } from 'react-native';
 import { Presets, Settings } from 'react-native-pulsar';
 
-// In dev builds, also play the audio preview of each pattern so haptics are
-// "audible" in the iOS Simulator / Android Emulator where the real motor
-// isn't available. Physical devices will still vibrate normally; the audio
-// is a development aid only.
-if (__DEV__) {
-  try {
-    Settings.enableSound(true);
-  } catch {}
-}
+// Android haptic motors (especially budget ones) produce coarse, "buzzy"
+// vibrations that feel inferior to iOS' Taptic Engine. We route feedback
+// through Pulsar's bundled audio previews on Android instead, while iOS
+// keeps the native haptic patterns.
+const useSoundInsteadOfHaptics = Platform.OS === 'android';
+
+try {
+  Settings.enableSound(useSoundInsteadOfHaptics);
+  Settings.enableHaptics(!useSoundInsteadOfHaptics);
+} catch {}
 
 /**
  * Centralized haptic service backed by react-native-pulsar.
@@ -28,14 +30,12 @@ let enabled = true;
 
 export function setHapticsEnabled(value: boolean) {
   enabled = value;
-  // Propagate to Pulsar's native flags so anything that bypasses our `play()`
-  // wrapper (pattern composer, realtime composer, etc.) is also muted.
-  // In simulator/dev the audible feedback comes from the AudioSimulator which
-  // has its own `playSound` flag — without disabling it here, audio preview
-  // would still play even with haptics "off".
   try {
-    Settings.enableHaptics(value);
-    if (__DEV__) Settings.enableSound(value);
+    if (useSoundInsteadOfHaptics) {
+      Settings.enableSound(value);
+    } else {
+      Settings.enableHaptics(value);
+    }
   } catch {}
 }
 
