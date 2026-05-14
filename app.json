@@ -12,7 +12,9 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.bruno.wavelength",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleDevelopmentRegion": "pt-BR",
+        "CFBundleLocalizations": ["pt-BR", "en"]
       }
     },
     "android": {
