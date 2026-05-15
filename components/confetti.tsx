@@ -13,7 +13,7 @@ import Animated, {
 // 50 simultaneous Reanimated tracks spike the UI thread hard on budget Android
 // (~80% of the perfect-guess "drop absurdo"). Cap at 20 there — still reads as
 // a celebratory burst, no more jank.
-const PARTICLE_COUNT = Platform.OS === 'android' ? 20 : 50;
+const PARTICLE_COUNT = Platform.OS === 'android' ? 20 : 32;
 const COLORS = [
   GameColors.primary,
   GameColors.accent,

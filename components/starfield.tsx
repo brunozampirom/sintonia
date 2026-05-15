@@ -17,62 +17,23 @@ interface StarData {
   opacity: number;
   color: string;
   twinkle: boolean;
-  twinkleDelay: number;
-  twinkleDuration: number;
-  twinkleMin: number;
 }
 
 interface StarfieldProps {
   count?: number;
 }
 
-function TwinklingStar({ star }: { star: StarData }) {
-  const opacity = useSharedValue(star.opacity);
-
-  useEffect(() => {
-    opacity.value = withDelay(
-      star.twinkleDelay,
-      withRepeat(
-        withSequence(
-          withTiming(star.twinkleMin, { duration: star.twinkleDuration }),
-          withTiming(star.opacity, { duration: star.twinkleDuration }),
-        ),
-        -1,
-        false,
-      ),
-    );
-  }, [opacity, star]);
-
-  const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
-
-  return (
-    <Animated.View
-      style={[
-        styles.star,
-        {
-          left: star.left as unknown as number,
-          top: star.top as unknown as number,
-          width: star.size,
-          height: star.size,
-          borderRadius: star.size / 2,
-          backgroundColor: star.color,
-        },
-        animatedStyle,
-      ]}
-    />
-  );
-}
-
-// Android's mid-range haptic motors aren't the only weak spot — the GPU/UI
-// thread also chokes on dozens of concurrent Reanimated loops. Cap the
-// effective star count and twinkle rate on Android so we don't ship 35+
-// infinite `withRepeat` animations to budget devices.
+// Android's mid-range GPUs choke on per-star animation loops, so skip twinkle
+// entirely there. On iOS we run exactly two shared loops (groups A + B in
+// opposite phase) and let RN multiply parent×child opacity instead of
+// animating each star individually.
 const MAX_STARS_ANDROID = 50;
 const TWINKLE_PROB = Platform.OS === 'android' ? 0 : 0.35;
 
 export function Starfield({ count = 80 }: StarfieldProps) {
   const effectiveCount =
     Platform.OS === 'android' ? Math.min(count, MAX_STARS_ANDROID) : count;
+
   const stars = useMemo(() => {
     const result: StarData[] = [];
     for (let i = 0; i < effectiveCount; i++) {
@@ -87,39 +48,76 @@ export function Starfield({ count = 80 }: StarfieldProps) {
         opacity: twinkle ? Math.max(opacity, 0.35) : opacity,
         color: Math.random() < 0.1 ? '#8B9DC3' : Math.random() < 0.05 ? '#F5A623' : '#FFFFFF',
         twinkle,
-        twinkleDelay: Math.random() * 3000,
-        twinkleDuration: 600 + Math.random() * 1200,
-        twinkleMin: 0.02,
       });
     }
     return result;
   }, [effectiveCount]);
 
+  const groupA = useSharedValue(1);
+  const groupB = useSharedValue(1);
+
+  useEffect(() => {
+    if (Platform.OS === 'android') return;
+    groupA.value = withRepeat(
+      withSequence(
+        withTiming(0.25, { duration: 900 }),
+        withTiming(1, { duration: 900 }),
+      ),
+      -1,
+      false,
+    );
+    groupB.value = withDelay(
+      550,
+      withRepeat(
+        withSequence(
+          withTiming(0.35, { duration: 1100 }),
+          withTiming(1, { duration: 1100 }),
+        ),
+        -1,
+        false,
+      ),
+    );
+  }, [groupA, groupB]);
+
+  const styleA = useAnimatedStyle(() => ({ opacity: groupA.value }));
+  const styleB = useAnimatedStyle(() => ({ opacity: groupB.value }));
+
+  const staticStars = stars.filter((s) => !s.twinkle);
+  const groupAStars = stars.filter((s) => s.twinkle && s.key % 2 === 0);
+  const groupBStars = stars.filter((s) => s.twinkle && s.key % 2 === 1);
+
   return (
     <View style={styles.container} pointerEvents="none">
-      {stars.map((s) =>
-        s.twinkle ? (
-          <TwinklingStar key={s.key} star={s} />
-        ) : (
-          <View
-            key={s.key}
-            style={[
-              styles.star,
-              {
-                left: s.left as unknown as number,
-                top: s.top as unknown as number,
-                width: s.size,
-                height: s.size,
-                borderRadius: s.size / 2,
-                backgroundColor: s.color,
-                opacity: s.opacity,
-              },
-            ]}
-          />
-        ),
-      )}
+      {staticStars.map((s) => (
+        <View key={s.key} style={starStyle(s)} />
+      ))}
+      <Animated.View style={[styles.container, styleA]} pointerEvents="none">
+        {groupAStars.map((s) => (
+          <View key={s.key} style={starStyle(s)} />
+        ))}
+      </Animated.View>
+      <Animated.View style={[styles.container, styleB]} pointerEvents="none">
+        {groupBStars.map((s) => (
+          <View key={s.key} style={starStyle(s)} />
+        ))}
+      </Animated.View>
     </View>
   );
+}
+
+function starStyle(s: StarData) {
+  return [
+    styles.star,
+    {
+      left: s.left as unknown as number,
+      top: s.top as unknown as number,
+      width: s.size,
+      height: s.size,
+      borderRadius: s.size / 2,
+      backgroundColor: s.color,
+      opacity: s.opacity,
+    },
+  ];
 }
 
 const styles = StyleSheet.create({
