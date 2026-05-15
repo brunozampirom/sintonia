@@ -22,7 +22,7 @@ import type { LanguagePreference } from '@/i18n';
 import { haptics } from '@/lib/haptics';
 import { useTranslation } from 'react-i18next';
 
-const LANGUAGE_OPTIONS: LanguagePreference[] = ['system', 'pt-BR', 'en'];
+const LANGUAGE_OPTIONS: LanguagePreference[] = ['system', 'pt-BR', 'en', 'es'];
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -36,6 +36,7 @@ export default function SettingsScreen() {
   const getLanguageLabel = (lang: LanguagePreference) => {
     if (lang === 'system') return t('settings.language.system');
     if (lang === 'pt-BR') return t('settings.language.ptBR');
+    if (lang === 'es') return t('settings.language.es');
     return t('settings.language.en');
   };
 

@@ -3,6 +3,7 @@ import { reconcileColors } from '@/constants/player-colors';
 import { GameColors } from '@/constants/theme';
 import type { GameMode, GameSettings, RoundFlow, ScoringTarget } from '@/contexts/settings-context';
 import spectrumsEN from '@/data/spectrums.en.json';
+import spectrumsES from '@/data/spectrums.es.json';
 import spectrumsPtBR from '@/data/spectrums.pt-BR.json';
 import type { SupportedLanguage } from '@/i18n';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
@@ -78,7 +79,9 @@ type GameAction =
   | { type: 'SET_LOCALE_POOL'; pool: Spectrum[] };
 
 function getBaseSpectrums(language: SupportedLanguage): Spectrum[] {
-  return language === 'en' ? spectrumsEN : spectrumsPtBR;
+  if (language === 'en') return spectrumsEN;
+  if (language === 'es') return spectrumsES;
+  return spectrumsPtBR;
 }
 
 function buildSpectrumPool(baseSpectrums: Spectrum[], customSpectrums: Spectrum[]): Spectrum[] {

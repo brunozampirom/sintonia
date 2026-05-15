@@ -3,14 +3,18 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 import en from '@/i18n/locales/en.json';
+import es from '@/i18n/locales/es.json';
 import ptBR from '@/i18n/locales/pt-BR.json';
 
-export type SupportedLanguage = 'pt-BR' | 'en';
+export type SupportedLanguage = 'pt-BR' | 'en' | 'es';
 export type LanguagePreference = 'system' | SupportedLanguage;
 
 export function normalizeLanguageTag(tag?: string): SupportedLanguage {
   if (!tag) return 'pt-BR';
-  return tag.toLowerCase().startsWith('pt') ? 'pt-BR' : 'en';
+  const lower = tag.toLowerCase();
+  if (lower.startsWith('pt')) return 'pt-BR';
+  if (lower.startsWith('es')) return 'es';
+  return 'en';
 }
 
 export function getDeviceLanguage(): SupportedLanguage {
@@ -20,6 +24,7 @@ export function getDeviceLanguage(): SupportedLanguage {
 
 export const resources = {
   en: { translation: en },
+  es: { translation: es },
   'pt-BR': { translation: ptBR },
 } as const;
 

@@ -14,7 +14,7 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleDevelopmentRegion": "pt-BR",
-        "CFBundleLocalizations": ["pt-BR", "en"]
+        "CFBundleLocalizations": ["pt-BR", "en", "es"]
       }
     },
     "android": {

@@ -175,6 +175,7 @@
       "system": "Sistema",
       "ptBR": "Português",
       "en": "English",
+      "es": "Español",
       "effective": "Idioma ativo: {{language}}"
     },
     "haptics": {
@@ -244,8 +245,8 @@
         "desc": "De 'Frio ↔ Quente' a 'Superestimado ↔ Subestimado' — nunca enjoa"
       },
       "bilingual": {
-        "title": "EN & PT-BR",
-        "desc": "Suporte completo para inglês e português brasileiro"
+        "title": "PT-BR, EN & ES",
+        "desc": "Suporte completo para português, inglês e espanhol"
       },
       "custom": {
         "title": "Espectros Custom",

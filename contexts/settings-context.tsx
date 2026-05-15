@@ -61,14 +61,22 @@ export const DEFAULT_SETTINGS: GameSettings = {
 };
 
 function localizeIndexedLabel(kind: 'player' | 'team', index: number, language: SupportedLanguage): string {
-  const base = kind === 'player'
-    ? (language === 'pt-BR' ? 'Jogador' : 'Player')
-    : (language === 'pt-BR' ? 'Time' : 'Team');
+  const playerByLang: Record<SupportedLanguage, string> = {
+    'pt-BR': 'Jogador',
+    en: 'Player',
+    es: 'Jugador',
+  };
+  const teamByLang: Record<SupportedLanguage, string> = {
+    'pt-BR': 'Time',
+    en: 'Team',
+    es: 'Equipo',
+  };
+  const base = kind === 'player' ? playerByLang[language] : teamByLang[language];
   return `${base} ${index}`;
 }
 
 function parseDefaultIndexedLabel(name: string, kind: 'player' | 'team'): number | null {
-  const prefixes = kind === 'player' ? '(Jogador|Player)' : '(Time|Team)';
+  const prefixes = kind === 'player' ? '(Jogador|Player|Jugador)' : '(Time|Team|Equipo)';
   const match = name.match(new RegExp(`^${prefixes}\\s+(\\d+)$`, 'i'));
   if (!match) return null;
   const parsed = Number.parseInt(match[2], 10);

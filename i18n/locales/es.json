@@ -1,0 +1,264 @@
+{
+  "common": {
+    "appName": "SINTONÍA",
+    "actions": {
+      "play": "JUGAR",
+      "settings": "AJUSTES",
+      "confirm": "CONFIRMAR",
+      "cancel": "Cancelar",
+      "add": "Añadir",
+      "nextRound": "SIGUIENTE RONDA",
+      "passPhone": "PASA EL CELU",
+      "skip": "PASAR",
+      "playAgain": "JUGAR DE NUEVO",
+      "viewHistory": "RESUMEN DE LA PARTIDA",
+      "mainMenu": "MENÚ PRINCIPAL"
+    },
+    "labels": {
+      "player": "Jugador",
+      "team": "Equipo",
+      "target": "Objetivo",
+      "guess": "Tirada",
+      "difference": "Diferencia"
+    }
+  },
+  "home": {
+    "subtitle": "Un juego de sintonía mental",
+    "description": "Da una pista sobre un objetivo secreto en el espectro. ¡Cuanto más cerca, más puntos!",
+    "tutorialButton": "Cómo jugar",
+    "rules": {
+      "firstToWin": "Primero a {{score}} puntos gana",
+      "alternating": "Los jugadores se turnan dando pistas",
+      "samePhone": "De 2 a 8 jugadores en el mismo celular"
+    }
+  },
+  "tutorial": {
+    "title": "Cómo Jugar",
+    "intro": "Aprende lo básico en 6 pasos rápidos. El juego va de sintonizar mentes en un espectro.",
+    "cta": "¡A JUGAR!",
+    "steps": {
+      "objective": {
+        "title": "El Objetivo",
+        "description": "Los jugadores se turnan en el mismo celular. Quien tiene el celular ve un objetivo secreto en un espectro y da una pista para que los demás adivinen dónde está."
+      },
+      "clue": {
+        "title": "Da la Pista",
+        "description": "Quien da la pista ve en secreto un objetivo en el dial y una carta de espectro. Inventa una palabra o frase que sugiera dónde está el objetivo entre los dos extremos.",
+        "exampleLeft": "Frío",
+        "exampleRight": "Caliente"
+      },
+      "passPhone": {
+        "title": "Pasa el Celular",
+        "description": "Dí la pista en voz alta y pasa el celular a quien adivina, sin mostrarle el objetivo."
+      },
+      "guess": {
+        "title": "Arrastra la Aguja",
+        "description": "Quien adivina ve el mismo espectro pero sin el objetivo. Arrastra la aguja a donde sientas que encaja la pista."
+      },
+      "scoring": {
+        "title": "Puntúa la Ronda",
+        "description": "Cuanto más cerca esté tu tirada del objetivo, más puntos te llevas.",
+        "perfect": "PERFECTO",
+        "close": "CASI",
+        "near": "CERCA",
+        "miss": "FALLASTE"
+      },
+      "winning": {
+        "title": "Gana la Partida",
+        "description": "Los papeles cambian en cada ronda. El primero en llegar al puntaje objetivo gana la partida."
+      }
+    }
+  },
+  "setup": {
+    "title": "Nueva Partida",
+    "mode": {
+      "individual": "Individual",
+      "teams": "Equipos"
+    },
+    "sections": {
+      "winningScore": "Puntos para Ganar",
+      "skipsPer": "Saltos por {{target}}",
+      "scoringTarget": "¿Quién gana los puntos?",
+      "players": "Jugadores",
+      "time": "Tiempo"
+    },
+    "time": {
+      "clue": "Pista",
+      "guess": "Tirada"
+    },
+    "scoring": {
+      "cluer": "Quien da la pista",
+      "guesser": "Quien adivina"
+    },
+    "team": {
+      "title": "Equipo {{number}}",
+      "namePlaceholder": "Nombre del Equipo {{number}}",
+      "minPlayersAlert": "Mínimo 2 jugadores por equipo",
+      "addPlayer": "Añadir Jugador"
+    },
+    "individual": {
+      "addPlayer": "Añadir Jugador",
+      "minPlayersAlert": "Mínimo 2 jugadores",
+      "maxPlayersAlert": "Máximo 8 jugadores",
+      "pickColor": "Elegir color"
+    },
+    "roundFlow": {
+      "title": "Modo de ronda",
+      "allGuess": "Todos adivinan",
+      "allGuessDesc": "En cada ronda, un jugador da la pista y todos intentan adivinar.",
+      "singleGuess": "Sorteo al azar",
+      "singleGuessDesc": "Quien da la pista y quien adivina se sortean en cada ronda.",
+      "scoringHint": "Quien da la pista gana un punto por cada jugador que acierte, y quienes adivinan suman por cercanía."
+    }
+  },
+  "game": {
+    "turn": {
+      "clue": "¡{{name}}, te toca!",
+      "guess": "¡{{name}}, te toca!"
+    },
+    "clue": {
+      "subtitle": "Mira el objetivo y piensa una pista",
+      "instruction": "Dí la pista en voz alta y pasa el celular a {{name}}"
+    },
+    "guess": {
+      "subtitle": "Arrastra la aguja a donde creas que está la pista",
+      "sequence": "{{current}} de {{total}}",
+      "passToNext": "Pasa a {{name}}",
+      "passLabel": "Pasa a",
+      "imHere": "AQUÍ ESTOY"
+    },
+    "selection": {
+      "title": "Sorteo de la Ronda",
+      "cluerLabel": "QUIÉN DA LA PISTA",
+      "guesserLabel": "QUIÉN ADIVINA",
+      "letsGo": "¡VAMOS!"
+    },
+    "result": {
+      "perfect": "¡PERFECTO! +4",
+      "close": "¡CASI CASI! +3",
+      "near": "¡EN LA ZONA! +2",
+      "miss": "¡FALLASTE! +0",
+      "details": "Objetivo: {{target}}° | Tirada: {{guess}}° | Diferencia: {{difference}}°",
+      "allReveals": "Todas las tiradas",
+      "cluerBonus_one": "Bonus de pista: +{{count}}",
+      "cluerBonus_other": "Bonus de pista: +{{count}}"
+    },
+    "skip": {
+      "unlimited": "Saltos ilimitados",
+      "remaining_one": "Queda {{count}} salto",
+      "remaining_other": "Quedan {{count}} saltos"
+    },
+    "gameOver": {
+      "won": "¡{{name}} GANÓ!",
+      "finalScore": "Puntaje Final",
+      "roundsPlayed_one": "{{count}} ronda jugada",
+      "roundsPlayed_other": "{{count}} rondas jugadas",
+      "podium": {
+        "first": "Campeón",
+        "second": "2º Lugar",
+        "third": "3º Lugar",
+        "ranking": "Ranking final"
+      }
+    },
+    "review": {
+      "title": "¿La estás pasando bien?",
+      "description": "Tu feedback nos ayuda a mejorar",
+      "yes": "Sí",
+      "no": "No"
+    }
+  },
+  "settings": {
+    "title": "Ajustes",
+    "language": {
+      "title": "Idioma",
+      "description": "Elige el idioma de la interfaz y los espectros por defecto.",
+      "system": "Sistema",
+      "ptBR": "Português",
+      "en": "English",
+      "es": "Español",
+      "effective": "Idioma activo: {{language}}"
+    },
+    "haptics": {
+      "title": "Vibración",
+      "titleAndroid": "Sonidos",
+      "description": "Apágalo si prefieres jugar sin feedback táctil.",
+      "descriptionAndroid": "Apágalo si prefieres jugar sin sonidos."
+    },
+    "customSpectrums": {
+      "title": "Espectros Propios",
+      "empty": "Agrega tus propios espectros al juego",
+      "count_one": "{{count}} espectro agregado",
+      "count_other": "{{count}} espectros agregados",
+      "leftPlaceholder": "Lado izquierdo",
+      "rightPlaceholder": "Lado derecho",
+      "addSpectrum": "Agregar Espectro",
+      "fillBothFields": "Llena los dos campos"
+    }
+  },
+  "history": {
+    "title": "Historial",
+    "summary": {
+      "rounds": "Rondas",
+      "perfect": "Perfectos",
+      "avgDiff": "Dif. Prom."
+    },
+    "score": {
+      "perfect": "¡PERFECTO!",
+      "close": "¡CASI CASI!",
+      "near": "¡EN LA ZONA!",
+      "miss": "¡FALLASTE!"
+    },
+    "round": "R{{round}}"
+  },
+  "scoreboard": {
+    "round": "R{{round}}",
+    "target": "Meta: {{score}}"
+  },
+  "landing": {
+    "hero": {
+      "subtitle": "Un juego de sintonía mental",
+      "tagline": "por fin un motivo para mirar todos el mismo celular"
+    },
+    "howItWorks": {
+      "title": "Cómo Funciona",
+      "step1": {
+        "title": "Da una Pista",
+        "desc": "Mira un objetivo secreto en el espectro y suelta una pista de una palabra"
+      },
+      "step2": {
+        "title": "Lee su Mente",
+        "desc": "Tu compañero arrastra la aguja a donde cree que cae la pista"
+      },
+      "step3": {
+        "title": "Suma Puntos",
+        "desc": "Cuanto más cerca, más puntos — el primero en llegar a la meta gana"
+      }
+    },
+    "features": {
+      "title": "Por Qué Te Va a Encantar",
+      "samePhone": {
+        "title": "Mismo Celular",
+        "desc": "Nadie tiene que bajar nada — solo pasa el celu y a jugar"
+      },
+      "spectrums": {
+        "title": "200+ Espectros",
+        "desc": "De 'Frío ↔ Caliente' a 'Sobrevalorado ↔ Subvalorado' — nunca aburre"
+      },
+      "bilingual": {
+        "title": "EN, PT-BR y ES",
+        "desc": "Soporte completo en inglés, portugués brasileño y español"
+      },
+      "custom": {
+        "title": "Espectros Propios",
+        "desc": "Crea tus propias cartas con chistes internos y vibras del grupo"
+      }
+    },
+    "cta": {
+      "title": "¿Listo para sintonizar?",
+      "subtitle": "Gratis, sin anuncios, sin cuentas",
+      "playNow": "JUGAR YA",
+      "downloadOn": "Descarga en",
+      "getItOn": "Consíguelo en"
+    }
+  }
+}

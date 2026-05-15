@@ -175,6 +175,7 @@
       "system": "System",
       "ptBR": "Portuguese",
       "en": "English",
+      "es": "Spanish",
       "effective": "Active language: {{language}}"
     },
     "haptics": {
@@ -244,8 +245,8 @@
         "desc": "From 'Cold ↔ Hot' to 'Overrated ↔ Underrated' — never gets old"
       },
       "bilingual": {
-        "title": "EN & PT-BR",
-        "desc": "Full support for English and Brazilian Portuguese"
+        "title": "EN, PT-BR & ES",
+        "desc": "Full support for English, Brazilian Portuguese and Spanish"
       },
       "custom": {
         "title": "Custom Spectrums",
