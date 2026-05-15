@@ -1,3 +1,4 @@
+import { HeaderIconButton, HeaderSpacer, HeaderTitle, ScreenHeader } from '@/components/screen-header';
 import { GameColors } from '@/constants/theme';
 import type { RoundGuess, RoundRecord } from '@/hooks/use-game-state';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
@@ -5,10 +6,10 @@ import { haptics } from '@/lib/haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function getScoreColor(score: number) {
   switch (score) {
@@ -137,11 +138,20 @@ function RoundCard({
   );
 }
 
+const GRID_GAP = 12;
+const LIST_PADDING = 16;
+
 export default function HistoryScreen() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { isTablet, containerMaxWidth } = useResponsiveLayout();
+  const { isTablet, isLandscape, containerMaxWidth } = useResponsiveLayout();
+  const { width: windowWidth } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ history: string; playerNames: string; scores: string }>();
+
+  const safeWidth = windowWidth - insets.left - insets.right;
+  const effectiveWidth = isTablet && containerMaxWidth ? Math.min(safeWidth, containerMaxWidth) : safeWidth;
+  const gridItemWidth = isLandscape ? (effectiveWidth - LIST_PADDING * 2 - GRID_GAP) / 2 : undefined;
 
   const history: RoundRecord[] = params.history ? JSON.parse(params.history) : [];
   const playerNames: string[] = params.playerNames
@@ -171,13 +181,11 @@ export default function HistoryScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={[styles.header, responsiveContainer]}>
-        <Pressable style={styles.backButton} onPress={() => { haptics.back(); router.back(); }}>
-          <Ionicons name="arrow-back" size={20} color={GameColors.textMuted} />
-        </Pressable>
-        <Text style={styles.headerTitle}>{t('history.title')}</Text>
-        <View />
-      </View>
+      <ScreenHeader style={responsiveContainer}>
+        <HeaderIconButton icon="arrow-back" size={20} color={GameColors.textMuted} onPress={() => { haptics.back(); router.back(); }} />
+        <HeaderTitle>{t('history.title')}</HeaderTitle>
+        <HeaderSpacer />
+      </ScreenHeader>
 
       <View style={[styles.summaryRow, responsiveContainer]}>
         <View style={styles.summaryItem}>
@@ -195,11 +203,16 @@ export default function HistoryScreen() {
       </View>
 
       <FlatList
+        key={isLandscape ? 'grid' : 'list'}
         data={history}
         keyExtractor={(item) => String(item.round)}
         renderItem={({ item, index }) => (
-          <RoundCard record={item} playerNames={playerNames} index={index} />
+          <View style={isLandscape ? { width: gridItemWidth } : undefined}>
+            <RoundCard record={item} playerNames={playerNames} index={index} />
+          </View>
         )}
+        numColumns={isLandscape ? 2 : 1}
+        columnWrapperStyle={isLandscape ? styles.gridRow : undefined}
         contentContainerStyle={[styles.listContent, responsiveContainer]}
         showsVerticalScrollIndicator={false}
       />
@@ -211,27 +224,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: GameColors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  backButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: GameColors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: GameColors.text,
-    letterSpacing: 1,
   },
   summaryRow: {
     flexDirection: 'row',
@@ -260,6 +252,9 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: 16,
+    gap: 12,
+  },
+  gridRow: {
     gap: 12,
   },
   card: {

@@ -90,7 +90,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.screenWrap}>
       <Starfield count={100} />
-      {heroOverlay}
+      {!isLandscape && heroOverlay}
       <SafeAreaView style={styles.container}>
         <View
           style={[
@@ -100,11 +100,11 @@ export default function HomeScreen() {
             { paddingBottom: insets.bottom + 24 },
           ]}
         >
-          <View style={styles.centerStack}>
+          <View style={[styles.centerStack, isLandscape && styles.centerStackLandscape]}>
             {titleBlock}
             {buttonsBlock}
           </View>
-          {tutorialLink}
+          <View style={isLandscape ? styles.tutorialWrapLandscape : undefined}>{tutorialLink}</View>
         </View>
       </SafeAreaView>
     </View>
@@ -128,6 +128,8 @@ const styles = StyleSheet.create({
   },
   contentLandscape: {
     paddingTop: 20,
+    justifyContent: 'center',
+    gap: 24,
   },
   centerStack: {
     flex: 1,
@@ -135,6 +137,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 56,
+  },
+  centerStackLandscape: {
+    flex: 0,
+    gap: 28,
+  },
+  tutorialWrapLandscape: {
+    alignItems: 'center',
   },
   decorativeContainer: {
     position: 'absolute',

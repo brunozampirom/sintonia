@@ -17,6 +17,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { GameColors } from '@/constants/theme';
 import { useSettings } from '@/contexts/settings-context';
 import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
+import { HeaderIconButton, HeaderSpacer, HeaderTitle, ScreenHeader } from '@/components/screen-header';
 import type { LanguagePreference } from '@/i18n';
 import { haptics } from '@/lib/haptics';
 import { useTranslation } from 'react-i18next';
@@ -67,13 +68,11 @@ export default function SettingsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, responsiveContainer]}>
-        <Pressable style={styles.backButton} onPress={() => { haptics.back(); router.back(); }}>
-          <Ionicons name="chevron-back" size={22} color={GameColors.text} />
-        </Pressable>
-        <Text style={styles.headerTitle}>{t('settings.title')}</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+      <ScreenHeader style={responsiveContainer}>
+        <HeaderIconButton icon="chevron-back" onPress={() => { haptics.back(); router.back(); }} />
+        <HeaderTitle>{t('settings.title')}</HeaderTitle>
+        <HeaderSpacer />
+      </ScreenHeader>
 
       <ScrollView
         style={styles.scroll}
@@ -225,30 +224,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: GameColors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  backButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: GameColors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    flex: 1,
-    fontSize: 20,
-    fontWeight: '800',
-    color: GameColors.text,
-    textAlign: 'center',
-  },
-  headerSpacer: {
-    width: 36,
   },
   scroll: {
     flex: 1,

@@ -1,5 +1,6 @@
 import { GameButton } from '@/components/game-button';
 import { GameColors } from '@/constants/theme';
+import { useResponsiveLayout } from '@/hooks/use-responsive-layout';
 import { haptics } from '@/lib/haptics';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect } from 'react';
@@ -15,6 +16,8 @@ interface PassPhoneCardProps {
 }
 
 export function PassPhoneCard({ name, color, ctaLabel, message, onPress }: PassPhoneCardProps) {
+  const { isLandscape } = useResponsiveLayout();
+
   useEffect(() => {
     haptics.passPhone();
   }, []);
@@ -31,16 +34,16 @@ export function PassPhoneCard({ name, color, ctaLabel, message, onPress }: PassP
     >
       <Animated.View
         entering={FadeIn.duration(240)}
-        style={[styles.card, { borderColor: color }]}
+        style={[styles.card, isLandscape && styles.cardLandscape, { borderColor: color }]}
       >
-        <View style={[styles.icon, { backgroundColor: color }]}>
-          <Ionicons name="phone-portrait-outline" size={36} color={GameColors.background} />
+        <View style={[styles.icon, isLandscape && styles.iconLandscape, { backgroundColor: color }]}>
+          <Ionicons name="phone-portrait-outline" size={isLandscape ? 26 : 36} color={GameColors.background} />
         </View>
-        <Text style={styles.message}>{message}</Text>
-        <Text style={[styles.name, { color }]} numberOfLines={2}>
+        <Text style={[styles.message, isLandscape && styles.messageLandscape]}>{message}</Text>
+        <Text style={[styles.name, isLandscape && styles.nameLandscape, { color }]} numberOfLines={2}>
           {name}
         </Text>
-        <View style={styles.button}>
+        <View style={[styles.button, isLandscape && styles.buttonLandscape]}>
           <GameButton title={ctaLabel} onPress={handlePress} color={color} textColor={GameColors.background} />
         </View>
       </Animated.View>
@@ -72,6 +75,13 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 12,
   },
+  cardLandscape: {
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    gap: 8,
+    maxWidth: 320,
+    borderRadius: 18,
+  },
   icon: {
     width: 72,
     height: 72,
@@ -80,6 +90,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 4,
   },
+  iconLandscape: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    marginBottom: 0,
+  },
   message: {
     fontSize: 14,
     color: GameColors.textMuted,
@@ -87,13 +103,22 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 1,
   },
+  messageLandscape: {
+    fontSize: 11,
+  },
   name: {
     fontSize: 36,
     fontWeight: '900',
     textAlign: 'center',
     letterSpacing: 0.5,
   },
+  nameLandscape: {
+    fontSize: 24,
+  },
   button: {
     marginTop: 12,
+  },
+  buttonLandscape: {
+    marginTop: 4,
   },
 });

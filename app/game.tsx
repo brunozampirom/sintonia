@@ -7,6 +7,7 @@ import { PassPhoneCard } from '@/components/pass-phone-card';
 import { ReviewPromptModal } from '@/components/review-prompt-modal';
 import { RoundResultsBreakdown } from '@/components/round-results-breakdown';
 import { ScoreBoard } from '@/components/score-board';
+import { HeaderIconButton, ScreenHeader } from '@/components/screen-header';
 import { SlotReel } from '@/components/slot-reel';
 import { SpectrumCard } from '@/components/spectrum-card';
 import { WavelengthDial, type PlayerMarker } from '@/components/wavelength-dial';
@@ -164,6 +165,19 @@ export default function GameScreen() {
     submitGuess(currentGuessRef.current);
   }, [submitGuess]);
 
+  const timerNode = (clueActive || guessActive) ? (
+    <CountdownPill
+      duration={clueActive ? settings.clueTimeLimit : settings.guessTimeLimit}
+      active={clueActive || guessActive}
+      onExpire={clueActive ? handleClueExpire : handleGuessExpire}
+      resetKey={
+        clueActive
+          ? `clue-${game.round}-${game.activeSideIndex}-${game.targetAngle}`
+          : `guess-${game.round}-${game.currentGuesserIndex}`
+      }
+    />
+  ) : null;
+
   // Haptic feedback on result reveal — distinct preset per outcome.
   useEffect(() => {
     if (game.phase === 'result') {
@@ -268,12 +282,10 @@ export default function GameScreen() {
     const guesserTarget = rolled.current?.guesser ?? 0;
     const bothSettled = reelsSettled.cluer && reelsSettled.guesser;
     return (
-      <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-        <View style={[styles.header, responsiveContainer]}>
-          <Pressable style={styles.closeButton} onPress={() => { haptics.back(); router.back(); }}>
-            <Ionicons name="close" size={20} color={GameColors.textMuted} />
-          </Pressable>
-        </View>
+      <SafeAreaView style={styles.container}>
+        <ScreenHeader style={responsiveContainer}>
+          <HeaderIconButton icon="close" size={20} color={GameColors.textMuted} onPress={() => { haptics.back(); router.back(); }} />
+        </ScreenHeader>
         <Animated.View entering={FadeIn.duration(300)} style={[styles.selectionContainer, responsiveContainer]}>
           <Text style={styles.selectionTitle}>{t('game.selection.title')}</Text>
           <View style={styles.selectionReels}>
@@ -304,7 +316,7 @@ export default function GameScreen() {
             )}
           </View>
         </Animated.View>
-      </View>
+      </SafeAreaView>
     );
   }
 
@@ -335,22 +347,11 @@ export default function GameScreen() {
       )}
 
       {/* Header — in landscape includes compact scoreboard */}
-      <View style={[isLandscape ? styles.landscapeHeader : styles.header, responsiveContainer]}>
-        <Pressable style={styles.closeButton} onPress={() => { haptics.back(); router.back(); }}>
-          <Ionicons name="close" size={20} color={GameColors.textMuted} />
-        </Pressable>
-        {(clueActive || guessActive) && (
+      <ScreenHeader style={responsiveContainer}>
+        <HeaderIconButton icon="close" size={20} color={GameColors.textMuted} onPress={() => { haptics.back(); router.back(); }} />
+        {!isLandscape && timerNode && (
           <View style={styles.headerTimerWrap} pointerEvents="box-none">
-            <CountdownPill
-              duration={clueActive ? settings.clueTimeLimit : settings.guessTimeLimit}
-              active={clueActive || guessActive}
-              onExpire={clueActive ? handleClueExpire : handleGuessExpire}
-              resetKey={
-                clueActive
-                  ? `clue-${game.round}-${game.activeSideIndex}-${game.targetAngle}`
-                  : `guess-${game.round}-${game.currentGuesserIndex}`
-              }
-            />
+            {timerNode}
           </View>
         )}
         {isLandscape && game.phase !== 'gameover' && (
@@ -358,7 +359,7 @@ export default function GameScreen() {
             <ScoreBoard {...scoreBoardProps} compact />
           </View>
         )}
-      </View>
+      </ScreenHeader>
 
       {isLandscape ? (
         /* ========== LANDSCAPE LAYOUT ========== */
@@ -366,6 +367,7 @@ export default function GameScreen() {
           {game.phase === 'clue' && (
             <Animated.View entering={FadeIn.duration(300)} style={styles.landscapePhase}>
               <View style={styles.landscapeDialCol}>
+                {timerNode}
                 <WavelengthDial
                   targetAngle={game.targetAngle}
                   guessAngle={guessAngle}
@@ -404,6 +406,7 @@ export default function GameScreen() {
           {game.phase === 'guess' && (
             <Animated.View entering={FadeIn.duration(300)} style={styles.landscapePhase}>
               <View style={styles.landscapeDialCol}>
+                {timerNode}
                 <WavelengthDial
                   targetAngle={game.targetAngle}
                   guessAngle={guessAngle}
@@ -745,24 +748,9 @@ const styles = StyleSheet.create({
     backgroundColor: GameColors.background,
   },
   // ===== Portrait =====
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    paddingHorizontal: 16,
-    paddingTop: 20,
-    paddingBottom: 14,
-  },
-  closeButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: GameColors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   headerTimerWrap: {
     position: 'absolute',
-    top: 20,
+    top: 12,
     left: 0,
     right: 0,
     height: 36,
@@ -906,14 +894,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   // ===== Landscape =====
-  landscapeHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingTop: 20,
-    paddingBottom: 4,
-    gap: 4,
-  },
   landscapeScoreWrap: {
     flex: 1,
   },

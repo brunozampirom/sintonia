@@ -1,4 +1,5 @@
 import { GameButton } from '@/components/game-button';
+import { HeaderIconButton, HeaderSpacer, HeaderTitle, ScreenHeader } from '@/components/screen-header';
 import { haptics } from '@/lib/haptics';
 import { MAX_PLAYERS, MIN_PLAYERS, PLAYER_COLOR_PALETTE, assignDefaultColors, reconcileColors } from '@/constants/player-colors';
 import { GameColors } from '@/constants/theme';
@@ -380,13 +381,11 @@ export default function GameSetupScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={[styles.header, responsiveContainer]}>
-        <Pressable style={styles.backButton} onPress={() => { haptics.back(); router.back(); }}>
-          <Ionicons name="chevron-back" size={22} color={GameColors.text} />
-        </Pressable>
-        <Text style={styles.headerTitle}>{t('setup.title')}</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+      <ScreenHeader style={responsiveContainer}>
+        <HeaderIconButton icon="chevron-back" onPress={() => { haptics.back(); router.back(); }} />
+        <HeaderTitle>{t('setup.title')}</HeaderTitle>
+        <HeaderSpacer />
+      </ScreenHeader>
 
       <View style={responsiveContainer}>
         <ModeToggle mode={mode} onChange={setMode} />
@@ -554,30 +553,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: GameColors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  backButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: GameColors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    flex: 1,
-    fontSize: 20,
-    fontWeight: '800',
-    color: GameColors.text,
-    textAlign: 'center',
-  },
-  headerSpacer: {
-    width: 36,
   },
   toggleRow: {
     flexDirection: 'row',

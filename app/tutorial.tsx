@@ -1,4 +1,5 @@
 import { GameButton } from '@/components/game-button';
+import { HeaderIconButton, HeaderSpacer, HeaderTitle, ScreenHeader } from '@/components/screen-header';
 import { SpectrumCard } from '@/components/spectrum-card';
 import { Starfield } from '@/components/starfield';
 import { WavelengthDial } from '@/components/wavelength-dial';
@@ -168,13 +169,11 @@ export default function TutorialScreen() {
     <View style={styles.screenWrap}>
       <Starfield count={60} />
       <SafeAreaView style={styles.container}>
-        <View style={[styles.header, responsiveContainer]}>
-          <Pressable style={styles.backButton} onPress={() => { haptics.back(); router.back(); }}>
-            <Ionicons name="chevron-back" size={22} color={GameColors.text} />
-          </Pressable>
-          <Text style={styles.headerTitle}>{t('tutorial.title')}</Text>
-          <View style={styles.headerSpacer} />
-        </View>
+        <ScreenHeader style={responsiveContainer}>
+          <HeaderIconButton icon="chevron-back" onPress={() => { haptics.back(); router.back(); }} />
+          <HeaderTitle>{t('tutorial.title')}</HeaderTitle>
+          <HeaderSpacer />
+        </ScreenHeader>
 
         <ScrollView
           style={styles.scroll}
@@ -243,30 +242,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  backButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: GameColors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    flex: 1,
-    fontSize: 20,
-    fontWeight: '800',
-    color: GameColors.text,
-    textAlign: 'center',
-  },
-  headerSpacer: {
-    width: 36,
   },
   scroll: {
     flex: 1,
