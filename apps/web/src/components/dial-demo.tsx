@@ -13,36 +13,64 @@ interface Spectrum {
   target: number;
 }
 
+// Curated from apps/mobile/data/spectrums.*.json — alternates left/right so
+// the dial isn't always pointing in the same direction.
 const SPECTRUMS: Spectrum[] = [
+  // RIGHT
   {
-    l: { pt: "Frio", en: "Cold", es: "Frío" },
-    r: { pt: "Quente", en: "Hot", es: "Caliente" },
-    clue: { pt: "Fogueira", en: "Bonfire", es: "Fogata" },
-    target: 142,
-  },
-  {
-    l: { pt: "Barato", en: "Cheap", es: "Barato" },
-    r: { pt: "Caro", en: "Expensive", es: "Caro" },
-    clue: { pt: "Tesla", en: "Tesla", es: "Tesla" },
-    target: 156,
-  },
-  {
-    l: { pt: "Comum", en: "Common", es: "Común" },
-    r: { pt: "Esquisito", en: "Weird", es: "Raro" },
-    clue: { pt: "Abacaxi na pizza", en: "Pineapple pizza", es: "Piña en la pizza" },
-    target: 124,
-  },
-  {
-    l: { pt: "Pequeno", en: "Small", es: "Pequeño" },
+    l: { pt: "Pequeno", en: "Tiny", es: "Pequeño" },
     r: { pt: "Gigante", en: "Huge", es: "Gigante" },
     clue: { pt: "Elefante", en: "Elephant", es: "Elefante" },
     target: 168,
   },
+  // LEFT
   {
-    l: { pt: "Antigo", en: "Old", es: "Antiguo" },
+    l: { pt: "Famoso", en: "Famous", es: "Famoso" },
+    r: { pt: "Desconhecido", en: "Unknown", es: "Desconocido" },
+    clue: { pt: "Beyoncé", en: "Beyoncé", es: "Beyoncé" },
+    target: 20,
+  },
+  // RIGHT
+  {
+    l: { pt: "Comum", en: "Common", es: "Común" },
+    r: { pt: "Esquisito", en: "Weird", es: "Raro" },
+    clue: { pt: "Abacaxi na pizza", en: "Pineapple pizza", es: "Piña en la pizza" },
+    target: 140,
+  },
+  // LEFT
+  {
+    l: { pt: "Saudável", en: "Healthy", es: "Saludable" },
+    r: { pt: "Porcaria", en: "Junk", es: "Chatarra" },
+    clue: { pt: "Brócolis no vapor", en: "Steamed broccoli", es: "Brócoli al vapor" },
+    target: 14,
+  },
+  // RIGHT
+  {
+    l: { pt: "Antigo", en: "Old-school", es: "Antiguo" },
     r: { pt: "Moderno", en: "Modern", es: "Moderno" },
     clue: { pt: "TikTok", en: "TikTok", es: "TikTok" },
-    target: 170,
+    target: 172,
+  },
+  // LEFT
+  {
+    l: { pt: "Doce", en: "Sweet", es: "Dulce" },
+    r: { pt: "Amargo", en: "Bitter", es: "Amargo" },
+    clue: { pt: "Algodão doce", en: "Cotton candy", es: "Algodón de azúcar" },
+    target: 12,
+  },
+  // RIGHT
+  {
+    l: { pt: "Rápido", en: "Fast", es: "Rápido" },
+    r: { pt: "Lento", en: "Slow", es: "Lento" },
+    clue: { pt: "Bicho-preguiça", en: "Sloth", es: "Perezoso" },
+    target: 168,
+  },
+  // LEFT
+  {
+    l: { pt: "Corajoso", en: "Brave", es: "Valiente" },
+    r: { pt: "Medroso", en: "Coward", es: "Miedoso" },
+    clue: { pt: "Bombeiro", en: "Firefighter", es: "Bombero" },
+    target: 22,
   },
 ];
 

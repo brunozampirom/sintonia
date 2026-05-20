@@ -53,3 +53,6 @@ GoogleService-Info.plist
 
 # Misc
 app-example
+
+# Playwright MCP test artifacts
+.playwright-mcp/
