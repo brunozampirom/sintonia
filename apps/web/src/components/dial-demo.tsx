@@ -176,10 +176,9 @@ export function DialDemo() {
                 color: T.accent,
                 fontWeight: 900,
                 letterSpacing: 1,
-                marginLeft: 4,
               }}
             >
-              &quot;{spectrum.clue[loc]}&quot;
+              &ldquo;{spectrum.clue[loc]}&rdquo;
             </span>
           </span>
         </div>
