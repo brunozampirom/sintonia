@@ -63,6 +63,7 @@ const PT: Dict = {
 
   "footer.howToPlay": "Como Jogar",
   "footer.privacy": "Privacidade",
+  "footer.terms": "Termos",
   "footer.github": "GitHub",
   "footer.copyright": "© 2026 Sintonia",
 
@@ -142,6 +143,7 @@ const EN: Dict = {
 
   "footer.howToPlay": "How To Play",
   "footer.privacy": "Privacy",
+  "footer.terms": "Terms",
   "footer.github": "GitHub",
   "footer.copyright": "© 2026 Sintonia",
 
@@ -221,6 +223,7 @@ const ES: Dict = {
 
   "footer.howToPlay": "Cómo Jugar",
   "footer.privacy": "Privacidad",
+  "footer.terms": "Términos",
   "footer.github": "GitHub",
   "footer.copyright": "© 2026 Sintonia",
 

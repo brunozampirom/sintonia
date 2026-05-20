@@ -42,11 +42,14 @@ export function SiteFooter() {
           className="flex gap-5"
           style={{ color: T.textMuted, fontSize: 13, fontWeight: 600 }}
         >
-          <a href="#como" className="nav-link cursor-pointer">
+          <a href="/#como" className="nav-link cursor-pointer">
             {t("footer.howToPlay")}
           </a>
           <a href="/privacy" className="nav-link cursor-pointer">
             {t("footer.privacy")}
+          </a>
+          <a href="/terms" className="nav-link cursor-pointer">
+            {t("footer.terms")}
           </a>
         </div>
 

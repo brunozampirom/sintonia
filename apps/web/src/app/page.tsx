@@ -5,17 +5,12 @@ import { FeaturesCarousel } from "@/components/features-carousel";
 import { FinalCTA } from "@/components/final-cta";
 import { Hero } from "@/components/hero";
 import { HowItWorks } from "@/components/how-it-works";
-import { SiteFooter } from "@/components/site-footer";
-import { TopNav } from "@/components/top-nav";
-import { TwinkleStars } from "@/components/twinkle-stars";
 import { useT } from "@/lib/i18n";
 
 export default function HomePage() {
   const t = useT();
   return (
-    <div className="relative z-10">
-      <TwinkleStars count={110} />
-      <TopNav />
+    <>
       <Hero />
       <div className="wave-sep" />
       <div id="como">
@@ -38,7 +33,6 @@ export default function HomePage() {
         <FeaturesCarousel />
       </div>
       <FinalCTA />
-      <SiteFooter />
-    </div>
+    </>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useT } from "@/lib/i18n";
 import { T } from "@/lib/tokens";
@@ -7,6 +8,9 @@ import { LanguagePicker } from "./language-picker";
 
 export function TopNav() {
   const t = useT();
+  const pathname = usePathname();
+  // Language picker only on home — legal pages are PT-only for now.
+  const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -54,18 +58,18 @@ export function TopNav() {
         </a>
 
         <nav className="hidden md:flex items-center gap-6">
-          <a href="#como" className="nav-link" style={navLinkStyle}>
+          <a href="/#como" className="nav-link" style={navLinkStyle}>
             {t("nav.howItWorks")}
           </a>
-          <a href="#demo" className="nav-link" style={navLinkStyle}>
+          <a href="/#demo" className="nav-link" style={navLinkStyle}>
             {t("nav.demo")}
           </a>
-          <a href="#features" className="nav-link" style={navLinkStyle}>
+          <a href="/#features" className="nav-link" style={navLinkStyle}>
             {t("nav.features")}
           </a>
-          <LanguagePicker />
+          {isHome && <LanguagePicker />}
           <a
-            href="#baixar"
+            href="/#baixar"
             className="press"
             style={{
               background: T.primary,
@@ -83,9 +87,11 @@ export function TopNav() {
           </a>
         </nav>
 
-        <div className="md:hidden">
-          <LanguagePicker />
-        </div>
+        {isHome && (
+          <div className="md:hidden">
+            <LanguagePicker />
+          </div>
+        )}
       </div>
     </header>
   );

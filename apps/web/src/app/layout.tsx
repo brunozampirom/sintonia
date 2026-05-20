@@ -1,4 +1,8 @@
 import type { Metadata, Viewport } from "next";
+import { I18nProvider } from "@/components/i18n-provider";
+import { SiteFooter } from "@/components/site-footer";
+import { TopNav } from "@/components/top-nav";
+import { TwinkleStars } from "@/components/twinkle-stars";
 import "./globals.css";
 
 const SITE_URL = "https://sintonia.party";
@@ -54,14 +58,19 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-import { I18nProvider } from "@/components/i18n-provider";
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
       <body>
         <div className="page-ambient" />
-        <I18nProvider>{children}</I18nProvider>
+        <I18nProvider>
+          <div className="relative z-10">
+            <TwinkleStars count={110} />
+            <TopNav />
+            {children}
+            <SiteFooter />
+          </div>
+        </I18nProvider>
       </body>
     </html>
   );
