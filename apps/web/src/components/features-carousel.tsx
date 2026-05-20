@@ -23,6 +23,9 @@ interface Feature {
   bodyKey: string;
 }
 
+const CARD_W = 420;
+const CARD_H = 380;
+
 const ITEMS: Feature[] = [
   { Icon: IoPeopleOutline, color: T.primary, titleKey: "features.players.title", bodyKey: "features.players.body" },
   { Icon: IoPhonePortraitOutline, color: T.coral, titleKey: "features.onePhone.title", bodyKey: "features.onePhone.body" },
@@ -83,77 +86,73 @@ export function FeaturesCarousel() {
           <p className="section-subtitle">{t("features.subtitle")}</p>
         </div>
 
-        {/* Carousel */}
-        <div className="relative" style={{ height: 380 }}>
-          {/* Cards stack */}
-          <div
-            className="absolute left-1/2 top-1/2"
-            style={{ transform: "translate(-50%, -50%)", width: "100%", maxWidth: 1080, height: "100%" }}
-          >
-            {ITEMS.map((item, i) => {
-              const offset = i - active;
-              const wrapped =
-                offset > ITEMS.length / 2
-                  ? offset - ITEMS.length
-                  : offset < -ITEMS.length / 2
-                    ? offset + ITEMS.length
-                    : offset;
-              return (
-                <CarouselCard
-                  key={i}
-                  item={item}
-                  offset={wrapped}
-                  onClick={() => go(i)}
-                  t={t}
-                />
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Controls */}
-        <div className="flex items-center justify-center mt-8 gap-5">
-          <ArrowBtn dir="l" onClick={() => go(active - 1)} />
-
-          <div className="flex items-center gap-2">
-            {ITEMS.map((_, i) => (
-              <button
+        {/* Carousel — cards top-aligned, fixed-height container */}
+        <div className="relative" style={{ height: CARD_H, overflow: "visible" }}>
+          {ITEMS.map((item, i) => {
+            const offset = i - active;
+            const wrapped =
+              offset > ITEMS.length / 2
+                ? offset - ITEMS.length
+                : offset < -ITEMS.length / 2
+                  ? offset + ITEMS.length
+                  : offset;
+            return (
+              <CarouselCard
                 key={i}
-                type="button"
+                item={item}
+                offset={wrapped}
                 onClick={() => go(i)}
-                aria-label={`ir para ${i + 1}`}
-                className="feat-dot"
-                style={{
-                  width: i === active ? 30 : 10,
-                  height: 10,
-                  borderRadius: 999,
-                  background:
-                    i === active ? ITEMS[active].color : "rgba(139,157,195,0.28)",
-                  boxShadow:
-                    i === active ? `0 0 12px ${ITEMS[active].color}88` : "none",
-                }}
+                t={t}
               />
-            ))}
-          </div>
-
-          <ArrowBtn dir="r" onClick={() => go(active + 1)} />
+            );
+          })}
         </div>
 
-        {/* Counter */}
-        <div
-          className="text-center mt-4"
-          style={{
-            color: T.textMuted,
-            fontFamily: T.fontBody,
-            fontSize: 12,
-            fontWeight: 800,
-            letterSpacing: 2,
-            textTransform: "uppercase",
-          }}
-        >
-          <span style={{ color: "#fff" }}>{String(active + 1).padStart(2, "0")}</span>
-          <span style={{ margin: "0 8px", opacity: 0.4 }}>/</span>
-          <span>{String(ITEMS.length).padStart(2, "0")}</span>
+        {/* Controls (below cards) */}
+        <div className="flex flex-col items-center" style={{ marginTop: 36, gap: 14 }}>
+          <div className="flex items-center justify-center" style={{ gap: 20 }}>
+            <ArrowBtn dir="l" onClick={() => go(active - 1)} />
+
+            <div className="flex items-center" style={{ gap: 8 }}>
+              {ITEMS.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => go(i)}
+                  aria-label={`ir para ${i + 1}`}
+                  className="feat-dot"
+                  style={{
+                    width: i === active ? 30 : 10,
+                    height: 10,
+                    borderRadius: 999,
+                    background:
+                      i === active ? ITEMS[active].color : "rgba(139,157,195,0.28)",
+                    boxShadow:
+                      i === active ? `0 0 12px ${ITEMS[active].color}88` : "none",
+                  }}
+                />
+              ))}
+            </div>
+
+            <ArrowBtn dir="r" onClick={() => go(active + 1)} />
+          </div>
+
+          <div
+            style={{
+              color: T.textMuted,
+              fontFamily: T.fontBody,
+              fontSize: 12,
+              fontWeight: 800,
+              letterSpacing: 2,
+              textTransform: "uppercase",
+            }}
+          >
+            <span style={{ color: "#fff" }}>
+              {String(active + 1).padStart(2, "0")}
+            </span>
+            <span style={{ margin: "0 8px", opacity: 0.4 }}>/</span>
+            <span>{String(ITEMS.length).padStart(2, "0")}</span>
+          </div>
         </div>
       </div>
     </section>
@@ -189,21 +188,16 @@ function CarouselCard({
     <motion.button
       type="button"
       onClick={onClick}
-      animate={{
-        x,
-        scale,
-        opacity,
-        rotateY,
-        zIndex,
-      }}
+      animate={{ x, scale, opacity, rotateY }}
       transition={{ type: "spring", stiffness: 200, damping: 28 }}
       style={{
         position: "absolute",
+        top: 0,
         left: "50%",
-        top: "50%",
-        transform: "translate(-50%, -50%)",
-        width: "min(420px, 86vw)",
-        height: "min(360px, 60vh)",
+        marginLeft: -CARD_W / 2,
+        width: CARD_W,
+        maxWidth: "86vw",
+        height: CARD_H,
         padding: "32px 28px 30px",
         borderRadius: 24,
         background:
@@ -220,6 +214,7 @@ function CarouselCard({
         appearance: "none",
         transformStyle: "preserve-3d",
         perspective: 1000,
+        zIndex,
       }}
     >
       {/* Color glow blob */}
