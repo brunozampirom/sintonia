@@ -48,14 +48,6 @@ export function SiteFooter() {
           <a href="/privacy" className="nav-link cursor-pointer">
             {t("footer.privacy")}
           </a>
-          <a
-            href="https://github.com/brunozampirom/Wavelength"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="nav-link cursor-pointer"
-          >
-            {t("footer.github")}
-          </a>
         </div>
 
         <div style={{ color: T.textMuted, fontSize: 12, opacity: 0.7 }}>

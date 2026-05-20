@@ -12,8 +12,40 @@ export function PhoneMockup({ width = 260 }: Props) {
   const height = Math.round(width * ratio);
 
   return (
-    <div className="relative" style={{ width, height }}>
-      {/* Titanium body */}
+    <div
+      className="relative"
+      style={{ width, height, transformStyle: "preserve-3d" }}
+    >
+      {/* === 3D BODY: back / side / front layers stacked on Z axis === */}
+      {/* Each translateZ slice reveals the case's side wall when the phone
+          tilts (via the parent's rotateX/rotateY). Combined they create
+          actual depth instead of a flat painted shape. */}
+
+      {/* Back face — pushed deepest */}
+      <div
+        className="absolute inset-0"
+        style={{
+          borderRadius: 48,
+          background:
+            "linear-gradient(135deg, #14171f 0%, #2a3140 50%, #14171f 100%)",
+          transform: "translateZ(-14px)",
+        }}
+      />
+      {/* Mid wall slices — every 2px of Z creates a visible band when tilted */}
+      {[-12, -10, -8, -6, -4, -2].map((z) => (
+        <div
+          key={z}
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            borderRadius: 48,
+            background:
+              "linear-gradient(135deg, #1f2430 0%, #3d4452 40%, #1a1d24 70%, #34394a 100%)",
+            transform: `translateZ(${z}px)`,
+          }}
+        />
+      ))}
+
+      {/* Front titanium face */}
       <div
         className="absolute inset-0"
         style={{
@@ -100,14 +132,14 @@ export function PhoneMockup({ width = 260 }: Props) {
         }}
       />
 
-      {/* Glass — bezel inner shadow / vignette for depth */}
+      {/* Glass — bezel inner highlight */}
       <div
         className="absolute pointer-events-none"
         style={{
           inset: 10,
           borderRadius: 38,
           boxShadow:
-            "inset 0 0 0 1px rgba(255,255,255,0.06), inset 0 1px 1px rgba(255,255,255,0.18), inset 0 -2px 6px rgba(0,0,0,0.35)",
+            "inset 0 0 0 1px rgba(255,255,255,0.06), inset 0 1px 1px rgba(255,255,255,0.22), inset 0 -2px 6px rgba(0,0,0,0.35)",
           zIndex: 11,
         }}
       />
