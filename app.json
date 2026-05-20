@@ -57,6 +57,11 @@
       "router": {},
       "eas": {
         "projectId": "c73bbe7b-7982-4d45-b4bb-0bf374d77c84"
+      },
+      "stores": {
+        "iosAppId": "6762064623",
+        "iosUrl": "https://apps.apple.com/br/app/sintonia-party-game/id6762064623",
+        "androidUrl": "https://play.google.com/store/apps/details?id=com.bruno.wavelength"
       }
     }
   }
