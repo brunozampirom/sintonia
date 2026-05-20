@@ -7,7 +7,7 @@ interface Props {
 // Titanium iPhone 16 Pro mockup. Screen plays a muted/looped recording
 // of the real app (apps/web/public/hero/phone-loop.mp4) so the visuals
 // are 100% authentic instead of an HTML recreation.
-export function PhoneMockup({ width = 300 }: Props) {
+export function PhoneMockup({ width = 260 }: Props) {
   const ratio = 19.5 / 9.5;
   const height = Math.round(width * ratio);
 
@@ -72,49 +72,6 @@ export function PhoneMockup({ width = 300 }: Props) {
         >
           <source src="/hero/phone-loop.mp4" type="video/mp4" />
         </video>
-      </div>
-
-      {/* Dynamic Island — covers the in-video status bar notch */}
-      <div
-        className="absolute"
-        style={{
-          top: 16,
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: 110,
-          height: 32,
-          borderRadius: 20,
-          background: "#000",
-          boxShadow:
-            "0 0 0 1px rgba(255,255,255,0.06), inset 0 0 8px rgba(255,255,255,0.04)",
-          zIndex: 5,
-        }}
-      >
-        <div
-          className="absolute"
-          style={{
-            right: 12,
-            top: "50%",
-            transform: "translateY(-50%)",
-            width: 10,
-            height: 10,
-            borderRadius: "50%",
-            background: "radial-gradient(circle, #1a1f2e 0%, #050810 80%)",
-            boxShadow: "inset 0 0 0 1px #2a3a55",
-          }}
-        />
-        <div
-          className="absolute"
-          style={{
-            left: 14,
-            top: "50%",
-            transform: "translateY(-50%)",
-            width: 4,
-            height: 4,
-            borderRadius: "50%",
-            background: "#080b14",
-          }}
-        />
       </div>
 
       {/* Glossy reflection overlay */}

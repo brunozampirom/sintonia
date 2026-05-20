@@ -289,7 +289,7 @@ function TiltedPhone({ parallaxY }: { parallaxY: number }) {
         }}
       >
         <div style={{ animation: "float-y 6s ease-in-out infinite" }}>
-          <PhoneMockup width={300} />
+          <PhoneMockup width={260} />
         </div>
       </div>
     </div>
