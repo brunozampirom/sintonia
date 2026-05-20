@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { IoChevronDownOutline } from "react-icons/io5";
 import { useT } from "@/lib/i18n";
 import { T } from "@/lib/tokens";
 import { PhoneMockup } from "./phone-mockup";
@@ -90,9 +91,9 @@ export function Hero() {
             style={{
               fontFamily: T.fontDisplay,
               fontWeight: 900,
-              fontSize: "clamp(56px, 9vw, 120px)",
+              fontSize: "clamp(48px, 7.5vw, 100px)",
               lineHeight: 0.92,
-              letterSpacing: "clamp(2px, 0.5vw, 6px)",
+              letterSpacing: "clamp(2px, 0.45vw, 5px)",
               color: "#fff",
               margin: 0,
               textTransform: "uppercase",
@@ -180,7 +181,7 @@ export function Hero() {
       </div>
 
       <div
-        className="absolute flex flex-col items-center gap-1.5"
+        className="absolute flex flex-col items-center gap-2"
         style={{
           bottom: 18,
           left: "50%",
@@ -195,11 +196,11 @@ export function Hero() {
         }}
       >
         <span>{t("hero.scrollCue")}</span>
-        <div
+        <IoChevronDownOutline
+          size={18}
           style={{
-            width: 1,
-            height: 22,
-            background: `linear-gradient(180deg, ${T.textMuted}, transparent)`,
+            color: T.textMuted,
+            animation: "scroll-bob 1.8s ease-in-out infinite",
           }}
         />
       </div>
@@ -288,7 +289,12 @@ function TiltedPhone({ parallaxY }: { parallaxY: number }) {
           filter: `drop-shadow(${tilt.ry * -1.2}px ${24 - tilt.rx * 1.4}px 40px rgba(0,0,0,0.55))`,
         }}
       >
-        <div style={{ animation: "float-y 6s ease-in-out infinite" }}>
+        <div
+          style={{
+            animation: "float-y 6s ease-in-out infinite",
+            transformStyle: "preserve-3d",
+          }}
+        >
           <PhoneMockup width={260} />
         </div>
       </div>

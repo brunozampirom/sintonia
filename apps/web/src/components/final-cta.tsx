@@ -2,7 +2,6 @@
 
 import { useT } from "@/lib/i18n";
 import { T } from "@/lib/tokens";
-import { CTAWaves } from "./cta-waves";
 import { StoreButton } from "./store-button";
 
 export function FinalCTA() {
@@ -19,8 +18,7 @@ export function FinalCTA() {
               "linear-gradient(180deg, rgba(26,39,68,0.85) 0%, rgba(10,23,43,0.95) 100%)",
             borderRadius: 32,
             border: "1px solid rgba(211,119,63,0.25)",
-            padding:
-              "clamp(48px, 8vw, 96px) clamp(28px, 6vw, 72px) clamp(120px, 14vw, 180px)",
+            padding: "clamp(48px, 8vw, 96px) clamp(28px, 6vw, 72px) clamp(56px, 7vw, 80px)",
             textAlign: "center",
           }}
         >
@@ -66,8 +64,6 @@ export function FinalCTA() {
           >
             {t("cta.meta")}
           </div>
-
-          <CTAWaves height={150} />
         </div>
       </div>
     </section>
