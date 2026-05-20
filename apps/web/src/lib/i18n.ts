@@ -26,7 +26,7 @@ const PT: Dict = {
 
   "how.eyebrow": "Como Funciona",
   "how.title": "Três passos. Um celular. Bora jogar.",
-  "how.subtitle": "Sintonia foi feito pra ser explicado em 20 segundos e jogado de pé, com bebida na mão. Sem app pra todo mundo. Sem cadastro. Sem regras decoradas.",
+  "how.subtitle": "Sintonia foi feito pra ser explicado em 20 segundos e jogado em qualquer rolê. Sem app pra todo mundo. Sem cadastro. Sem regras decoradas.",
   "how.step1.title": "Dê a dica",
   "how.step1.body": "A tela mostra um alvo secreto. Pense numa dica que represente onde ele está no espectro entre os dois polos.",
   "how.step2.title": "Passe o celular",
@@ -105,7 +105,7 @@ const EN: Dict = {
 
   "how.eyebrow": "How It Works",
   "how.title": "Three steps. One phone. Just play.",
-  "how.subtitle": "Sintonia was built to be explained in 20 seconds and played on your feet, drink in hand. No app for everyone. No sign-up. No rules to memorize.",
+  "how.subtitle": "Sintonia was built to be explained in 20 seconds and played at any hangout. No app for everyone. No sign-up. No rules to memorize.",
   "how.step1.title": "Give the clue",
   "how.step1.body": "The screen shows a secret target. Think of a clue that nails where it falls on the spectrum between the two poles.",
   "how.step2.title": "Pass the phone",
@@ -184,7 +184,7 @@ const ES: Dict = {
 
   "how.eyebrow": "Cómo Funciona",
   "how.title": "Tres pasos. Un celular. A jugar.",
-  "how.subtitle": "Sintonía está pensado para explicarse en 20 segundos y jugarse de pie, con la bebida en la mano. Sin app para todos. Sin registro. Sin reglas memorizadas.",
+  "how.subtitle": "Sintonía está pensado para explicarse en 20 segundos y jugarse en cualquier juntada. Sin app para todos. Sin registro. Sin reglas memorizadas.",
   "how.step1.title": "Dale la pista",
   "how.step1.body": "La pantalla muestra un objetivo secreto. Pensá una pista que represente dónde cae en el espectro entre los dos polos.",
   "how.step2.title": "Pasá el celular",
