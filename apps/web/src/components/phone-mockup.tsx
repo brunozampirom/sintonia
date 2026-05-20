@@ -74,16 +74,41 @@ export function PhoneMockup({ width = 260 }: Props) {
         </video>
       </div>
 
-      {/* Glossy reflection overlay */}
+      {/* Glass — diagonal sheen across the screen */}
       <div
         className="absolute pointer-events-none"
         style={{
           inset: 10,
           borderRadius: 38,
           background:
-            "linear-gradient(135deg, rgba(255,255,255,0.10) 0%, transparent 30%, transparent 70%, rgba(255,255,255,0.03) 100%)",
+            "linear-gradient(125deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 18%, transparent 38%, transparent 62%, rgba(255,255,255,0.04) 82%, rgba(255,255,255,0.12) 100%)",
           mixBlendMode: "screen",
           zIndex: 10,
+        }}
+      />
+
+      {/* Glass — inner top-edge highlight (light kissing the curved glass) */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          inset: 10,
+          borderRadius: 38,
+          background:
+            "radial-gradient(120% 30% at 50% 0%, rgba(255,255,255,0.18), transparent 70%)",
+          mixBlendMode: "screen",
+          zIndex: 10,
+        }}
+      />
+
+      {/* Glass — bezel inner shadow / vignette for depth */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          inset: 10,
+          borderRadius: 38,
+          boxShadow:
+            "inset 0 0 0 1px rgba(255,255,255,0.06), inset 0 1px 1px rgba(255,255,255,0.18), inset 0 -2px 6px rgba(0,0,0,0.35)",
+          zIndex: 11,
         }}
       />
     </div>
