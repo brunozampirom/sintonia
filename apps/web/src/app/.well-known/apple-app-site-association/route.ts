@@ -3,14 +3,10 @@
 // for sintonia.party. Apple caches it heavily (CDN edge ~48h), so update
 // it before changing the iOS app's associatedDomains entitlement.
 //
-// IMPORTANT: replace TEAMID9999 below with the real 10-character Apple
-// Developer Team ID. You can find it at:
-//   https://developer.apple.com/account → Membership → Team ID
-//
 // Verify after deploy with:
 //   https://branch.io/resources/aasa-validator/?domain=sintonia.party
 
-const APPLE_TEAM_ID = "TEAMID9999"; // TODO: replace with real Team ID
+const APPLE_TEAM_ID = "AT677MHAU4";
 const BUNDLE_ID = "com.bruno.wavelength";
 
 const AASA = {
