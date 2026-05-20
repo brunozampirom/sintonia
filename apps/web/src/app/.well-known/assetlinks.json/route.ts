@@ -30,10 +30,11 @@
 const ANDROID_PACKAGE = "com.bruno.wavelength";
 const SHA256_CERT_FINGERPRINTS: string[] = [
   // EAS upload key fingerprint (from `eas credentials --platform android`).
+  // Used by dev builds and any APK installed outside the Play Store.
   "5A:40:2C:0B:DD:C9:2A:9C:10:1B:13:08:CF:80:A0:B1:4B:61:64:4B:C5:D8:DF:B4:39:F5:E9:CB:27:10:84:D7",
-  // If/when Google Play App Signing is enabled, add the Play signing key
-  // fingerprint here too (Play Console → App signing → App signing key
-  // certificate → SHA-256 certificate fingerprint).
+  // Google Play App Signing key. The fingerprint of the APK Play actually
+  // distributes to users — required for App Links to verify in production.
+  "F9:C0:8F:A6:C3:05:53:A9:0F:64:54:6A:A2:97:86:23:43:A1:A6:36:A5:EC:3B:4A:F0:1D:2D:12:1C:EE:C4:9C",
 ];
 
 const ASSET_LINKS = [
