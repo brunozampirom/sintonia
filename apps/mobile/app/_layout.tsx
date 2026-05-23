@@ -1,3 +1,4 @@
+import { DeeplinkListener } from '@/components/deeplink-listener';
 import { HapticsBridge } from '@/components/haptics-bridge';
 import { NetworkProvider } from '@/contexts/network-context';
 import { SettingsProvider } from '@/contexts/settings-context';
@@ -14,9 +15,14 @@ export default function RootLayout() {
       <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <SettingsProvider>
           <NetworkProvider>
+            <DeeplinkListener />
             <HapticsBridge />
             <Stack screenOptions={{ headerShown: false, freezeOnBlur: true }}>
               <Stack.Screen name="index" />
+              <Stack.Screen name="play-mode" />
+              <Stack.Screen name="online-mode" />
+              <Stack.Screen name="lobby/[code]" />
+              <Stack.Screen name="join/[code]" />
               <Stack.Screen name="game-setup" />
               <Stack.Screen name="game" />
               <Stack.Screen name="settings" />
