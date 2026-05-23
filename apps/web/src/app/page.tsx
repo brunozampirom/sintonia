@@ -14,7 +14,7 @@ export default function HomePage() {
     <>
       <Hero />
       <div className="wave-sep" />
-      <div id="como">
+      <div id="how">
         <HowItWorks />
       </div>
       <section id="demo" style={{ padding: "40px 0 80px", position: "relative", zIndex: 2 }}>

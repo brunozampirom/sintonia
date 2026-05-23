@@ -7,7 +7,7 @@ import { StoreButton } from "./store-button";
 export function FinalCTA() {
   const t = useT();
   return (
-    <section id="baixar" style={{ padding: "90px 0 90px", position: "relative", zIndex: 2 }}>
+    <section id="download" style={{ padding: "90px 0 90px", position: "relative", zIndex: 2 }}>
       <div className="sintonia-container">
         <div
           className="relative overflow-hidden"
