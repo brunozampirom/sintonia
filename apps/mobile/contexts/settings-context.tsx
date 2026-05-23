@@ -3,25 +3,22 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n, { getDeviceLanguage, type LanguagePreference, type SupportedLanguage } from '@/i18n';
 import { MAX_PLAYERS, MIN_PLAYERS, PLAYER_COLOR_PALETTE, assignDefaultColors, reconcileColors } from '@/constants/player-colors';
 import { GameColors } from '@/constants/theme';
+import type {
+  GameMode,
+  RoundFlow,
+  ScoringTarget,
+  Spectrum,
+  TeamConfig,
+} from '@sintonia/game-core';
+
+// Re-export so downstream mobile code can keep importing these names
+// from '@/contexts/settings-context' without each call site needing to
+// know that the shared package owns the type now.
+export type { GameMode, RoundFlow, ScoringTarget, Spectrum, TeamConfig };
 
 const DEFAULT_TEAM_COLORS: [string, string] = [GameColors.sky, GameColors.primary];
 
 const STORAGE_KEY = '@wavelength_settings';
-
-export interface Spectrum {
-  left: string;
-  right: string;
-}
-
-export interface TeamConfig {
-  name: string;
-  players: string[];
-  color?: string;
-}
-
-export type GameMode = 'individual' | 'teams';
-export type ScoringTarget = 'cluer' | 'guesser';
-export type RoundFlow = 'all-guess' | 'single-guess';
 
 export interface GameSettings {
   language: LanguagePreference;

@@ -1,4 +1,5 @@
 import { HapticsBridge } from '@/components/haptics-bridge';
+import { NetworkProvider } from '@/contexts/network-context';
 import { SettingsProvider } from '@/contexts/settings-context';
 import '@/i18n';
 import { Stack } from 'expo-router';
@@ -12,17 +13,19 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <SettingsProvider>
-          <HapticsBridge />
-          <Stack screenOptions={{ headerShown: false, freezeOnBlur: true }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="game-setup" />
-            <Stack.Screen name="game" />
-            <Stack.Screen name="settings" />
-            <Stack.Screen name="tutorial" />
-            <Stack.Screen name="history" />
-            <Stack.Screen name="landing" />
-          </Stack>
-          <StatusBar style="light" />
+          <NetworkProvider>
+            <HapticsBridge />
+            <Stack screenOptions={{ headerShown: false, freezeOnBlur: true }}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="game-setup" />
+              <Stack.Screen name="game" />
+              <Stack.Screen name="settings" />
+              <Stack.Screen name="tutorial" />
+              <Stack.Screen name="history" />
+              <Stack.Screen name="landing" />
+            </Stack>
+            <StatusBar style="light" />
+          </NetworkProvider>
         </SettingsProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
