@@ -7,39 +7,54 @@ import "./globals.css";
 
 const SITE_URL = "https://sintonia.party";
 
+const DESCRIPTION =
+  "Sintonia é o jogo de festa em sintonia mental: dê uma dica, a galera adivinha onde cai no espectro. Grátis no iOS e Android, sem cadastro, até 8 jogadores no mesmo celular.";
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Sintonia · um jogo de sintonia mental",
+    default: "Sintonia · Jogo de festa em sintonia mental",
     template: "%s · Sintonia",
   },
-  description:
-    "Dá uma dica de uma palavra só sobre um alvo secreto. A galera adivinha junto, no mesmo celular. Quanto mais perto, mais ponto.",
+  description: DESCRIPTION,
   applicationName: "Sintonia",
   keywords: [
-    "jogo de festa",
-    "party game",
     "sintonia",
-    "wavelength",
+    "sintonia jogo",
+    "sintonia party game",
+    "jogo de festa",
+    "jogo de festa pra celular",
+    "jogo pra jogar com amigos",
+    "jogo de adivinhar palavra",
+    "jogo de espectro",
+    "jogo de espectro mental",
+    "jogo de uma palavra",
+    "jogo no mesmo celular",
+    "jogo de grupo no celular",
+    "party game brasileiro",
     "jogo brasileiro",
-    "jogo de grupo",
-    "celular único",
-    "amigos",
+    "jogo offline para grupos",
+    "jogo de tabuleiro digital",
+    "jogo de festa grátis",
+    "jogo do tiktok",
+    "party game",
   ],
   authors: [{ name: "Bruno Zampirom" }],
+  alternates: {
+    canonical: SITE_URL,
+  },
   openGraph: {
     type: "website",
     locale: "pt_BR",
     url: SITE_URL,
-    title: "Sintonia · um jogo de sintonia mental",
-    description:
-      "Dá uma dica de uma palavra só sobre um alvo secreto. A galera adivinha junto, no mesmo celular.",
+    title: "Sintonia · Jogo de festa em sintonia mental",
+    description: DESCRIPTION,
     siteName: "Sintonia",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sintonia · um jogo de sintonia mental",
-    description: "Jogue com até 8 amigos no mesmo celular.",
+    title: "Sintonia · Jogo de festa em sintonia mental",
+    description: DESCRIPTION,
   },
   appleWebApp: {
     title: "Sintonia",
@@ -58,6 +73,40 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+const APP_LD = {
+  "@context": "https://schema.org",
+  "@type": "MobileApplication",
+  name: "Sintonia",
+  alternateName: "Sintonia Party Game",
+  applicationCategory: "GameApplication",
+  applicationSubCategory: "Party Game",
+  operatingSystem: "iOS, ANDROID",
+  description: DESCRIPTION,
+  url: SITE_URL,
+  inLanguage: ["pt-BR", "en", "es"],
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "BRL",
+    availability: "https://schema.org/InStock",
+  },
+  downloadUrl: [
+    "https://apps.apple.com/br/app/sintonia-party-game/id6762064623",
+    "https://play.google.com/store/apps/details?id=com.bruno.wavelength",
+  ],
+  installUrl: "https://apps.apple.com/br/app/sintonia-party-game/id6762064623",
+  screenshot: `${SITE_URL}/opengraph-image`,
+  author: {
+    "@type": "Person",
+    name: "Bruno Zampirom",
+  },
+  publisher: {
+    "@type": "Person",
+    name: "Bruno Zampirom",
+  },
+  datePublished: "2026-04-23",
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
@@ -71,6 +120,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <SiteFooter />
           </div>
         </I18nProvider>
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(APP_LD) }}
+        />
       </body>
     </html>
   );

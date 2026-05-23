@@ -62,6 +62,7 @@ const PT: Dict = {
   "cta.meta": "iOS 15+ · Android 8+ · 38 MB · sem cadastro · sem ads",
 
   "footer.howToPlay": "Como Jogar",
+  "footer.about": "Sobre",
   "footer.privacy": "Privacidade",
   "footer.terms": "Termos",
   "footer.github": "GitHub",
@@ -142,6 +143,7 @@ const EN: Dict = {
   "cta.meta": "iOS 15+ · Android 8+ · 38 MB · no sign-up · no ads",
 
   "footer.howToPlay": "How To Play",
+  "footer.about": "About",
   "footer.privacy": "Privacy",
   "footer.terms": "Terms",
   "footer.github": "GitHub",
@@ -222,6 +224,7 @@ const ES: Dict = {
   "cta.meta": "iOS 15+ · Android 8+ · 38 MB · sin registro · sin ads",
 
   "footer.howToPlay": "Cómo Jugar",
+  "footer.about": "Acerca",
   "footer.privacy": "Privacidad",
   "footer.terms": "Términos",
   "footer.github": "GitHub",

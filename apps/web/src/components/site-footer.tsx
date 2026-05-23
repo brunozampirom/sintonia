@@ -45,6 +45,9 @@ export function SiteFooter() {
           <a href="/#como" className="nav-link cursor-pointer">
             {t("footer.howToPlay")}
           </a>
+          <a href="/sobre" className="nav-link cursor-pointer">
+            {t("footer.about")}
+          </a>
           <a href="/privacy" className="nav-link cursor-pointer">
             {t("footer.privacy")}
           </a>

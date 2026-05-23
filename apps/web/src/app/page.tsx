@@ -1,6 +1,7 @@
 "use client";
 
 import { DialDemo } from "@/components/dial-demo";
+import { FaqSection } from "@/components/faq-section";
 import { FeaturesCarousel } from "@/components/features-carousel";
 import { FinalCTA } from "@/components/final-cta";
 import { Hero } from "@/components/hero";
@@ -32,6 +33,8 @@ export default function HomePage() {
       <div id="features">
         <FeaturesCarousel />
       </div>
+      <div className="wave-sep" />
+      <FaqSection />
       <FinalCTA />
     </>
   );
