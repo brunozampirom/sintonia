@@ -25,6 +25,12 @@ interface Feature {
 
 const CARD_W = 420;
 const CARD_H = 380;
+// Effective card width as a CSS expression. Uses 100% (containing block,
+// which is the .sintonia-container's inner width) instead of 100vw so the
+// card automatically respects the same horizontal padding as the rest of
+// the page on every viewport. Used for BOTH `width` and the negative
+// marginLeft that centers the card so they always agree.
+const CARD_W_CSS = `min(${CARD_W}px, 100%)`;
 
 const ITEMS: Feature[] = [
   { Icon: IoPeopleOutline, color: T.primary, titleKey: "features.players.title", bodyKey: "features.players.body" },
@@ -194,9 +200,8 @@ function CarouselCard({
         position: "absolute",
         top: 0,
         left: "50%",
-        marginLeft: -CARD_W / 2,
-        width: CARD_W,
-        maxWidth: "86vw",
+        marginLeft: `calc(${CARD_W_CSS} / -2)`,
+        width: CARD_W_CSS,
         height: CARD_H,
         padding: "32px 28px 30px",
         borderRadius: 24,
