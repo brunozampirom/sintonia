@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description:
     "Conheça o Sintonia: um jogo de festa pra celular onde a galera tenta entrar em sintonia mental dando uma dica sobre um alvo secreto num espectro. Grátis, sem cadastro, até 8 jogadores no mesmo aparelho.",
   alternates: {
-    canonical: "https://sintonia.party/sobre",
+    canonical: "https://sintonia.party/about",
   },
 };
 
