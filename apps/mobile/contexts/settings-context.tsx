@@ -34,6 +34,11 @@ export interface GameSettings {
   hapticsEnabled: boolean;
   customSpectrums: Spectrum[];
   teams: [TeamConfig, TeamConfig];
+  /** Persisted identity used in the online flow (host or guest). Empty until
+   * the user fills it the first time. Separate from playerNames so the
+   * offline "same phone" config isn't tied to the online nickname. */
+  onlinePlayerName: string;
+  onlinePlayerColor: string;
 }
 
 export const VALID_TIME_LIMITS = [-1, 15, 30, 60] as const;
@@ -55,6 +60,8 @@ export const DEFAULT_SETTINGS: GameSettings = {
     { name: 'Team 1', players: ['Player 1', 'Player 2'], color: DEFAULT_TEAM_COLORS[0] },
     { name: 'Team 2', players: ['Player 3', 'Player 4'], color: DEFAULT_TEAM_COLORS[1] },
   ],
+  onlinePlayerName: '',
+  onlinePlayerColor: '',
 };
 
 function localizeIndexedLabel(kind: 'player' | 'team', index: number, language: SupportedLanguage): string {

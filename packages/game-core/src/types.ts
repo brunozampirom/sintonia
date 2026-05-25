@@ -32,6 +32,10 @@ export interface GameInitConfig {
   playerColors: string[];
   customSpectrums: Spectrum[];
   teams: [TeamConfig, TeamConfig];
+  /** Seconds for the cluer to submit clue; -1 = unlimited. Online-only. */
+  clueTimeLimit?: number;
+  /** Seconds for guess submission; -1 = unlimited. Online-only. */
+  guessTimeLimit?: number;
 }
 
 export type GamePhase =

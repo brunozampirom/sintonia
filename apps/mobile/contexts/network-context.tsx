@@ -2,8 +2,11 @@
 // room server. Wraps each "session" (one connected room) in a single
 // hook surface so screens don't have to wrangle ws lifecycle.
 //
-// Phase 0: connect to a room by code, send JOIN, observe the public
-// state. No game logic yet — Phase 2 wires START_GAME et al.
+// Phase 3: auto-reconnect with exponential backoff. When the socket
+// drops unexpectedly (network blip, server reboot) we retry up to
+// MAX_RETRIES times. Same playerId + room code = server treats it as
+// a reconnect and restores the seat. Explicit `disconnect()` (user
+// pressed leave) suppresses retry by clearing the saved params.
 
 import { getOrCreatePlayerId } from "@/lib/persistent-id";
 import type {
@@ -11,13 +14,43 @@ import type {
   PublicRoomState,
   ServerMessage,
 } from "@sintonia/game-core";
+import Constants from "expo-constants";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
-// Dev: PartyKit local server. Prod: deployed PartyKit URL (TBD when
-// we run `partykit deploy`).
+// Dev: PartyKit local server. On a real device, "localhost" is the phone
+// itself, so we MUST point to the Mac's LAN IP — the same one Metro is
+// serving on. We try a few sources in order:
+//   1. Constants.expoConfig.hostUri (the dev server URI as seen by the app)
+//   2. Constants.expoGoConfig.debuggerHost (Expo Go fallback)
+//   3. DEV_LAN_FALLBACK hardcoded below — update if your Mac's wifi IP changes
+//
+// Prod: deployed PartyKit URL (TBD when we run `partykit deploy`).
+const DEV_LAN_FALLBACK = "192.168.68.121";
+
+function resolveDevPartykitHost(): string {
+  const hostUri = Constants.expoConfig?.hostUri ?? Constants.expoGoConfig?.debuggerHost ?? null;
+  let host: string | null = null;
+  if (hostUri) {
+    const candidate = hostUri.split(":")[0];
+    // exp.host (tunnel) won't reach a local PartyKit; ignore it and use LAN fallback.
+    if (candidate && !candidate.includes("exp.")) host = candidate;
+  }
+  if (!host) host = DEV_LAN_FALLBACK;
+  const resolved = `${host}:1999`;
+  console.log("[NetworkContext] PartyKit host resolved to", resolved, "from hostUri:", hostUri);
+  return resolved;
+}
+
 const PARTYKIT_HOST = __DEV__
-  ? "localhost:1999"
+  ? resolveDevPartykitHost()
   : "sintonia.brunozampirom.partykit.dev"; // placeholder; update on first deploy
+
+// Reconnect with exponential backoff up to RETRY_MAX_MS, then keep retrying
+// at that ceiling indefinitely. Real-world reasons the socket might drop —
+// PartyKit deploy, brief wifi blip, app backgrounded — usually clear within
+// seconds; giving up too early strands the player in a dead room.
+const RETRY_BASE_MS = 500; // 500ms, 1s, 2s, 4s, 8s, then 8s, 8s, ...
+const RETRY_MAX_MS = 8000;
 
 function buildSocketUrl(code: string): string {
   const protocol = __DEV__ ? "ws" : "wss";
@@ -28,8 +61,17 @@ export type ConnectionStatus =
   | "idle"
   | "connecting"
   | "connected"
+  | "reconnecting"
   | "disconnected"
   | "error";
+
+interface ConnectParams {
+  code: string;
+  name: string;
+  color: string;
+  /** "host" creates the room; "guest" requires the room to already exist. */
+  mode?: "host" | "guest";
+}
 
 interface NetworkContextValue {
   status: ConnectionStatus;
@@ -37,12 +79,19 @@ interface NetworkContextValue {
   privateTargetAngle: number | null;
   lastError: { code: string; message: string } | null;
   playerId: string | null;
+  /** Retry attempt counter (resets to 0 on success). */
+  retryAttempt: number;
+  /** Latest room-closure notice from the server. `reason: "host"` = host
+   * closed; `reason: "kicked"` = the host removed THIS client. */
+  roomClosure: { reason: "host" | "kicked" } | null;
   /** Connect to a room by code. Returns a promise that resolves once JOIN is sent. */
-  connect: (params: { code: string; name: string; color: string }) => Promise<void>;
-  /** Tear down current connection. */
+  connect: (params: ConnectParams) => Promise<void>;
+  /** Tear down current connection. Suppresses auto-reconnect. */
   disconnect: () => void;
   /** Send a typed client message. No-op if not connected. */
   send: (message: ClientMessage) => void;
+  /** Clear the room closure notice (after the screen showed it). */
+  clearRoomClosure: () => void;
 }
 
 const NetworkContext = createContext<NetworkContextValue>({
@@ -51,9 +100,12 @@ const NetworkContext = createContext<NetworkContextValue>({
   privateTargetAngle: null,
   lastError: null,
   playerId: null,
+  retryAttempt: 0,
+  roomClosure: null,
   connect: async () => {},
   disconnect: () => {},
   send: () => {},
+  clearRoomClosure: () => {},
 });
 
 export function NetworkProvider({ children }: { children: React.ReactNode }) {
@@ -62,8 +114,15 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
   const [privateTargetAngle, setPrivateTargetAngle] = useState<number | null>(null);
   const [lastError, setLastError] = useState<{ code: string; message: string } | null>(null);
   const [playerId, setPlayerId] = useState<string | null>(null);
+  const [retryAttempt, setRetryAttempt] = useState(0);
+  const [roomClosure, setRoomClosure] = useState<{ reason: "host" | "kicked" } | null>(null);
 
   const wsRef = useRef<WebSocket | null>(null);
+  // Last connect params — used to replay JOIN on reconnect.
+  const sessionRef = useRef<ConnectParams | null>(null);
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // When true, an explicit user-initiated disconnect happened — don't auto-reconnect.
+  const userDisconnectedRef = useRef(false);
   // Pending payload sent the instant the socket opens. Lets `connect()`
   // resolve early without callers needing to await onOpen explicitly.
   const pendingJoinRef = useRef<ClientMessage | null>(null);
@@ -80,56 +139,51 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  const clearRetryTimer = () => {
+    if (retryTimerRef.current) {
+      clearTimeout(retryTimerRef.current);
+      retryTimerRef.current = null;
+    }
+  };
+
   const send = useCallback((message: ClientMessage) => {
     const ws = wsRef.current;
     if (!ws || ws.readyState !== WebSocket.OPEN) return;
     ws.send(JSON.stringify(message));
   }, []);
 
-  const disconnect = useCallback(() => {
-    const ws = wsRef.current;
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      try {
-        ws.send(JSON.stringify({ type: "LEAVE" } satisfies ClientMessage));
-      } catch {
-        // socket may have just closed
-      }
-    }
-    ws?.close();
-    wsRef.current = null;
-    pendingJoinRef.current = null;
-    setStatus("idle");
-    setState(null);
-    setPrivateTargetAngle(null);
-  }, []);
-
-  const connect = useCallback(
-    async ({ code, name, color }: { code: string; name: string; color: string }) => {
+  // Internal connect — does the actual WS dance. Called by public `connect`
+  // (initial) and the retry timer.
+  const openSocket = useCallback(
+    async (params: ConnectParams, attempt: number) => {
       // Tear down any previous connection cleanly.
       if (wsRef.current) {
-        wsRef.current.close();
+        try { wsRef.current.close(); } catch { /* noop */ }
         wsRef.current = null;
       }
 
       const id = playerId ?? (await getOrCreatePlayerId());
       if (!playerId) setPlayerId(id);
 
-      const url = buildSocketUrl(code);
-      setStatus("connecting");
-      setLastError(null);
+      const url = buildSocketUrl(params.code);
+      setStatus(attempt === 0 ? "connecting" : "reconnecting");
+      setRetryAttempt(attempt);
 
       const ws = new WebSocket(url);
       wsRef.current = ws;
       pendingJoinRef.current = {
         type: "JOIN",
-        code: code.toUpperCase(),
+        code: params.code.toUpperCase(),
         playerId: id,
-        name,
-        color,
+        name: params.name,
+        color: params.color,
+        mode: params.mode,
       };
 
       ws.onopen = () => {
         setStatus("connected");
+        setRetryAttempt(0);
+        setLastError(null);
         const pending = pendingJoinRef.current;
         pendingJoinRef.current = null;
         if (pending) ws.send(JSON.stringify(pending));
@@ -151,27 +205,100 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
             break;
           case "ERROR":
             setLastError({ code: msg.code, message: msg.message });
+            // Terminal errors abort retry — server rejected the join.
+            if (msg.code === "INVALID_CODE" || msg.code === "ROOM_FULL" || msg.code === "ALREADY_STARTED") {
+              userDisconnectedRef.current = true;
+            }
+            break;
+          case "ROOM_CLOSED":
+            // Host nuked the room. Don't try to reconnect to a dead room.
+            userDisconnectedRef.current = true;
+            sessionRef.current = null;
+            setRoomClosure({ reason: msg.reason });
+            break;
+          case "KICKED":
+            // Host removed this client. Same vibe as ROOM_CLOSED for us, but
+            // we want to surface a different message to the player.
+            userDisconnectedRef.current = true;
+            sessionRef.current = null;
+            setRoomClosure({ reason: "kicked" });
             break;
         }
       };
 
       ws.onerror = () => {
-        setStatus("error");
+        // We don't set 'error' immediately — onclose will fire next and
+        // decide whether to retry or stay errored.
       };
 
       ws.onclose = () => {
-        if (wsRef.current === ws) {
-          wsRef.current = null;
+        if (wsRef.current !== ws) return; // a newer connection replaced this one
+        wsRef.current = null;
+
+        // If the user explicitly left, stop here.
+        if (userDisconnectedRef.current) {
           setStatus("disconnected");
+          return;
         }
+
+        // If the server told us off (invalid code etc.), no point retrying.
+        if (sessionRef.current == null) {
+          setStatus("disconnected");
+          return;
+        }
+
+        // Retry path — infinite, capped at RETRY_MAX_MS.
+        const nextAttempt = attempt + 1;
+        setStatus("reconnecting");
+        setRetryAttempt(nextAttempt);
+        const delay = Math.min(RETRY_BASE_MS * Math.pow(2, nextAttempt - 1), RETRY_MAX_MS);
+        retryTimerRef.current = setTimeout(() => {
+          if (!sessionRef.current || userDisconnectedRef.current) return;
+          void openSocket(sessionRef.current, nextAttempt);
+        }, delay);
       };
     },
     [playerId],
   );
 
+  const connect = useCallback(
+    async (params: ConnectParams) => {
+      userDisconnectedRef.current = false;
+      sessionRef.current = params;
+      setRoomClosure(null);
+      clearRetryTimer();
+      await openSocket(params, 0);
+    },
+    [openSocket],
+  );
+
+  const clearRoomClosure = useCallback(() => setRoomClosure(null), []);
+
+  const disconnect = useCallback(() => {
+    userDisconnectedRef.current = true;
+    sessionRef.current = null;
+    clearRetryTimer();
+    const ws = wsRef.current;
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      try {
+        ws.send(JSON.stringify({ type: "LEAVE" } satisfies ClientMessage));
+      } catch {
+        // socket may have just closed
+      }
+    }
+    ws?.close();
+    wsRef.current = null;
+    pendingJoinRef.current = null;
+    setStatus("idle");
+    setState(null);
+    setPrivateTargetAngle(null);
+    setRetryAttempt(0);
+  }, []);
+
   // Cleanup on unmount.
   useEffect(() => {
     return () => {
+      clearRetryTimer();
       wsRef.current?.close();
       wsRef.current = null;
     };
@@ -184,11 +311,14 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
       privateTargetAngle,
       lastError,
       playerId,
+      retryAttempt,
+      roomClosure,
       connect,
       disconnect,
       send,
+      clearRoomClosure,
     }),
-    [status, state, privateTargetAngle, lastError, playerId, connect, disconnect, send],
+    [status, state, privateTargetAngle, lastError, playerId, retryAttempt, roomClosure, connect, disconnect, send, clearRoomClosure],
   );
 
   return <NetworkContext.Provider value={value}>{children}</NetworkContext.Provider>;

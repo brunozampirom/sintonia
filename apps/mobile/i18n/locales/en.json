@@ -260,5 +260,269 @@
       "downloadOn": "Download on the",
       "getItOn": "Get it on"
     }
+  },
+  "playMode": {
+    "title": "How are you playing?",
+    "mesmoCelular": {
+      "title": "Same Phone",
+      "description": "Pass the phone every turn. Great for 2 to 8 people in one room."
+    },
+    "online": {
+      "title": "Online",
+      "description": "Everyone plays from their own phone. Start a room or jump in with a code.",
+      "badge": "NEW"
+    }
+  },
+  "onlineEntry": {
+    "title": "Play online",
+    "criar": {
+      "title": "Start a room",
+      "description": "You open the room and invite the crew via link, code or QR."
+    },
+    "entrar": {
+      "title": "Join a room",
+      "description": "Got a code? Type it in and hop into the match."
+    }
+  },
+  "onlineMode": {
+    "title": "How's the clue?",
+    "lead": "Pick the vibe that fits your hangout best.",
+    "voz": {
+      "title": "Out loud",
+      "description": "You can hear each other — at a bar table or on a Discord call. Clue gets spoken out loud."
+    },
+    "texto": {
+      "title": "By text",
+      "description": "No audio. The clue giver types it and everyone reads it on screen."
+    }
+  },
+  "onlineConfig": {
+    "title": "Set up the match",
+    "voce": "You",
+    "namePlaceholder": "Your name",
+    "dica": {
+      "title": "How's the clue?",
+      "voz": {
+        "title": "Out loud",
+        "hint": "At a table or on Discord"
+      },
+      "texto": {
+        "title": "By text",
+        "hint": "Clue giver types, everyone reads"
+      }
+    },
+    "flow": {
+      "title": "Who guesses?",
+      "allGuess": {
+        "title": "Everyone",
+        "hint": "Each player drops their own needle. Max participation."
+      },
+      "singleGuess": {
+        "title": "One at a time",
+        "hint": "Only one drawn guesser per round. Rotates."
+      }
+    },
+    "pontos": {
+      "title": "Points to win"
+    },
+    "skips": {
+      "title": "Skips per player"
+    },
+    "tempo": {
+      "title": "Time per round",
+      "dar": "To give the clue",
+      "adivinhar": "To guess"
+    },
+    "criarSala": "START ROOM",
+    "criandoSala": "STARTING ROOM…",
+    "errors": {
+      "connect": "Couldn't reach the server. Check your internet and try again.",
+      "refused": "The server refused the room.",
+      "timeout": "Connection took too long. Try again or check if the server is up."
+    }
+  },
+  "joinCode": {
+    "title": "Join a room",
+    "codigoSala": "Room code",
+    "codigoPlaceholder": "ABCD",
+    "codigoHint": "The 4 characters your friends shared with you.",
+    "voce": "You",
+    "namePlaceholder": "Your name",
+    "entrar": "JOIN",
+    "entrando": "JOINING…",
+    "errors": {
+      "joinFailed": "Couldn't join that room.",
+      "connect": "Couldn't reach the server. Check your internet.",
+      "timeout": "Connection took too long. Try again."
+    }
+  },
+  "lobby": {
+    "title": "Room",
+    "fallbackName": "Player",
+    "compartilhe": "Share this code",
+    "copiarCodigo": "COPY CODE",
+    "codigoCopiado": "CODE COPIED",
+    "compartilharConvite": "Share invite",
+    "inviteMessage": "I started a Sintonia room. Jump in: {{url}}",
+    "inviteTitle": "Sintonia · room {{code}}",
+    "jogadores": "Players · {{n}}/8",
+    "badges": {
+      "host": "HOST",
+      "offline": "OFFLINE"
+    },
+    "self": " (you)",
+    "esperandoOutros": "Waiting for someone to join…",
+    "jogar": "PLAY",
+    "esperandoAnfitriao": "Waiting for the host to start…",
+    "qrButtonLabel": "Show QR code",
+    "kickLabel": "Remove {{name}}",
+    "conectando": "Connecting…",
+    "alerts": {
+      "encerrar": {
+        "title": "Close the room?",
+        "body": "Everyone will be disconnected.",
+        "confirm": "Close"
+      },
+      "sair": {
+        "title": "Leave the room?",
+        "body": "You can rejoin with the same code later.",
+        "confirm": "Leave"
+      },
+      "codigoInvalido": {
+        "title": "Invalid code",
+        "body": "Couldn't read the room code.",
+        "ok": "OK"
+      },
+      "naoFoiPossivelEntrar": {
+        "title": "Couldn't join",
+        "ok": "OK"
+      },
+      "salaEncerrada": {
+        "title": "Room closed",
+        "body": "The host closed the room."
+      },
+      "faltamJogadores": {
+        "title": "Not enough players",
+        "body": "You need at least 2 people in the room."
+      },
+      "timeout": {
+        "title": "Took too long",
+        "body": "Couldn't reach the server. Try again in a bit."
+      },
+      "kick": {
+        "title": "Remove {{name}}?",
+        "body": "They'll leave the room. They can come back with the same code.",
+        "confirm": "Remove"
+      },
+      "kicked": {
+        "title": "You were removed",
+        "body": "The host kicked you from the room."
+      },
+      "cancelar": "Cancel"
+    }
+  },
+  "onlineGame": {
+    "roomHeader": "Room {{code}}",
+    "roomPillLabel": "ROOM",
+    "conectando": "Connecting…",
+    "preparando": "Getting ready…",
+    "clue": {
+      "suaVez": "Your turn to drop a clue",
+      "suaVezSubtitle": "You're the clue giver. Check the secret spot on the dial.",
+      "voiceHelper": "Say your clue out loud to the crew and tap below when you're done.",
+      "voiceCta": "I said the clue",
+      "textHelper": "Type a word or short phrase:",
+      "textPlaceholder": "e.g. beach bonfire",
+      "textCta": "Send clue",
+      "pularCarta": "Skip this card",
+      "skipsUnlimited": "Unlimited skips",
+      "skipsRestantes_one": "{{count}} skip left",
+      "skipsRestantes_other": "{{count}} skips left",
+      "cluerVoiceTitle": "{{name}} is giving the clue out loud",
+      "cluerTextTitle": "{{name}} is typing the clue…",
+      "fallbackCluer": "Clue giver",
+      "voiceListenHelper": "Listen up on Discord or at the table. The dial drops in a sec.",
+      "textWaitHelper": "Wait for the clue giver to send the phrase.",
+      "cluerThinkingTitle": "{{name}} is thinking",
+      "waitHintVoice": "Wait for them to say the clue",
+      "waitHintText": "Wait for them to send the word",
+      "spectrumLabel": "This round's spectrum"
+    },
+    "guess": {
+      "dicaLabel": "CLUE",
+      "aguardando": "Waiting on guesses",
+      "aguardandoCount": "{{submitted}}/{{total}} have guessed",
+      "enviado": "Guess sent ✓",
+      "esperandoOutros_one": "Waiting on the others: {{count}} left.",
+      "esperandoOutros_other": "Waiting on the others: {{count}} left.",
+      "suaVez": "Your turn to guess",
+      "suaVezSubtitle": "Drag the needle to where the clue feels right.",
+      "confirmar": "Lock in guess"
+    },
+    "result": {
+      "title": "Round result",
+      "cluerLabel": " (cluer)",
+      "pronto": "READY ✓",
+      "estouPronto": "I'm ready",
+      "proximo": "NEXT",
+      "youAreNextCluer": "You're up next to give the clue.",
+      "waitingNextCluer": "Waiting on {{name}}…"
+    },
+    "gameover": {
+      "won": "{{name}} WINS",
+      "fim": "GAME OVER",
+      "rodadasJogadas_one": "{{count}} round played",
+      "rodadasJogadas_other": "{{count}} rounds played",
+      "voltarMenu": "Back to menu",
+      "voltarLobby": "Back to lobby"
+    },
+    "alerts": {
+      "encerrarPartida": {
+        "title": "Close the room?",
+        "body": "The match will end for everyone.",
+        "confirm": "Close"
+      },
+      "sairPartida": {
+        "title": "Leave the match?",
+        "body": "You'll bow out and the others keep playing.",
+        "confirm": "Leave"
+      },
+      "salaEncerrada": {
+        "title": "Room closed",
+        "body": "The host closed the room."
+      },
+      "timeout": {
+        "title": "Took too long",
+        "body": "Lost contact with the room. Back out and try again."
+      },
+      "kicked": {
+        "title": "You were removed",
+        "body": "The host kicked you from the match."
+      },
+      "erro": "Error",
+      "cancelar": "Cancel",
+      "ok": "OK"
+    },
+    "fallbackName": "..."
+  },
+  "connection": {
+    "conectando": "Connecting…",
+    "reconectando": "Reconnecting…",
+    "reconectandoCount": "Reconnecting… (attempt {{n}})",
+    "desconectado": "Disconnected",
+    "falha": "Connection failed"
+  },
+  "qrModal": {
+    "sala": "ROOM {{code}}"
+  },
+  "roomSettings": {
+    "title": "Match settings",
+    "titleReadOnly": "Match settings",
+    "save": "SAVE"
+  },
+  "aloneRoom": {
+    "title": "Waiting for players",
+    "body": "Everyone left the room. You can wait for someone to come back or disconnect.",
+    "disconnect": "DISCONNECT"
   }
 }

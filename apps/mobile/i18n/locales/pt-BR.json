@@ -260,5 +260,269 @@
       "downloadOn": "Baixe na",
       "getItOn": "Disponível no"
     }
+  },
+  "playMode": {
+    "title": "Como vão jogar?",
+    "mesmoCelular": {
+      "title": "Mesmo Celular",
+      "description": "Passa o aparelho a cada turno. Bom pra 2 a 8 pessoas no mesmo lugar."
+    },
+    "online": {
+      "title": "Online",
+      "description": "Cada um joga do seu celular. Crie uma sala ou entre com um código.",
+      "badge": "NOVO"
+    }
+  },
+  "onlineEntry": {
+    "title": "Jogar online",
+    "criar": {
+      "title": "Criar sala",
+      "description": "Você abre a sala e convida a galera por link, código ou QR code."
+    },
+    "entrar": {
+      "title": "Entrar na sala",
+      "description": "Já tem um código? Digita aqui e cola na partida da galera."
+    }
+  },
+  "onlineMode": {
+    "title": "Como vai a dica?",
+    "lead": "Escolhe o jeito que faz mais sentido pro seu rolê.",
+    "voz": {
+      "title": "Em voz alta",
+      "description": "Vocês estão se ouvindo — numa mesa de bar, em call do Discord. A dica é dita em voz alta."
+    },
+    "texto": {
+      "title": "Por texto",
+      "description": "Sem áudio. Quem dá a dica digita no celular e todo mundo vê o texto na tela."
+    }
+  },
+  "onlineConfig": {
+    "title": "Configurar partida",
+    "voce": "Você",
+    "namePlaceholder": "Seu nome",
+    "dica": {
+      "title": "Como vai a dica?",
+      "voz": {
+        "title": "Em voz alta",
+        "hint": "Numa mesa ou call do Discord"
+      },
+      "texto": {
+        "title": "Por texto",
+        "hint": "O cluer digita, todo mundo lê"
+      }
+    },
+    "flow": {
+      "title": "Quem palpita?",
+      "allGuess": {
+        "title": "Todo mundo",
+        "hint": "Cada um chuta na sua agulha. Mais participação."
+      },
+      "singleGuess": {
+        "title": "Um por vez",
+        "hint": "Só um sorteado palpita por rodada. Rotação."
+      }
+    },
+    "pontos": {
+      "title": "Pontos pra vencer"
+    },
+    "skips": {
+      "title": "Skips por jogador"
+    },
+    "tempo": {
+      "title": "Tempo por rodada",
+      "dar": "Pra dar a dica",
+      "adivinhar": "Pra adivinhar"
+    },
+    "criarSala": "CRIAR SALA",
+    "criandoSala": "CRIANDO SALA…",
+    "errors": {
+      "connect": "Não rolou conectar com o servidor. Confere sua internet e tenta de novo.",
+      "refused": "O servidor recusou a sala.",
+      "timeout": "A conexão demorou demais. Tenta de novo ou confere se o servidor tá rodando."
+    }
+  },
+  "joinCode": {
+    "title": "Entrar na sala",
+    "codigoSala": "Código da sala",
+    "codigoPlaceholder": "ABCD",
+    "codigoHint": "Os 4 caracteres que a galera te passou.",
+    "voce": "Você",
+    "namePlaceholder": "Seu nome",
+    "entrar": "ENTRAR",
+    "entrando": "ENTRANDO…",
+    "errors": {
+      "joinFailed": "Não consegui entrar nessa sala.",
+      "connect": "Não rolou conectar com o servidor. Confere sua internet.",
+      "timeout": "A conexão demorou demais. Tenta de novo."
+    }
+  },
+  "lobby": {
+    "title": "Sala",
+    "fallbackName": "Jogador",
+    "compartilhe": "Compartilhe esse código",
+    "copiarCodigo": "COPIAR CÓDIGO",
+    "codigoCopiado": "CÓDIGO COPIADO",
+    "compartilharConvite": "Compartilhar convite",
+    "inviteMessage": "Te chamei pra uma sala no Sintonia. Cola aí: {{url}}",
+    "inviteTitle": "Sintonia · sala {{code}}",
+    "jogadores": "Jogadores · {{n}}/8",
+    "badges": {
+      "host": "HOST",
+      "offline": "OFFLINE"
+    },
+    "self": " (você)",
+    "esperandoOutros": "Esperando alguém entrar…",
+    "jogar": "JOGAR",
+    "esperandoAnfitriao": "Esperando o anfitrião começar…",
+    "qrButtonLabel": "Mostrar QR code",
+    "kickLabel": "Remover {{name}}",
+    "conectando": "Conectando…",
+    "alerts": {
+      "encerrar": {
+        "title": "Encerrar a sala?",
+        "body": "Todo mundo vai ser desconectado.",
+        "confirm": "Encerrar"
+      },
+      "sair": {
+        "title": "Sair da sala?",
+        "body": "Você pode voltar entrando com o mesmo código.",
+        "confirm": "Sair"
+      },
+      "codigoInvalido": {
+        "title": "Código inválido",
+        "body": "Não consegui ler o código da sala.",
+        "ok": "OK"
+      },
+      "naoFoiPossivelEntrar": {
+        "title": "Não foi possível entrar",
+        "ok": "OK"
+      },
+      "salaEncerrada": {
+        "title": "Sala encerrada",
+        "body": "O anfitrião encerrou a sala."
+      },
+      "faltamJogadores": {
+        "title": "Faltam jogadores",
+        "body": "Pelo menos 2 pessoas precisam estar na sala."
+      },
+      "timeout": {
+        "title": "Conexão demorou demais",
+        "body": "Não consegui falar com o servidor. Tenta de novo daqui a pouco."
+      },
+      "kick": {
+        "title": "Remover {{name}}?",
+        "body": "Esse jogador vai sair da sala. Ele pode entrar de novo se quiser.",
+        "confirm": "Remover"
+      },
+      "kicked": {
+        "title": "Você foi removido",
+        "body": "O anfitrião te removeu da sala."
+      },
+      "cancelar": "Cancelar"
+    }
+  },
+  "onlineGame": {
+    "roomHeader": "Sala {{code}}",
+    "roomPillLabel": "SALA",
+    "conectando": "Conectando…",
+    "preparando": "Preparando…",
+    "clue": {
+      "suaVez": "Sua vez de dar a dica",
+      "suaVezSubtitle": "Você é o cluer. Olhe a posição secreta no dial.",
+      "voiceHelper": "Fala sua dica em voz alta pra galera e aperta abaixo quando terminar.",
+      "voiceCta": "Já falei a dica",
+      "textHelper": "Digite uma palavra ou frase curta:",
+      "textPlaceholder": "ex: fogueira de praia",
+      "textCta": "Enviar dica",
+      "pularCarta": "Pular essa carta",
+      "skipsUnlimited": "Skips ilimitados",
+      "skipsRestantes_one": "{{count}} skip restante",
+      "skipsRestantes_other": "{{count}} skips restantes",
+      "cluerVoiceTitle": "{{name}} vai dar a dica em voz alta",
+      "cluerTextTitle": "{{name}} está digitando a dica…",
+      "fallbackCluer": "Cluer",
+      "voiceListenHelper": "Presta atenção no Discord ou na mesa. A agulha vai aparecer logo.",
+      "textWaitHelper": "Espera o cluer enviar a frase aí.",
+      "cluerThinkingTitle": "{{name}} está pensando",
+      "waitHintVoice": "Aguarde ele falar a dica",
+      "waitHintText": "Aguarde ele mandar a palavra",
+      "spectrumLabel": "O espectro desta rodada"
+    },
+    "guess": {
+      "dicaLabel": "DICA",
+      "aguardando": "Aguardando palpites",
+      "aguardandoCount": "{{submitted}}/{{total}} já palpitaram",
+      "enviado": "Palpite enviado ✓",
+      "esperandoOutros_one": "Esperando os outros: {{count}} restante.",
+      "esperandoOutros_other": "Esperando os outros: {{count}} restantes.",
+      "suaVez": "Sua vez de palpitar",
+      "suaVezSubtitle": "Arrasta a agulha pro lugar que a dica te lembra.",
+      "confirmar": "Confirmar palpite"
+    },
+    "result": {
+      "title": "Resultado da rodada",
+      "cluerLabel": " (cluer)",
+      "pronto": "PRONTO ✓",
+      "estouPronto": "Estou pronto",
+      "proximo": "PRÓXIMO",
+      "youAreNextCluer": "Você é o próximo a dar a dica.",
+      "waitingNextCluer": "Aguardando {{name}} continuar…"
+    },
+    "gameover": {
+      "won": "{{name}} VENCEU",
+      "fim": "FIM DE JOGO",
+      "rodadasJogadas_one": "{{count}} rodada jogada",
+      "rodadasJogadas_other": "{{count}} rodadas jogadas",
+      "voltarMenu": "Voltar ao menu",
+      "voltarLobby": "Voltar ao lobby"
+    },
+    "alerts": {
+      "encerrarPartida": {
+        "title": "Encerrar a sala?",
+        "body": "A partida vai acabar pra todo mundo.",
+        "confirm": "Encerrar"
+      },
+      "sairPartida": {
+        "title": "Sair da partida?",
+        "body": "Você sai e os outros continuam jogando.",
+        "confirm": "Sair"
+      },
+      "salaEncerrada": {
+        "title": "Sala encerrada",
+        "body": "O anfitrião encerrou a sala."
+      },
+      "timeout": {
+        "title": "Conexão demorou demais",
+        "body": "Perdi contato com a sala. Tenta voltar e entrar de novo."
+      },
+      "kicked": {
+        "title": "Você foi removido",
+        "body": "O anfitrião te removeu da partida."
+      },
+      "erro": "Erro",
+      "cancelar": "Cancelar",
+      "ok": "OK"
+    },
+    "fallbackName": "..."
+  },
+  "connection": {
+    "conectando": "Conectando…",
+    "reconectando": "Reconectando…",
+    "reconectandoCount": "Reconectando… (tentativa {{n}})",
+    "desconectado": "Desconectado",
+    "falha": "Falha de conexão"
+  },
+  "qrModal": {
+    "sala": "SALA {{code}}"
+  },
+  "roomSettings": {
+    "title": "Configurações da partida",
+    "titleReadOnly": "Configurações da partida",
+    "save": "SALVAR"
+  },
+  "aloneRoom": {
+    "title": "Aguardando jogadores",
+    "body": "A galera saiu da sala. Você pode esperar alguém voltar ou desconectar.",
+    "disconnect": "DESCONECTAR"
   }
 }

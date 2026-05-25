@@ -20,9 +20,13 @@ export default function RootLayout() {
             <Stack screenOptions={{ headerShown: false, freezeOnBlur: true }}>
               <Stack.Screen name="index" />
               <Stack.Screen name="play-mode" />
+              <Stack.Screen name="online-entry" />
+              <Stack.Screen name="online-config" />
               <Stack.Screen name="online-mode" />
+              <Stack.Screen name="join-code" />
               <Stack.Screen name="lobby/[code]" />
               <Stack.Screen name="join/[code]" />
+              <Stack.Screen name="online-game/[code]" />
               <Stack.Screen name="game-setup" />
               <Stack.Screen name="game" />
               <Stack.Screen name="settings" />

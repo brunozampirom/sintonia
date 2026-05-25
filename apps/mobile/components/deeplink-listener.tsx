@@ -16,11 +16,13 @@ export function DeeplinkListener() {
     function handleUrl(url: string) {
       const parsed = Linking.parse(url);
       const path = parsed.path ?? '';
-      // Path looks like "join/PIZA" (no leading slash from Linking.parse)
+      // Path looks like "join/PIZA" (no leading slash from Linking.parse).
+      // Route to /join-code with the code prefilled — that's our single
+      // "Entrar na sala" UI with code + name + color in one screen.
       if (path.startsWith('join/')) {
         const code = normalizeRoomCode(path.slice('join/'.length).split('/')[0]);
         if (isValidRoomCode(code)) {
-          router.push({ pathname: '/join/[code]', params: { code } });
+          router.push({ pathname: '/join-code', params: { code } });
         }
       }
     }

@@ -5,6 +5,7 @@ import { haptics } from '@/lib/haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -40,6 +41,7 @@ function ModeCard({ icon, iconColor, title, description, delay, onPress }: ModeC
 
 export default function OnlineModeScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   function createRoom(voice: boolean) {
     const code = generateRoomCode();
@@ -53,28 +55,26 @@ export default function OnlineModeScreen() {
     <SafeAreaView style={styles.screen}>
       <ScreenHeader>
         <HeaderIconButton icon="chevron-back" onPress={() => router.back()} />
-        <HeaderTitle>Como vai a dica?</HeaderTitle>
+        <HeaderTitle>{t('onlineMode.title')}</HeaderTitle>
         <HeaderSpacer />
       </ScreenHeader>
 
       <View style={styles.content}>
-        <Text style={styles.lead}>
-          Escolhe o jeito que faz mais sentido pro seu rolê.
-        </Text>
+        <Text style={styles.lead}>{t('onlineMode.lead')}</Text>
 
         <ModeCard
-          icon="mic"
+          icon="megaphone"
           iconColor={GameColors.accent}
-          title="Em voz alta"
-          description="Vocês estão se ouvindo — numa mesa de bar, em call do Discord. A dica é dita em voz alta."
+          title={t('onlineMode.voz.title')}
+          description={t('onlineMode.voz.description')}
           delay={100}
           onPress={() => createRoom(true)}
         />
         <ModeCard
           icon="chatbubble-ellipses"
           iconColor={GameColors.mint}
-          title="Por texto"
-          description="Sem áudio. Quem dá a dica digita no celular e todo mundo vê o texto na tela."
+          title={t('onlineMode.texto.title')}
+          description={t('onlineMode.texto.description')}
           delay={220}
           onPress={() => createRoom(false)}
         />
