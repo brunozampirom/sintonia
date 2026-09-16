@@ -46,10 +46,15 @@ module.exports = function withIosDeploymentTarget(config, { deploymentTarget = '
 
       const anchor = 'post_install do |installer|';
       if (!contents.includes(anchor)) {
-        throw new Error(
-          `with-ios-deployment-target: could not find "${anchor}" in the Podfile. ` +
-            'The Expo template changed; update this plugin.'
+        // Warn rather than throw: a missing anchor means the Expo template
+        // changed and the pods keep their own deployment targets, which fails
+        // later with a clear Xcode error. Taking the whole prebuild down here
+        // would hide that behind a stack trace.
+        console.warn(
+          `with-ios-deployment-target: no "${anchor}" in the Podfile; skipping. ` +
+            'Pods will keep their declared deployment targets.'
         );
+        return cfg;
       }
 
       contents = contents.replace(anchor, anchor + buildSnippet(deploymentTarget));
