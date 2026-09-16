@@ -2,7 +2,7 @@
   "expo": {
     "name": "Sintonia",
     "slug": "Wavelength",
-    "version": "2.1.0",
+    "version": "3.0.0",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "wavelength",
@@ -80,7 +80,9 @@
           }
         }
       ],
-      "./plugins/with-ios-deployment-target.js"
+      "./plugins/with-ios-deployment-target.js",
+      "expo-font",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,
