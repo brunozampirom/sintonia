@@ -63,3 +63,9 @@ app-example
 
 # Playwright MCP test artifacts
 .playwright-mcp/
+
+# PartyKit local dev state (sqlite per Durable Object instance)
+apps/backend/.partykit/
+
+# agent-device test artifacts (screenshots, replay scripts, reports)
+device-test-output/

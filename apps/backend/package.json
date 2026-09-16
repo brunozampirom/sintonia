@@ -1,0 +1,20 @@
+{
+  "name": "@sintonia/backend",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev --port 1999",
+    "deploy": "wrangler deploy",
+    "types": "wrangler types",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@sintonia/game-core": "workspace:*",
+    "partyserver": "^0.5.10"
+  },
+  "devDependencies": {
+    "partykit": "^0.0.115",
+    "typescript": "~5.9.2",
+    "wrangler": "^4.132.0"
+  }
+}

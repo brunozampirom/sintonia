@@ -1,4 +1,6 @@
+import { DeeplinkListener } from '@/components/deeplink-listener';
 import { HapticsBridge } from '@/components/haptics-bridge';
+import { NetworkProvider } from '@/contexts/network-context';
 import { SettingsProvider } from '@/contexts/settings-context';
 import '@/i18n';
 import { Stack } from 'expo-router';
@@ -12,17 +14,28 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <SettingsProvider>
-          <HapticsBridge />
-          <Stack screenOptions={{ headerShown: false, freezeOnBlur: true }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="game-setup" />
-            <Stack.Screen name="game" />
-            <Stack.Screen name="settings" />
-            <Stack.Screen name="tutorial" />
-            <Stack.Screen name="history" />
-            <Stack.Screen name="landing" />
-          </Stack>
-          <StatusBar style="light" />
+          <NetworkProvider>
+            <DeeplinkListener />
+            <HapticsBridge />
+            <Stack screenOptions={{ headerShown: false, freezeOnBlur: true }}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="play-mode" />
+              <Stack.Screen name="online-entry" />
+              <Stack.Screen name="online-config" />
+              <Stack.Screen name="online-mode" />
+              <Stack.Screen name="join-code" />
+              <Stack.Screen name="lobby/[code]" />
+              <Stack.Screen name="join/[code]" />
+              <Stack.Screen name="online-game/[code]" />
+              <Stack.Screen name="game-setup" />
+              <Stack.Screen name="game" />
+              <Stack.Screen name="settings" />
+              <Stack.Screen name="tutorial" />
+              <Stack.Screen name="history" />
+              <Stack.Screen name="landing" />
+            </Stack>
+            <StatusBar style="light" />
+          </NetworkProvider>
         </SettingsProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

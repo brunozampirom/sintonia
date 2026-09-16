@@ -49,7 +49,7 @@ export default function HomeScreen() {
         title={t('common.actions.play')}
         onPress={() => {
           haptics.play();
-          router.push('/game-setup');
+          router.push('/play-mode');
         }}
       />
       <View style={{ height: 10 }} />

@@ -58,7 +58,7 @@ export function TopNav() {
         </a>
 
         <nav className="hidden md:flex items-center gap-6">
-          <a href="/#como" className="nav-link" style={navLinkStyle}>
+          <a href="/#how" className="nav-link" style={navLinkStyle}>
             {t("nav.howItWorks")}
           </a>
           <a href="/#demo" className="nav-link" style={navLinkStyle}>
@@ -69,7 +69,7 @@ export function TopNav() {
           </a>
           {isHome && <LanguagePicker />}
           <a
-            href="/#baixar"
+            href="/#download"
             className="press"
             style={{
               background: T.primary,

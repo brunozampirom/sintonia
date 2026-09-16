@@ -3,25 +3,22 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n, { getDeviceLanguage, type LanguagePreference, type SupportedLanguage } from '@/i18n';
 import { MAX_PLAYERS, MIN_PLAYERS, PLAYER_COLOR_PALETTE, assignDefaultColors, reconcileColors } from '@/constants/player-colors';
 import { GameColors } from '@/constants/theme';
+import type {
+  GameMode,
+  RoundFlow,
+  ScoringTarget,
+  Spectrum,
+  TeamConfig,
+} from '@sintonia/game-core';
+
+// Re-export so downstream mobile code can keep importing these names
+// from '@/contexts/settings-context' without each call site needing to
+// know that the shared package owns the type now.
+export type { GameMode, RoundFlow, ScoringTarget, Spectrum, TeamConfig };
 
 const DEFAULT_TEAM_COLORS: [string, string] = [GameColors.sky, GameColors.primary];
 
 const STORAGE_KEY = '@wavelength_settings';
-
-export interface Spectrum {
-  left: string;
-  right: string;
-}
-
-export interface TeamConfig {
-  name: string;
-  players: string[];
-  color?: string;
-}
-
-export type GameMode = 'individual' | 'teams';
-export type ScoringTarget = 'cluer' | 'guesser';
-export type RoundFlow = 'all-guess' | 'single-guess';
 
 export interface GameSettings {
   language: LanguagePreference;
@@ -37,6 +34,11 @@ export interface GameSettings {
   hapticsEnabled: boolean;
   customSpectrums: Spectrum[];
   teams: [TeamConfig, TeamConfig];
+  /** Persisted identity used in the online flow (host or guest). Empty until
+   * the user fills it the first time. Separate from playerNames so the
+   * offline "same phone" config isn't tied to the online nickname. */
+  onlinePlayerName: string;
+  onlinePlayerColor: string;
 }
 
 export const VALID_TIME_LIMITS = [-1, 15, 30, 60] as const;
@@ -58,6 +60,8 @@ export const DEFAULT_SETTINGS: GameSettings = {
     { name: 'Team 1', players: ['Player 1', 'Player 2'], color: DEFAULT_TEAM_COLORS[0] },
     { name: 'Team 2', players: ['Player 3', 'Player 4'], color: DEFAULT_TEAM_COLORS[1] },
   ],
+  onlinePlayerName: '',
+  onlinePlayerColor: '',
 };
 
 function localizeIndexedLabel(kind: 'player' | 'team', index: number, language: SupportedLanguage): string {

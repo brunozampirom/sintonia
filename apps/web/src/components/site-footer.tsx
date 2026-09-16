@@ -42,7 +42,7 @@ export function SiteFooter() {
           className="flex gap-5"
           style={{ color: T.textMuted, fontSize: 13, fontWeight: 600 }}
         >
-          <a href="/#como" className="nav-link cursor-pointer">
+          <a href="/#how" className="nav-link cursor-pointer">
             {t("footer.howToPlay")}
           </a>
           <a href="/about" className="nav-link cursor-pointer">
