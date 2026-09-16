@@ -3,8 +3,5 @@
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
-  },
-  "chat.tools.terminal.autoApprove": {
-    "true": true
   }
 }
