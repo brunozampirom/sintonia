@@ -47,6 +47,13 @@ yarn-error.*
 # Secrets / service accounts (never commit)
 wavelength-*.json
 *-service-account*.json
+# Google Cloud / Firebase service-account keys are exported as
+# <project-id>-<hash>.json, which no name pattern catches reliably.
+# The real guard is .githooks/pre-commit, which matches on content.
+*-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]*.json
+serviceAccount*.json
+*credentials*.json
+
 *.gcp.json
 google-services.json
 GoogleService-Info.plist
