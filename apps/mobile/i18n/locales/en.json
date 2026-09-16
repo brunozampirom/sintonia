@@ -338,7 +338,7 @@
     "errors": {
       "connect": "Couldn't reach the server. Check your internet and try again.",
       "refused": "The server refused the room.",
-      "timeout": "Connection took too long. Try again or check if the server is up."
+      "timeout": "Connection took too long. Try again."
     }
   },
   "joinCode": {

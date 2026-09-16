@@ -338,7 +338,7 @@
     "errors": {
       "connect": "Não rolou conectar com o servidor. Confere sua internet e tenta de novo.",
       "refused": "O servidor recusou a sala.",
-      "timeout": "A conexão demorou demais. Tenta de novo ou confere se o servidor tá rodando."
+      "timeout": "A conexão demorou demais. Tenta de novo."
     }
   },
   "joinCode": {

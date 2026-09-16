@@ -338,7 +338,7 @@
     "errors": {
       "connect": "No se pudo conectar al servidor. Revisá tu internet y probá de nuevo.",
       "refused": "El servidor rechazó la sala.",
-      "timeout": "La conexión tardó demasiado. Probá de nuevo o fijate si el servidor está activo."
+      "timeout": "La conexión tardó demasiado. Probá de nuevo."
     }
   },
   "joinCode": {

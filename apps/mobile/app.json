@@ -11,11 +11,17 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.bruno.wavelength",
-      "associatedDomains": ["applinks:sintonia.party"],
+      "associatedDomains": [
+        "applinks:sintonia.party"
+      ],
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleDevelopmentRegion": "pt-BR",
-        "CFBundleLocalizations": ["pt-BR", "en", "es"]
+        "CFBundleLocalizations": [
+          "pt-BR",
+          "en",
+          "es"
+        ]
       }
     },
     "android": {
@@ -40,7 +46,10 @@
               "pathPrefix": "/join"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -62,7 +71,16 @@
           }
         }
       ],
-      "./plugins/with-android-fullscreen-splash.js"
+      "./plugins/with-android-fullscreen-splash.js",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "15.1"
+          }
+        }
+      ],
+      "./plugins/with-ios-deployment-target.js"
     ],
     "experiments": {
       "typedRoutes": true,
