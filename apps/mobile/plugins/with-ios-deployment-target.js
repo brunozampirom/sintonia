@@ -4,14 +4,14 @@
  *
  * Why: `expo-build-properties` sets `ios.deploymentTarget` on the app and on
  * regular pod targets, but resource-bundle targets keep whatever their podspec
- * declares. A few transitive pods still ship very old values — RNSVGFilters at
- * 12.4, RNCAsyncStorage resources at 13.4, SDWebImage at 9.0 — and recent Xcode
+ * declares. A few transitive pods still ship very old values (RNSVGFilters at
+ * 12.4, RNCAsyncStorage resources at 13.4, SDWebImage at 9.0) and recent Xcode
  * refuses anything below 15.0, so the build dies with three errors that have
  * nothing to do with this app's code.
  *
  * Approach: append a loop to the Podfile's existing `post_install` block that
  * walks every target and raises anything below the floor. Kept as a plugin
- * rather than a hand edit because `ios/` is generated — a Podfile patch would
+ * rather than a hand edit because `ios/` is generated. A Podfile patch would
  * be wiped by the next `expo prebuild`.
  */
 

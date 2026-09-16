@@ -1,6 +1,6 @@
 // Worker entrypoint. `routePartykitRequest` maps the request path onto a
 // Durable Object: /parties/<binding-in-kebab-case>/<room-name>. The binding
-// is named `Main`, so the path stays /parties/main/<ROOM_CODE> — the same URL
+// is named `Main`, so the path stays /parties/main/<ROOM_CODE>, the same URL
 // the mobile and web clients already build.
 
 import { routePartykitRequest } from "partyserver";

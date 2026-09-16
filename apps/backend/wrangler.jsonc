@@ -9,7 +9,7 @@
   "routes": [
     { "pattern": "ws.sintonia.party", "custom_domain": true }
   ],
-  // No workers.dev subdomain — the custom domain above is the only entrypoint.
+  // No workers.dev subdomain. The custom domain above is the only entrypoint.
   "workers_dev": false,
   "durable_objects": {
     "bindings": [
@@ -21,7 +21,7 @@
   "migrations": [
     {
       "tag": "v1",
-      // SQLite-backed classes — required for Durable Objects on the free plan.
+      // SQLite-backed classes, required for Durable Objects on the free plan.
       "new_sqlite_classes": ["SintoniaRoom"]
     }
   ]

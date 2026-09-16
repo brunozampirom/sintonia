@@ -4,7 +4,7 @@
 
 # Sintonia
 
-**A party game about reading other people's minds — around a table or across the internet.**
+**A party game about reading other people's minds, around a table or across the internet.**
 
 [![App Store](https://img.shields.io/badge/App_Store-0D96F6?style=flat&logo=app-store&logoColor=white)](https://apps.apple.com/app/id6762064623)
 [![Google Play](https://img.shields.io/badge/Google_Play-414141?style=flat&logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=com.bruno.wavelength)
@@ -20,7 +20,7 @@
 
 ---
 
-One player sees a hidden target on a spectrum — *Avengers movie prop* ↔ *Almodóvar movie prop* — and gives a one-word clue. Everyone else guesses where on the dial that clue lands. The closer they get, the more points.
+One player sees a hidden target on a spectrum, say *Avengers movie prop* to *Almodóvar movie prop*, and gives a one-word clue. Everyone else guesses where on the dial that clue lands. The closer they get, the more points.
 
 <div align="center">
 <img src="./docs/assets/lobby.png" alt="Lobby" width="31%" />
@@ -30,7 +30,7 @@ One player sees a hidden target on a spectrum — *Avengers movie prop* ↔ *Alm
 
 ## 🧠 How it works
 
-The rules live in exactly one place. `packages/game-core` is a pure reducer — no I/O, no framework — and the three runtimes all read from it:
+The rules live in exactly one place. `packages/game-core` is a pure reducer with no I/O and no framework, and the three runtimes all read from it:
 
 ```
                       ┌──────────────────────────┐
@@ -44,10 +44,11 @@ The rules live in exactly one place. `packages/game-core` is a pure reducer — 
           renders state    owns the truth        landing + /join
 ```
 
-**Offline** the app runs the reducer itself and passes the phone around.
-**Online** the same reducer runs inside a Durable Object, one per room, and the app becomes a renderer: it sends intents over a WebSocket and draws whatever state comes back.
+**Offline** the app runs the reducer itself and players pass the phone around.
 
-That split is the whole design. The server never trusts a client with the hidden target, and the client never has to reimplement a rule to stay in sync — because it is running the same function.
+**Online** the same reducer runs inside a Durable Object, one per room, and the app becomes a renderer. It sends intents over a WebSocket and draws whatever state comes back.
+
+That split is the whole design. The server never trusts a client with the hidden target, and the client never has to reimplement a rule to stay in sync, because it is running the same function.
 
 ## 📁 Structure
 
@@ -79,9 +80,9 @@ node scripts/bot.mjs ABCD "Bot 2" host text single     # a host that starts the 
 
 **Room codes skip `I`, `O`, `0` and `1`.** The code gets read out loud across a noisy room, so the alphabet drops every character that gets misheard.
 
-**The host can drop without killing the room.** A disconnect starts a grace timer rather than closing immediately — hosts walk through dead spots, and ten seconds of patience is cheaper than ending everyone's game.
+**The host can drop without killing the room.** A disconnect starts a grace timer instead of closing immediately. Hosts walk through dead spots, and ten seconds of patience is cheaper than ending everyone's game.
 
-**Reconnects keep your seat.** The client carries a persistent player id, so the server treats a returning socket as the same player rather than a new one. Backoff climbs to 8s and then keeps retrying, because the usual causes — a deploy, a wifi blip, a backgrounded app — clear on their own.
+**Reconnects keep your seat.** The client carries a persistent player id, so the server treats a returning socket as the same player rather than a new one. Backoff climbs to 8s and then keeps retrying, because the usual causes (a deploy, a wifi blip, a backgrounded app) clear on their own.
 
 **The server decides, the client animates.** Every phase transition comes from the Durable Object. The app has no authority to advance a round, which is why two clients can't disagree about whose turn it is.
 
