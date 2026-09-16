@@ -31,7 +31,8 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useR
 // comes back null in a dev build, which is how this used to fall through
 // to a hardcoded IP that went stale the moment the wifi changed.
 //
-// Prod: deployed PartyKit URL (TBD when we run `partykit deploy`).
+// Prod: our own Cloudflare Worker on a domain we control, so this host
+// can be repointed without shipping a new binary to the stores.
 const DEV_LAN_FALLBACK = "127.0.0.1"; // last resort; only if every source fails
 
 function safeDevServerUrl(): string | null {
@@ -71,7 +72,7 @@ function resolveDevPartykitHost(): string {
 
 const PARTYKIT_HOST = __DEV__
   ? resolveDevPartykitHost()
-  : "sintonia.brunozampirom.partykit.dev"; // placeholder; update on first deploy
+  : "ws.sintonia.party"; // PartyServer on Cloudflare Workers, custom domain
 
 // Reconnect with exponential backoff up to RETRY_MAX_MS, then keep retrying
 // at that ceiling indefinitely. Real-world reasons the socket might drop —

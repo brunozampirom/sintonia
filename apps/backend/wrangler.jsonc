@@ -4,6 +4,13 @@
   "main": "src/index.ts",
   "compatibility_date": "2025-01-01",
   "observability": { "enabled": true },
+  // Custom domain instead of workers.dev: the mobile build hardcodes this
+  // host, so it needs to be one we control and can repoint later.
+  "routes": [
+    { "pattern": "ws.sintonia.party", "custom_domain": true }
+  ],
+  // No workers.dev subdomain — the custom domain above is the only entrypoint.
+  "workers_dev": false,
   "durable_objects": {
     "bindings": [
       // Kebab-cased to `main`, which is the /parties/main/... segment the
