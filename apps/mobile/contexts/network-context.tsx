@@ -15,30 +15,58 @@ import type {
   ServerMessage,
 } from "@sintonia/game-core";
 import Constants from "expo-constants";
+import { NativeModules } from "react-native";
+// RN's own accessor for the dev server that served this bundle. Works under
+// bridgeless, where NativeModules.SourceCode is no longer reachable. It is an
+// internal path and ships no types, hence the suppression.
+// @ts-expect-error untyped React Native internal
+import getDevServer from "react-native/Libraries/Core/Devtools/getDevServer";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
-// Dev: PartyKit local server. On a real device, "localhost" is the phone
-// itself, so we MUST point to the Mac's LAN IP — the same one Metro is
-// serving on. We try a few sources in order:
-//   1. Constants.expoConfig.hostUri (the dev server URI as seen by the app)
-//   2. Constants.expoGoConfig.debuggerHost (Expo Go fallback)
-//   3. DEV_LAN_FALLBACK hardcoded below — update if your Mac's wifi IP changes
+// Dev: PartyKit local server. On a real device "localhost" is the phone
+// itself, so we must point at the machine serving the app. The most
+// reliable source for that is the URL the JS bundle was loaded from —
+// by definition the dev machine, and it is correct on a simulator, on a
+// device over LAN, and in Expo Go alike. `Constants.expoConfig.hostUri`
+// comes back null in a dev build, which is how this used to fall through
+// to a hardcoded IP that went stale the moment the wifi changed.
 //
 // Prod: deployed PartyKit URL (TBD when we run `partykit deploy`).
-const DEV_LAN_FALLBACK = "192.168.68.121";
+const DEV_LAN_FALLBACK = "127.0.0.1"; // last resort; only if every source fails
+
+function safeDevServerUrl(): string | null {
+  try {
+    return getDevServer()?.url ?? null;
+  } catch {
+    return null;
+  }
+}
 
 function resolveDevPartykitHost(): string {
-  const hostUri = Constants.expoConfig?.hostUri ?? Constants.expoGoConfig?.debuggerHost ?? null;
-  let host: string | null = null;
-  if (hostUri) {
-    const candidate = hostUri.split(":")[0];
-    // exp.host (tunnel) won't reach a local PartyKit; ignore it and use LAN fallback.
-    if (candidate && !candidate.includes("exp.")) host = candidate;
+  const sources: Array<[string, string | null | undefined]> = [
+    // http://192.168.0.3:8081/ — the dev server that served this bundle
+    ["devServer", safeDevServerUrl()],
+    ["scriptURL", NativeModules?.SourceCode?.scriptURL],
+    ["hostUri", Constants.expoConfig?.hostUri],
+    ["debuggerHost", Constants.expoGoConfig?.debuggerHost],
+  ];
+
+  for (const [name, raw] of sources) {
+    if (!raw) continue;
+    // Strip scheme if present, then take the host up to the port.
+    const withoutScheme = raw.replace(/^[a-z]+:\/\//i, "");
+    const candidate = withoutScheme.split("/")[0]?.split(":")[0];
+    // exp.host (tunnel) won't reach a local PartyKit; keep looking.
+    if (!candidate || candidate.includes("exp.")) continue;
+    const resolved = `${candidate}:1999`;
+    console.log(`[NetworkContext] PartyKit host ${resolved} (from ${name}: ${raw})`);
+    return resolved;
   }
-  if (!host) host = DEV_LAN_FALLBACK;
-  const resolved = `${host}:1999`;
-  console.log("[NetworkContext] PartyKit host resolved to", resolved, "from hostUri:", hostUri);
-  return resolved;
+
+  console.warn(
+    `[NetworkContext] no dev host found, falling back to ${DEV_LAN_FALLBACK}:1999`
+  );
+  return `${DEV_LAN_FALLBACK}:1999`;
 }
 
 const PARTYKIT_HOST = __DEV__

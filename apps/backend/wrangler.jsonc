@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "sintonia",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-01",
+  "observability": { "enabled": true },
+  "durable_objects": {
+    "bindings": [
+      // Kebab-cased to `main`, which is the /parties/main/... segment the
+      // clients already use. Renaming this binding breaks every client URL.
+      { "name": "Main", "class_name": "SintoniaRoom" }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      // SQLite-backed classes — required for Durable Objects on the free plan.
+      "new_sqlite_classes": ["SintoniaRoom"]
+    }
+  ]
+}

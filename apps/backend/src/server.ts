@@ -1,17 +1,18 @@
-// PartyKit room server for Sintonia multiplayer.
+// Room server for Sintonia multiplayer, on PartyServer.
 //
-// Each instance of this class IS a room — PartyKit gives one Durable
-// Object per unique URL path. Clients connect to
+// Each instance of this class IS a room — one Durable Object per room
+// code. Clients connect to
 //   wss://<host>/parties/main/<ROOM_CODE>
-// and PartyKit routes them all to the same instance. Room state lives
-// on the instance (in-memory) and persists in Durable Object storage
-// across deploys via the `room.storage` API.
+// and `routePartykitRequest` routes them all to the same instance. The
+// `main` segment is the kebab-cased name of the Durable Object binding
+// in wrangler.jsonc, which is why the binding is called `Main`: it keeps
+// the URL the clients already use. Room state lives on the instance.
 //
 // Phase 2: full game loop. Server owns truth — runs gameReducer from
 // @sintonia/game-core, sends PRIVATE_TARGET to the cluer, accumulates
 // parallel all-guess submissions before dispatching to the reducer.
 
-import type * as Party from "partykit/server";
+import { Server, type Connection } from "partyserver";
 import {
   computeAvgDiffs,
   createInitialState,
@@ -66,7 +67,7 @@ interface ActiveGame {
 // this long to reconnect before we tear down the room for everyone.
 const HOST_DISCONNECT_GRACE_MS = 10_000;
 
-export default class SintoniaRoom implements Party.Server {
+export class SintoniaRoom extends Server<Env> {
   // playerId → member (one persistent ID across reconnects)
   private members: Map<string, RoomMember> = new Map();
   private hostPlayerId: string | null = null;
@@ -82,8 +83,6 @@ export default class SintoniaRoom implements Party.Server {
     | { settings: GameInitConfig; voiceMode: boolean; spectrumPool: import("@sintonia/game-core").Spectrum[] }
     | null = null;
 
-  constructor(readonly room: Party.Room) {}
-
   private clearHostGraceTimer() {
     if (this.hostGraceTimer) {
       clearTimeout(this.hostGraceTimer);
@@ -92,10 +91,10 @@ export default class SintoniaRoom implements Party.Server {
   }
 
   private closeRoomBroadcast() {
-    this.room.broadcast(
+    this.broadcast(
       this.encodeServerMessage({ type: "ROOM_CLOSED", reason: "host" }),
     );
-    for (const c of this.room.getConnections()) {
+    for (const c of this.getConnections()) {
       try { c.close(); } catch { /* noop */ }
     }
     this.members.clear();
@@ -106,14 +105,14 @@ export default class SintoniaRoom implements Party.Server {
 
   // ---------- Lifecycle ----------
 
-  onConnect(conn: Party.Connection) {
+  onConnect(conn: Connection) {
     // Bare connection — the client must send { type: 'JOIN', ... } before
     // it's considered part of the room. Until then we keep it
     // anonymous. Send current state so they can render the lobby.
     conn.send(this.encodeServerMessage({ type: "STATE", state: this.publicState() }));
   }
 
-  onMessage(rawMessage: string, sender: Party.Connection) {
+  onMessage(sender: Connection, rawMessage: string) {
     let message: ClientMessage;
     try {
       message = JSON.parse(rawMessage) as ClientMessage;
@@ -155,7 +154,7 @@ export default class SintoniaRoom implements Party.Server {
     }
   }
 
-  onClose(conn: Party.Connection) {
+  onClose(conn: Connection) {
     // Mark the member as disconnected — they can reconnect within the same
     // room session under the same playerId.
     // Host disconnect is special: the room is the host's session, so when
@@ -186,11 +185,11 @@ export default class SintoniaRoom implements Party.Server {
   // ---------- Lobby handlers ----------
 
   private handleJoin(
-    conn: Party.Connection,
+    conn: Connection,
     message: Extract<ClientMessage, { type: "JOIN" }>,
   ) {
     const { code, playerId, name, color, mode } = message;
-    const expectedCode = this.room.id.toUpperCase();
+    const expectedCode = this.name.toUpperCase();
     if (code.toUpperCase() !== expectedCode) {
       this.sendError(conn, "INVALID_CODE", `Room code mismatch (room is ${expectedCode}).`);
       return;
@@ -250,7 +249,7 @@ export default class SintoniaRoom implements Party.Server {
   }
 
   private handleUpdateRoomSettings(
-    conn: Party.Connection,
+    conn: Connection,
     config: import("@sintonia/game-core").RoomConfig,
   ) {
     const member = this.findMemberByConnection(conn.id);
@@ -276,7 +275,7 @@ export default class SintoniaRoom implements Party.Server {
     this.broadcastState();
   }
 
-  private handleReturnToLobby(conn: Party.Connection) {
+  private handleReturnToLobby(conn: Connection) {
     const member = this.findMemberByConnection(conn.id);
     if (!member) {
       this.sendError(conn, "BAD_REQUEST", "Join the room first.");
@@ -299,7 +298,7 @@ export default class SintoniaRoom implements Party.Server {
     this.broadcastState();
   }
 
-  private handleKickPlayer(conn: Party.Connection, targetPlayerId: string) {
+  private handleKickPlayer(conn: Connection, targetPlayerId: string) {
     const member = this.findMemberByConnection(conn.id);
     if (!member) {
       this.sendError(conn, "BAD_REQUEST", "Join the room first.");
@@ -320,7 +319,7 @@ export default class SintoniaRoom implements Party.Server {
     }
     // Tell the kicked player first so their client knows it was intentional,
     // then close their socket and forget them.
-    for (const c of this.room.getConnections()) {
+    for (const c of this.getConnections()) {
       if (c.id === target.connectionId) {
         try { c.send(this.encodeServerMessage({ type: "KICKED" })); } catch { /* noop */ }
         try { c.close(); } catch { /* noop */ }
@@ -331,7 +330,7 @@ export default class SintoniaRoom implements Party.Server {
     this.broadcastState();
   }
 
-  private handleCloseRoom(conn: Party.Connection) {
+  private handleCloseRoom(conn: Connection) {
     const member = this.findMemberByConnection(conn.id);
     if (!member) {
       this.sendError(conn, "BAD_REQUEST", "Join the room first.");
@@ -344,7 +343,7 @@ export default class SintoniaRoom implements Party.Server {
     this.closeRoomBroadcast();
   }
 
-  private handleLeave(conn: Party.Connection) {
+  private handleLeave(conn: Connection) {
     const member = this.findMemberByConnection(conn.id);
     if (!member) return;
     this.members.delete(member.playerId);
@@ -390,7 +389,7 @@ export default class SintoniaRoom implements Party.Server {
     this.tryFlushAllGuesses();
   }
 
-  private handleReady(conn: Party.Connection, isReady: boolean) {
+  private handleReady(conn: Connection, isReady: boolean) {
     const member = this.findMemberByConnection(conn.id);
     if (!member) return;
     member.isReady = isReady;
@@ -400,7 +399,7 @@ export default class SintoniaRoom implements Party.Server {
   // ---------- Game handlers ----------
 
   private handleStartGame(
-    conn: Party.Connection,
+    conn: Connection,
     message: Extract<ClientMessage, { type: "START_GAME" }>,
   ) {
     const member = this.findMemberByConnection(conn.id);
@@ -604,7 +603,7 @@ export default class SintoniaRoom implements Party.Server {
     return true;
   }
 
-  private handleSubmitClueText(conn: Party.Connection, text: string) {
+  private handleSubmitClueText(conn: Connection, text: string) {
     const game = this.requireGame(conn);
     if (!game) return;
     if (game.voiceMode) {
@@ -630,7 +629,7 @@ export default class SintoniaRoom implements Party.Server {
     this.broadcastState();
   }
 
-  private handleClueSaid(conn: Party.Connection) {
+  private handleClueSaid(conn: Connection) {
     const game = this.requireGame(conn);
     if (!game) return;
     if (!game.voiceMode) {
@@ -650,7 +649,7 @@ export default class SintoniaRoom implements Party.Server {
     this.broadcastState();
   }
 
-  private handleSubmitGuess(conn: Party.Connection, angle: number) {
+  private handleSubmitGuess(conn: Connection, angle: number) {
     const game = this.requireGame(conn);
     if (!game) return;
     if (game.state.phase !== "guess" && game.state.phase !== "pass") {
@@ -704,7 +703,7 @@ export default class SintoniaRoom implements Party.Server {
     this.broadcastState();
   }
 
-  private handleSkipCard(conn: Party.Connection) {
+  private handleSkipCard(conn: Connection) {
     const game = this.requireGame(conn);
     if (!game) return;
     if (game.state.phase !== "clue") {
@@ -725,7 +724,7 @@ export default class SintoniaRoom implements Party.Server {
     this.broadcastState();
   }
 
-  private handleReadyNextRound(conn: Party.Connection) {
+  private handleReadyNextRound(conn: Connection) {
     const game = this.requireGame(conn);
     if (!game) return;
     if (game.state.phase !== "result") {
@@ -789,7 +788,7 @@ export default class SintoniaRoom implements Party.Server {
 
   // ---------- Helpers ----------
 
-  private requireGame(conn: Party.Connection): ActiveGame | null {
+  private requireGame(conn: Connection): ActiveGame | null {
     if (!this.game) {
       this.sendError(conn, "NOT_IN_GAME", "No game in progress.");
       return null;
@@ -809,7 +808,7 @@ export default class SintoniaRoom implements Party.Server {
     return this.game.playerIdByIndex[this.game.state.activeSideIndex] === playerId;
   }
 
-  private isCallerCluer(conn: Party.Connection): boolean {
+  private isCallerCluer(conn: Connection): boolean {
     const member = this.findMemberByConnection(conn.id);
     return !!member && this.isCluer(member.playerId);
   }
@@ -819,7 +818,7 @@ export default class SintoniaRoom implements Party.Server {
     const cluerId = this.game.playerIdByIndex[this.game.state.activeSideIndex];
     const cluerMember = this.members.get(cluerId);
     if (!cluerMember) return;
-    for (const conn of this.room.getConnections()) {
+    for (const conn of this.getConnections()) {
       if (conn.id === cluerMember.connectionId) {
         conn.send(
           this.encodeServerMessage({
@@ -979,7 +978,7 @@ export default class SintoniaRoom implements Party.Server {
     }
 
     return {
-      code: this.room.id.toUpperCase(),
+      code: this.name.toUpperCase(),
       hostId: this.hostPlayerId ?? "",
       phase,
       voiceMode: this.game?.voiceMode ?? false,
@@ -996,13 +995,13 @@ export default class SintoniaRoom implements Party.Server {
   }
 
   private broadcastState() {
-    this.room.broadcast(
+    this.broadcast(
       this.encodeServerMessage({ type: "STATE", state: this.publicState() }),
     );
   }
 
   private sendError(
-    conn: Party.Connection,
+    conn: Connection,
     code: ServerErrorCode,
     message: string,
   ) {
@@ -1013,5 +1012,3 @@ export default class SintoniaRoom implements Party.Server {
     return JSON.stringify(msg);
   }
 }
-
-SintoniaRoom satisfies Party.Worker;
