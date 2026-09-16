@@ -25,7 +25,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useR
 
 // Dev: PartyKit local server. On a real device "localhost" is the phone
 // itself, so we must point at the machine serving the app. The most
-// reliable source for that is the URL the JS bundle was loaded from —
+// reliable source for that is the URL the JS bundle was loaded from,
 // by definition the dev machine, and it is correct on a simulator, on a
 // device over LAN, and in Expo Go alike. `Constants.expoConfig.hostUri`
 // comes back null in a dev build, which is how this used to fall through
@@ -45,7 +45,7 @@ function safeDevServerUrl(): string | null {
 
 function resolveDevPartykitHost(): string {
   const sources: Array<[string, string | null | undefined]> = [
-    // http://192.168.0.3:8081/ — the dev server that served this bundle
+    // e.g. http://10.0.0.5:8081/, the dev server that served this bundle
     ["devServer", safeDevServerUrl()],
     ["scriptURL", NativeModules?.SourceCode?.scriptURL],
     ["hostUri", Constants.expoConfig?.hostUri],

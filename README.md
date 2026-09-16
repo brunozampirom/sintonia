@@ -86,6 +86,10 @@ node scripts/bot.mjs ABCD "Bot 2" host text single     # a host that starts the 
 
 **The server decides, the client animates.** Every phase transition comes from the Durable Object. The app has no authority to advance a round, which is why two clients can't disagree about whose turn it is.
 
+## 📄 License
+
+The source is public to be read, not to be reused. See [LICENSE](./LICENSE).
+
 <div align="center">
 <br />
 <sub>Built by <a href="https://github.com/brunozampirom">Bruno Zampirom</a></sub>
