@@ -874,7 +874,10 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.02)',
+    // Opaque on purpose: with a translucent fill, Android draws the elevation
+    // shadow through it as a polygon inside the ring. This is the background
+    // blended with 2% white, the same look as the old rgba fill.
+    backgroundColor: '#0f1c2f',
     shadowOffset: { width: 0, height: 0 },
     shadowRadius: 24,
     shadowOpacity: 0.55,
