@@ -35,7 +35,16 @@ function ModeCard({ icon, title, description, accent, badge, delay, onPress }: M
 
         <View style={styles.textCol}>
           <View style={styles.titleRow}>
-            <Text style={styles.cardTitle} numberOfLines={2}>
+            {/* One line that shrinks to fit. With numberOfLines={2}, Android
+                could reserve a second, empty line when the title is almost
+                exactly as wide as the column (measured as wrapping, drawn on
+                one line), leaving a big gap above the description. */}
+            <Text
+              style={styles.cardTitle}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.75}
+            >
               {title}
             </Text>
             {badge && (
