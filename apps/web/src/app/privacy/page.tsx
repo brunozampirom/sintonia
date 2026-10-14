@@ -4,7 +4,7 @@ import { T } from "@/lib/tokens";
 export const metadata: Metadata = {
   title: "Política de Privacidade",
   description:
-    "Como a Sintonia trata seus dados — em uma palavra: o mínimo possível, e nada sai do seu celular.",
+    "Como a Sintonia trata seus dados: o mínimo possível. No modo Mesmo Celular nada sai do seu celular, e no modo online só trafega o necessário pra partida acontecer.",
 };
 
 export default function PrivacyPage() {
@@ -43,7 +43,7 @@ export default function PrivacyPage() {
             Política de Privacidade
           </h1>
           <p style={{ color: T.textMuted, fontSize: 14 }}>
-            Última atualização: 20 de maio de 2026
+            Última atualização: 14 de outubro de 2026
           </p>
         </header>
 
@@ -53,8 +53,9 @@ export default function PrivacyPage() {
             <em>&ldquo;Sintonia&rdquo;, &ldquo;nós&rdquo;</em>) em relação à
             coleta, uso e divulgação das suas informações quando você usa o
             aplicativo Sintonia para iOS e Android. Em uma frase: nós coletamos
-            o mínimo possível e, na maior parte dos casos, nada sai do seu
-            celular.
+            o mínimo possível. No modo Mesmo Celular nada sai do seu celular, e
+            no modo online só trafega o necessário pra partida acontecer, sem
+            ficar guardado depois que a sala fecha.
           </p>
           <p>
             Ao usar o Sintonia você concorda com a coleta e uso das informações
@@ -105,14 +106,27 @@ export default function PrivacyPage() {
           </p>
           <ul style={listStyle}>
             <Li>
-              <strong>Dados Pessoais identificáveis</strong>: nenhum. Os nomes
-              de jogadores que você digita durante a configuração da partida
-              ficam armazenados <em>apenas no próprio celular</em> (AsyncStorage
-              local) e nunca são enviados pra servidores nossos.
+              <strong>Modo Mesmo Celular</strong>: os nomes de jogadores que
+              você digita durante a configuração da partida ficam armazenados{" "}
+              <em>apenas no próprio celular</em> (AsyncStorage local) e nunca
+              são enviados pra servidores nossos.
+            </Li>
+            <Li>
+              <strong>Modo online</strong>: pra conectar os jogadores de uma
+              sala, o aplicativo envia ao nosso servidor o nome e a cor que você
+              escolhe pra aparecer na partida, um identificador anônimo gerado
+              aleatoriamente no seu celular (serve só pra você voltar à sala se
+              a conexão cair, e não está ligado a nenhum dado seu), o código da
+              sala, os seus palpites e, quando a dica é por texto, a dica que
+              você digita. Se você cria a sala, os espectros da partida (incluindo
+              os customizados que você ativou) também são enviados, pra que
+              todos joguem com os mesmos cartões. Você pode usar um apelido; não
+              precisa ser o seu nome real.
             </Li>
             <Li>
               <strong>Espectros customizados</strong>: o texto dos cartões que
-              você cria fica armazenado <em>apenas no próprio celular</em>.
+              você cria fica armazenado <em>apenas no próprio celular</em>, e só
+              sai dele quando você cria uma sala online (veja acima).
             </Li>
             <Li>
               <strong>Preferências</strong>: idioma, vibração e configurações
@@ -135,6 +149,10 @@ export default function PrivacyPage() {
           <p>Os dados agregados são usados estritamente para:</p>
           <ul style={listStyle}>
             <Li>Manter o Serviço funcionando e identificar problemas.</Li>
+            <Li>
+              No modo online, conectar os jogadores da sala e sincronizar a
+              partida entre os celulares.
+            </Li>
             <Li>
               Priorizar correções e melhorias com base em quais telas e
               recursos são mais usados.
@@ -164,6 +182,24 @@ export default function PrivacyPage() {
               aplicativo nas suas lojas.
             </Li>
             <Li>
+              <strong>Outros jogadores da sala</strong>: no modo online, quem
+              está na mesma sala vê o seu nome, a sua cor, os seus palpites e as
+              dicas que você dá. É assim que o jogo funciona.
+            </Li>
+            <Li>
+              <strong>Cloudflare</strong>: o servidor do modo online roda na
+              infraestrutura da Cloudflare, que processa as conexões em nosso
+              nome e pode registrar dados técnicos de conexão (como endereço IP)
+              por um período limitado, conforme a{" "}
+              <a
+                href="https://www.cloudflare.com/privacypolicy/"
+                style={linkStyle}
+              >
+                política de privacidade dela
+              </a>
+              .
+            </Li>
+            <Li>
               <strong>Obrigação legal</strong>: se exigido por lei, ordem
               judicial ou autoridade competente.
             </Li>
@@ -178,8 +214,14 @@ export default function PrivacyPage() {
         <H2>Retenção dos dados</H2>
         <Section>
           <p>
-            Como os dados pessoais não saem do seu dispositivo, a retenção é
-            controlada por você: desinstalar o aplicativo remove tudo. Os
+            O que fica no seu dispositivo (nomes do modo Mesmo Celular,
+            espectros customizados, preferências e o identificador anônimo)
+            é controlado por você: desinstalar o aplicativo remove tudo.
+          </p>
+          <p>
+            Os dados de uma partida online ficam só na memória do servidor
+            enquanto a sala existe. Não gravamos nomes, palpites nem dicas em
+            banco de dados, e tudo é descartado quando a sala fecha. Os
             relatórios agregados que Apple e Google fornecem ficam disponíveis
             pelo período padrão dessas plataformas.
           </p>
@@ -189,9 +231,12 @@ export default function PrivacyPage() {
         <Section>
           <p>
             Você pode criar espectros customizados dentro do aplicativo. Esse
-            conteúdo é armazenado <em>apenas no seu celular</em> e não é
-            enviado para nossos servidores. Você é responsável por garantir que
-            o conteúdo criado não viole direitos de terceiros ou leis aplicáveis.
+            conteúdo é armazenado <em>apenas no seu celular</em>. A exceção é o
+            modo online: quando você cria uma sala, os espectros da partida
+            passam pelo servidor e aparecem pros jogadores da sala, assim como
+            as dicas digitadas. Nada disso é guardado depois que a sala fecha.
+            Você é responsável por garantir que o conteúdo criado não viole
+            direitos de terceiros ou leis aplicáveis.
           </p>
         </Section>
 
@@ -199,7 +244,8 @@ export default function PrivacyPage() {
         <Section>
           <p>
             Como a maior parte dos dados nunca sai do seu celular, o risco de
-            exposição é mínimo. Para os dados que trafegam para Apple e Google
+            exposição é mínimo. No modo online, a conexão com o servidor é
+            criptografada. Para os dados que trafegam para Apple e Google
             (relatórios de estabilidade), confiamos nos mecanismos de segurança
             dessas plataformas. Nenhum método de transmissão pela Internet é
             100% seguro.
@@ -241,10 +287,11 @@ export default function PrivacyPage() {
           <p>
             Sob a Lei Geral de Proteção de Dados, você tem direito a confirmar
             a existência de tratamento, acessar, corrigir, anonimizar ou pedir a
-            eliminação de dados pessoais. Como o Sintonia não retém dados
-            pessoais em servidores próprios, a forma direta de exercer esses
-            direitos é desinstalando o aplicativo. Para dúvidas adicionais,
-            entre em contato pelo e-mail abaixo.
+            eliminação de dados pessoais. Como o Sintonia não guarda dados
+            pessoais em servidores próprios (os dados do modo online somem
+            quando a sala fecha), a forma direta de exercer esses direitos é
+            desinstalando o aplicativo. Para dúvidas adicionais, entre em
+            contato pelo e-mail abaixo.
           </p>
         </Section>
 

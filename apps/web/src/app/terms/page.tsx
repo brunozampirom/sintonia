@@ -4,7 +4,7 @@ import { T } from "@/lib/tokens";
 export const metadata: Metadata = {
   title: "Termos de Uso",
   description:
-    "Termos de uso do aplicativo Sintonia — gratuito, sem cadastro, sem propaganda, fornecido como está.",
+    "Termos de uso do aplicativo Sintonia: gratuito, sem cadastro, sem propaganda, fornecido como está.",
 };
 
 export default function TermsPage() {
@@ -37,7 +37,7 @@ export default function TermsPage() {
             Termos de Uso
           </h1>
           <p style={{ color: T.textMuted, fontSize: 14 }}>
-            Última atualização: 20 de maio de 2026
+            Última atualização: 14 de outubro de 2026
           </p>
         </header>
 
@@ -56,8 +56,9 @@ export default function TermsPage() {
         <H2>O que é o Sintonia</H2>
         <Section>
           <p>
-            Sintonia é um jogo de festa para 2 a 8 pessoas em um único celular.
-            O Serviço é oferecido <strong>gratuitamente</strong>, sem
+            Sintonia é um jogo de festa para 2 a 8 pessoas, que pode ser jogado
+            em um único celular (modo Mesmo Celular) ou com cada pessoa no seu
+            próprio celular, numa sala online (modo online). O Serviço é oferecido <strong>gratuitamente</strong>, sem
             necessidade de cadastro, conta, assinatura ou pagamento de qualquer
             tipo. O aplicativo não exibe anúncios e não realiza compras dentro
             do app.
@@ -108,12 +109,15 @@ export default function TermsPage() {
           <p>
             O Sintonia permite que você crie espectros customizados (cartões
             com dois polos textuais). Esse conteúdo fica armazenado apenas no
-            seu dispositivo e nós não temos acesso a ele.
+            seu dispositivo. No modo online, o nome que você escolhe, as dicas
+            que você digita e, se você criou a sala, os espectros da partida
+            passam pelo nosso servidor e ficam visíveis pros jogadores da sala
+            enquanto ela existir.
           </p>
           <p>
             Você é o único responsável pelo conteúdo que cria. Ao criar
-            espectros customizados, você se compromete a não produzir conteúdo
-            que:
+            espectros customizados, escolher um nome ou dar dicas no modo
+            online, você se compromete a não produzir conteúdo que:
           </p>
           <ul style={listStyle}>
             <Li>Viole direitos de terceiros (propriedade intelectual, honra, imagem).</Li>
@@ -193,6 +197,23 @@ export default function TermsPage() {
           </ul>
         </Section>
 
+        <H2>Modo online</H2>
+        <Section>
+          <p>
+            O modo online precisa de conexão com a internet e de um servidor
+            nosso pra funcionar. Ele é oferecido sem garantia de
+            disponibilidade: partidas podem cair por problemas de conexão,
+            manutenção ou instabilidade do servidor. O modo Mesmo Celular
+            continua funcionando sem internet.
+          </p>
+          <p>
+            Quem cria a sala é o anfitrião e pode remover jogadores ou encerrar
+            a sala a qualquer momento. Trate os outros jogadores com respeito:
+            as regras de conteúdo da seção anterior valem pro nome que você
+            escolhe e pras dicas que você dá.
+          </p>
+        </Section>
+
         <H2>Privacidade</H2>
         <Section>
           <p>
@@ -200,8 +221,9 @@ export default function TermsPage() {
             <a href="/privacy" style={linkStyle}>
               Política de Privacidade
             </a>
-            , que descreve como tratamos seus dados (em uma frase: nada sai do
-            seu celular).
+            , que descreve como tratamos seus dados (em uma frase: no modo
+            Mesmo Celular nada sai do seu celular, e no modo online só trafega o
+            necessário pra partida acontecer).
           </p>
         </Section>
 
