@@ -8,7 +8,7 @@ import "./globals.css";
 const SITE_URL = "https://sintonia.party";
 
 const DESCRIPTION =
-  "Sintonia é o jogo de festa em sintonia mental: dê uma dica, a galera adivinha onde cai no espectro. Grátis no iOS e Android, sem cadastro, até 8 jogadores no mesmo celular.";
+  "Sintonia é o jogo de festa em sintonia mental: dê uma dica, a galera adivinha onde cai no espectro. Grátis no iOS e Android, sem cadastro, de 2 a 8 jogadores no mesmo celular ou online.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -34,6 +34,9 @@ export const metadata: Metadata = {
     "party game brasileiro",
     "jogo brasileiro",
     "jogo offline para grupos",
+    "jogo online com amigos",
+    "jogo pra jogar à distância",
+    "jogo pra jogar na call",
     "jogo de tabuleiro digital",
     "jogo de festa grátis",
     "jogo do tiktok",

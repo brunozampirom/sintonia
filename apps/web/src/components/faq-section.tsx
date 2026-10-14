@@ -12,15 +12,19 @@ interface QA {
 const FAQ: QA[] = [
   {
     q: "Como funciona o Sintonia?",
-    a: "Cada rodada, um jogador vê um alvo secreto num espectro entre dois extremos (tipo 'Frio ↔ Quente'). Ele pensa numa dica que represente esse ponto e diz em voz alta. A galera adivinha arrastando uma agulha no celular pro lugar que combina com a dica. Quanto mais perto, mais ponto. Primeiro a atingir a meta vence.",
+    a: "Cada rodada, um jogador vê um alvo secreto num espectro entre dois extremos (tipo 'Frio ↔ Quente'). Ele pensa numa dica que represente esse ponto e diz em voz alta (ou digita, no modo online por texto). A galera adivinha arrastando uma agulha no celular pro lugar que combina com a dica. Quanto mais perto, mais ponto. Primeiro a atingir a meta vence.",
   },
   {
     q: "Pra quantas pessoas é o jogo?",
-    a: "De 2 a 8 jogadores no mesmo celular. Funciona bem em grupos pequenos no sofá ou em rolês maiores em mesa de bar. Você passa o aparelho entre as pessoas a cada rodada.",
+    a: "De 2 a 8 jogadores, em dois modos. No Mesmo Celular, vocês passam o aparelho entre as pessoas a cada rodada. No online, cada um joga do seu celular numa sala. Funciona bem em grupos pequenos no sofá, em rolês maiores em mesa de bar ou numa call com a galera.",
+  },
+  {
+    q: "Dá pra jogar cada um no seu celular, mesmo à distância?",
+    a: "Dá. No modo online, uma pessoa cria a sala e chama a galera por link, código ou QR code. Cada um precisa ter o app instalado. A dica pode ser dita em voz alta, na mesa ou numa call do Discord, ou digitada por texto, e dá pra escolher se todo mundo palpita ou um por vez.",
   },
   {
     q: "Precisa de internet pra jogar?",
-    a: "Não. O Sintonia funciona 100% offline depois da instalação. Não usa servidor, não sincroniza nada, não pede login. Você abre, escolhe os jogadores e joga.",
+    a: "Depende do modo. O Mesmo Celular funciona 100% offline depois da instalação: você abre, escolhe os jogadores e joga. O modo online precisa de internet pra conectar a sala. Nenhum dos dois pede login ou cadastro.",
   },
   {
     q: "É grátis mesmo? Tem propaganda?",
@@ -36,7 +40,7 @@ const FAQ: QA[] = [
   },
   {
     q: "Posso criar meus próprios espectros?",
-    a: "Sim, dentro do app tem o recurso de espectros customizados. Você cria os cartões que quiser pra zoar o grupo com piadas internas. Eles ficam salvos só no seu celular.",
+    a: "Sim, dentro do app tem o recurso de espectros customizados. Você cria os cartões que quiser pra zoar o grupo com piadas internas. Eles ficam salvos só no seu celular e, se você criar uma sala online, entram na partida da galera também.",
   },
   {
     q: "Quantos espectros vêm no jogo?",

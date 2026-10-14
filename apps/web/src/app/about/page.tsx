@@ -5,7 +5,7 @@ import { T } from "@/lib/tokens";
 export const metadata: Metadata = {
   title: "Sobre o Sintonia · O jogo de festa em sintonia mental",
   description:
-    "Conheça o Sintonia: um jogo de festa pra celular onde a galera tenta entrar em sintonia mental dando uma dica sobre um alvo secreto num espectro. Grátis, sem cadastro, até 8 jogadores no mesmo aparelho.",
+    "Conheça o Sintonia: um jogo de festa pra celular onde a galera tenta entrar em sintonia mental dando uma dica sobre um alvo secreto num espectro. Grátis, sem cadastro, de 2 a 8 jogadores no mesmo aparelho ou online.",
   alternates: {
     canonical: "https://sintonia.party/about",
   },
@@ -84,7 +84,8 @@ export default function AboutPage() {
         <p>
           A pessoa pensa numa dica que represente esse ponto — uma palavra,
           uma expressão, um nome próprio, o que for. Diz a dica em voz alta e
-          passa o celular pra galera. Cada um arrasta a agulha pro lugar que
+          passa o celular pra galera (no modo online cada um já tá com o seu, e
+          a dica também pode ir por texto). Cada um arrasta a agulha pro lugar que
           combina com a dica. Quando todo mundo confirma, o jogo revela o alvo
           e calcula a pontuação: bullseye exato vale +4, próximo vale +3,
           razoavelmente perto vale +2, longe não pontua. Primeiro a chegar na
@@ -112,8 +113,9 @@ export default function AboutPage() {
 
         <H2>Pra quem é</H2>
         <p>
-          Sintonia funciona em qualquer grupo de 2 a 8 pessoas, em um único
-          celular. A gente vê três cenários se repetindo:
+          Sintonia funciona em qualquer grupo de 2 a 8 pessoas, passando um
+          celular só pela roda ou com cada um no seu, numa sala online. A gente
+          vê quatro cenários se repetindo:
         </p>
         <ul style={listStyle}>
           <Li>
@@ -132,17 +134,26 @@ export default function AboutPage() {
             celular passando entre as mãos. O jogo dura o quanto a partida
             durar — você define a meta de pontos, vence quem chegar primeiro.
           </Li>
+          <Li>
+            <strong>Call com a galera</strong>. Cada um na sua casa, todo mundo
+            no Discord. Alguém cria a sala online, manda o código e a partida
+            roda com cada um no próprio celular.
+          </Li>
         </ul>
 
-        <H2>Sem internet, sem cadastro, sem dado pessoal</H2>
+        <H2>Sem cadastro, sem propaganda, o mínimo de dados</H2>
         <p>
-          O Sintonia roda 100% offline depois do download. Não tem login, não
-          pede e-mail, não envia dado nenhum pra nenhum servidor (
+          O modo Mesmo Celular roda 100% offline depois do download. O modo
+          online precisa de internet e manda pro servidor só o necessário pra
+          partida acontecer (o nome que você escolhe, os palpites e as dicas),
+          sem guardar nada depois que a sala fecha. Nenhum dos dois tem login
+          ou pede e-mail (
           <a href="/privacy" style={linkStyle}>
             política de privacidade
           </a>
           ). Os espectros customizados que você cria ficam no próprio
-          aparelho. Sem propaganda, sem assinatura, sem compra dentro do app.
+          aparelho e só saem dele quando você cria uma sala online. Sem
+          propaganda, sem assinatura, sem compra dentro do app.
           A gente fez o app pelo prazer de fazer um jogo bom — não pra
           monetizar você.
         </p>

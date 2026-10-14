@@ -11,6 +11,7 @@ import {
   IoLanguageOutline,
   IoPeopleOutline,
   IoPhonePortraitOutline,
+  IoWifi,
 } from "react-icons/io5";
 import type { IconType } from "react-icons";
 import { useT } from "@/lib/i18n";
@@ -35,10 +36,11 @@ const CARD_W_CSS = `min(${CARD_W}px, 100%)`;
 const ITEMS: Feature[] = [
   { Icon: IoPeopleOutline, color: T.primary, titleKey: "features.players.title", bodyKey: "features.players.body" },
   { Icon: IoPhonePortraitOutline, color: T.coral, titleKey: "features.onePhone.title", bodyKey: "features.onePhone.body" },
+  { Icon: IoWifi, color: T.pink, titleKey: "features.online.title", bodyKey: "features.online.body" },
   { Icon: IoColorPaletteOutline, color: T.mint, titleKey: "features.spectrums.title", bodyKey: "features.spectrums.body" },
   { Icon: IoLanguageOutline, color: T.lavender, titleKey: "features.languages.title", bodyKey: "features.languages.body" },
   { Icon: IoCreateOutline, color: T.sky, titleKey: "features.custom.title", bodyKey: "features.custom.body" },
-  { Icon: IoFlagOutline, color: T.yellow, titleKey: "features.offline.title", bodyKey: "features.offline.body" },
+  { Icon: IoFlagOutline, color: T.yellow, titleKey: "features.noAds.title", bodyKey: "features.noAds.body" },
 ];
 
 export function FeaturesCarousel() {
